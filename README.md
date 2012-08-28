@@ -3,10 +3,10 @@
 # Flowplayer Flash
 
 
-## The video player for the web.
+## The video player for the web
 
 Flowplayer is an Open Source video player for your website.
-For site owners, developers, hobbyists, businesses and programmers
+For site owners, developers, hobbyists, businesses and programmers.
 
 This is Flowplayer Flash. Flowplayer 5 for HTML5 will be out soon.
 
