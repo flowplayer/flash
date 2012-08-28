@@ -1,0 +1,96 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+            autoPlay: false,
+            url: "sample2.f4m",
+            urlResolvers: ['f4m','bwcheck'],
+            provider: 'httpstreaming',
+            baseUrl: "http://httpstreaming.electroteque.org/videos/vod/",
+
+            bitrates: [
+                {bitrate: 150, label: '150k'},
+                {bitrate: 500, label: '500k'},
+                {bitrate: 700, label: '700k'},
+                {bitrate: 1000, label: '1000k'},
+                {bitrate: 1500, label: '1500k'}
+            ]
+        },
+        plugins:  {
+            f4m: {
+                url: 'flowplayer.f4m.swf'
+            },
+            httpstreaming: {
+                url: 'flowplayer.httpstreaming.swf'
+            },
+            bwcheck: {
+                url: 'flowplayer.bwcheck-httpstreaming.swf',
+
+                netConnectionUrl: 'http://flowplayer.electroteque.org/swf/flowplayer-bwcheck.swf',
+                bitrateProfileName: 'HTTPBitrateProfile',
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                   $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                   $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                }
+
+            },
+            content: {
+                url: 'flowplayer.content.swf',
+                top: 0, left: 0, width: 400, height: 50,
+                border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+</script>
+	</div>
+	
+	
+</body></html>

@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/***********************************************************
+* 
+* Copyright 2011 Adobe Systems Incorporated. All Rights Reserved.
+*
+* *********************************************************
+* The contents of this file are subject to the Berkeley Software Distribution (BSD) Licence
+* (the "License"); you may not use this file except in
+* compliance with the License. 
+*
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+*
+*
+* The Initial Developer of the Original Code is Adobe Systems Incorporated.
+* Portions created by Adobe Systems Incorporated are Copyright (C) 2011 Adobe Systems
+* Incorporated. All Rights Reserved.
+**********************************************************/
+-->
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:mx_internal="http://www.adobe.com/2006/flex/mx/internal"
+			   xmlns:components="org.osmf.smpte.tt.components.*"
+			   xmlns:local="*"
+			   initialize="application1_initializeHandler(event)"
+			   skinClass="org.osmf.smpte.tt.skins.spark.ApplicationSkin"
+			   viewSourceURL="srcview/index.html">
+	<fx:Style source="SMPTETTPluginTest.css" />
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayList;
+			import mx.core.mx_internal;
+			import mx.events.FlexEvent;
+			
+			import org.osmf.media.MediaFactory;
+			import org.osmf.smpte.tt.utils.FileRenderer;
+			
+			import spark.components.VideoDisplay;
+			import spark.events.IndexChangeEvent;
+			
+			use namespace mx_internal;
+			
+			private static const DEBUG:Boolean = true;
+			private static const STREAM_URL:String = "HBO_CC_ForNedaR.f4v";
+			private static const SMPTETT_URL:String = "SMPTETT.flv";
+			private static const F4M_STREAM_URL:String = "http://mediapm.edgesuite.net/osmf/content/test/manifest-files/dynamic_Streaming.f4m";
+			private static const AKAMAI_STREAM_URL:String = "rtmp://cp67126.edgefcs.net/ondemand/mediapm/osmf/content/test/akamai_10_year_f8_512K";
+			private static const ADOBE_STREAM_URL:String = "http://www.helpexamples.com/flash/video/caption_video.flv";
+			private static const W3C_STREAM_URL:String = "dfxp-testsuite/dfxp_movie.flv";
+			private static const BASE_W3C_TEST_SUITE_URL:String = "dfxp-testsuite/"; // "http://mediapm.edgesuite.net/osmf/content/test/captioning/dfxp-testsuite/";
+			private static const BASE_OVP_TEST_SUITE_URL:String = "http://mediapm.edgesuite.net/osmf/content/test/captioning/ovp-testsuite/";
+			
+			private var timingTestFilesSource:Array = [	
+				
+				/* HBO sample 
+				"HBO_CC_ForNedaR_tt.xml", */
+				"SMPTETT.xml",
+				"Elephants_Dream.en.xml",
+				
+				/* Akamai sample */
+				"http://mediapm.edgesuite.net/osmf/content/test/captioning/akamai_sample_caption.xml",
+				
+				/* Adobe sample */
+				"http://mediapm.edgesuite.net/osmf/content/test/captioning/adobe_sample.xml",
+				
+				/* OVP test suite */													
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_1.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_2.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_3.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_4.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_5.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_6.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_7.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_8.xml",
+				BASE_OVP_TEST_SUITE_URL + "ovp_sample_9.xml",
+				
+				/* W3C test suite */
+				BASE_W3C_TEST_SUITE_URL + "Content/Br001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Div001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Div002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Div003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Foreign001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Paragraph001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Paragraph002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Paragraph003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Paragraph004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Paragraph005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Span001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Span002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Span003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Span004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Span005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Tt001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Tt002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Content/Tt003.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTimeContainment001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTimeContainment002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTimeContainment003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTimeContainment004.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming008.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming010.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming011.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming012.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Timing/BeginDur001.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Timing/BeginEnd001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BeginEnd002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/BeginEnd003.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Timing/FixedBeginEnd002.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaParTiming001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaParTiming003.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaSeqTiming001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaSeqTiming002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaSeqTiming003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaSeqTiming004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaSeqTiming005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Timing/MediaSeqTiming006.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor008.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/BackgroundColor009.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color008.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Color009.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Direction001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Direction002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Direction003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Direction004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Direction005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Direction006.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Display001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Display002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Display004.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/DisplayAlign001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/DisplayAlign002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/DisplayAlign003.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/DynamicFlow001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/DynamicFlow002.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Extent001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Extent002.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily008.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily009.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontSize001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontSize002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontSize003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontSize004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontSize005.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontStyle001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontStyle002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontStyle003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontStyle004.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontWeight001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/FontWeight002.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/LineHeight001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/LineHeight002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/LineHeight003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/LineHeight006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/LineHeight007.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Opacity001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Opacity002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Opacity003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Opacity004.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Origin001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Origin002.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Overflow001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Overflow002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Overflow003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Overflow004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Overflow005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Overflow006.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Padding001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Padding002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Padding003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Padding004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Padding006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Padding007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Padding008.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/ShowBackground001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/ShowBackground002.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Style001.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Styling001.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign006.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration008.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration009.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration010.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration011.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration012.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextDecoration013.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextOutline001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextOutline002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextOutline003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextOutline004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/TextOutline005.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/UnicodeBidi001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/UnicodeBidi002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/UnicodeBidi003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/UnicodeBidi005.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/Visibility001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Visibility002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/Visibility003.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/WrapOption001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WrapOption002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WrapOption003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WrapOption004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WrapOption005.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode008.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/WritingMode009.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Styling/ZIndex001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/ZIndex002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Styling/ZIndex003.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation007.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation008.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation009.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation010.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation011.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation012.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation013.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation014.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation015.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation016.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/Animation017.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/BasicTiming004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/BasicTiming005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/MediaParTiming002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Animation/MediaSeqTiming007.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Parameters/CellResolution001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/ClockMode001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/ClockMode002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/ClockMode003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/MarkerMode001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/MarkerMode002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/Parameters006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/PixelAspectRatio001.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/PixelAspectRatio002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/PixelAspectRatio003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Parameters/PixelAspectRatio004.xml",
+				
+				BASE_W3C_TEST_SUITE_URL + "Metadata/Agent004.xml",
+				BASE_W3C_TEST_SUITE_URL + "Metadata/Copyright003.xml",
+				BASE_W3C_TEST_SUITE_URL + "Metadata/Desc002.xml",
+				BASE_W3C_TEST_SUITE_URL + "Metadata/Name005.xml",
+				BASE_W3C_TEST_SUITE_URL + "Metadata/Role006.xml",
+				BASE_W3C_TEST_SUITE_URL + "Metadata/Title001.xml"
+			];
+			
+			
+			private var videoDisplay:VideoDisplay;
+			private var mediaFactory:MediaFactory;
+			
+			[Bindable]
+			private var timingTestFiles:ArrayList;
+			
+			private function debug(msg:String):void
+			{
+				if (DEBUG)
+				{
+					trace(msg);
+					
+					if (ExternalInterface.available)
+					{
+						ExternalInterface.call("function(){ if (console && console.log) trace(\"FlashPlayer DEBUG: "+msg+"\"); }");
+					}
+				}
+			}
+			
+			protected function application1_initializeHandler(event:FlexEvent):void
+			{
+				videoDisplay = videoPlayer.videoDisplay;
+				mediaFactory = videoDisplay.mediaFactory;
+				
+				timingTestFiles = new ArrayList();
+				timingTestFiles.source = timingTestFilesSource;
+				
+				cbTestFile.setSelectedIndex(0,true);
+				
+			}
+			
+			private const COMBOBOX_START_INDEX:int = -1;
+			
+			protected function cbTestFile_changeHandler(event:IndexChangeEvent):void
+			{
+				
+				if(event.target.selectedIndex==COMBOBOX_START_INDEX)
+				{
+					tiMediaURL.text = STREAM_URL;
+				} 
+				else
+				if (event.target.selectedIndex==COMBOBOX_START_INDEX+1)
+				{
+					tiMediaURL.text = SMPTETT_URL;
+				} 
+				else if (event.target.selectedIndex==COMBOBOX_START_INDEX+2)
+				{
+					tiMediaURL.text = F4M_STREAM_URL;
+				} 
+				else if (event.target.selectedIndex==COMBOBOX_START_INDEX+4)
+				{
+					tiMediaURL.text = ADOBE_STREAM_URL;
+				} 
+				else if (event.target.selectedIndex>COMBOBOX_START_INDEX+13)
+				{
+					tiMediaURL.text = W3C_STREAM_URL;
+				} 
+				else
+				{
+					tiMediaURL.text = AKAMAI_STREAM_URL;
+				}
+			}
+			
+			protected function btnLoadMedia_clickHandler(event:MouseEvent):void
+			{
+				loadMedia(tiMediaURL.text, String(cbTestFile.selectedItem));
+			}
+			
+			protected function btnUnloadMedia_clickHandler(event:MouseEvent):void
+			{
+				unloadMedia();
+			}
+			
+			private function loadMedia(url:String, ttmlFile:String):void
+			{
+				
+				// var resource:URLResource = new URLResource(url);
+				// resource.addMetadataValue(SMPTETTPluginInfo.SMPTETT_METADATA_NAMESPACE, new Metadata());
+				
+				videoPlayer.source = url;
+				videoPlayer.captionsSource = ttmlFile;
+				
+				// Now load the DFXP file separately so we can show it in the UI (note this has
+				// nothing to do with the functionality of the app, this is only for the 
+				// convenience of the user)
+				var fileRenderer:FileRenderer = new FileRenderer(this.dxfpFileContents, ttmlFile);
+			}
+			
+			private function unloadMedia():void
+			{
+				videoPlayer.source = null;
+				videoPlayer.captionsSource = null;
+			}
+			
+		]]>
+	</fx:Script>
+	<s:BorderContainer width="100%" height="100%"
+					   minWidth="800" minHeight="480"
+					   borderVisible="false">
+		<s:VGroup width="100%" height="100%" gap="5" 
+				  paddingTop="20" paddingRight="20" 
+				  paddingBottom="20" paddingLeft="20">
+			<s:Label styleName="title" text="OSMF SMPTE-TT Test App"/>
+			
+			<mx:Form width="100%">
+				<!--<s:layout> 
+					<s:FormLayout gap="-14" 
+								  paddingTop="0" paddingRight="0" 
+								  paddingBottom="0" paddingLeft="0"/> 
+				</s:layout>-->
+				<mx:FormItem label="DFXP File:" width="100%">
+					<s:ComboBox id="cbTestFile" 
+								dataProvider="{timingTestFiles}"
+								width="100%"
+								skinClass="spark.skins.spark.ComboBoxSkin" change="cbTestFile_changeHandler(event)"/>
+				</mx:FormItem>
+				<mx:FormItem label="Media File:" width="100%">
+					<s:HGroup width="100%">
+						<s:TextInput id="tiMediaURL" width="100%" selectable="false"/>
+						<s:Button id="btnLoadMedia" label="Load Media Resource" click="btnLoadMedia_clickHandler(event)"/>
+						<s:Button id="btnUnloadMedia" label="Unload Media Resource" click="btnUnloadMedia_clickHandler(event)"/>			
+					</s:HGroup>					
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:HDividedBox width="100%" height="100%">
+				<s:Panel title="Video Container" width="100%" height="100%">
+					<s:Group width="100%" height="100%">
+						<s:Rect width="100%" height="100%">
+							<s:fill><s:SolidColor color="0xffffff" /></s:fill>
+						</s:Rect>
+						<s:VGroup width="100%" height="100%">
+							<components:SMPTETTVideoPlayer id="videoPlayer" 
+														   width="100%" height="100%" showCaptions="false"
+														   skinClass="org.osmf.smpte.tt.skins.spark.VideoPlayerSkin">
+							</components:SMPTETTVideoPlayer>
+						</s:VGroup>
+					</s:Group>
+					
+				</s:Panel>
+				<s:Panel title="SMPTE-TT File" width="100%" height="100%">
+					<s:VGroup width="100%" height="100%">
+						<s:TextArea id="dxfpFileContents" 
+									width="100%" height="100%" 
+									left="0" right="0" top="0" bottom="0"
+									styleName="panelTextArea">
+						</s:TextArea>
+					</s:VGroup>
+				</s:Panel>
+			</mx:HDividedBox>
+		</s:VGroup>
+	</s:BorderContainer>
+	
+
+	
+</s:Application>

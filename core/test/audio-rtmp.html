@@ -1,0 +1,66 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="01-beastie_boys-make_some_noise.mp3"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'error', filter: 'org.flowplayer.rtmp.*' },
+
+        onBegin: function(clip) {
+            console.log("onBegin, " + clip.duration);
+        },
+
+        onStart: function(clip) {
+            console.log("onStart, " + clip.duration);
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        onSeek: function() {
+            console.log("onSeek");
+        },
+
+        clip: {
+            url: "mp3:todestango",
+            provider: "rtmp"
+        },
+
+        plugins: {
+            rtmp: {
+                url: 'flowplayer.rtmp.swf',
+                netConnectionUrl: "rtmp://s2k10b45u2ab11.cloudfront.net/cfx/st"
+                ,
+                durationFunc: "getStreamLength"
+            }
+        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

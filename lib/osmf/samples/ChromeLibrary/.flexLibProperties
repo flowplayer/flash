@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="1">
+  <includeClasses>
+    <classEntry path="org.osmf.chrome.application.ChromeApplication"/>
+    <classEntry path="org.osmf.chrome.assets.Asset"/>
+    <classEntry path="org.osmf.chrome.assets.AssetLoader"/>
+    <classEntry path="org.osmf.chrome.assets.AssetResource"/>
+    <classEntry path="org.osmf.chrome.assets.AssetsManager"/>
+    <classEntry path="org.osmf.chrome.assets.BitmapAsset"/>
+    <classEntry path="org.osmf.chrome.assets.BitmapResource"/>
+    <classEntry path="org.osmf.chrome.assets.DisplayObjectAsset"/>
+    <classEntry path="org.osmf.chrome.assets.FontAsset"/>
+    <classEntry path="org.osmf.chrome.assets.FontResource"/>
+    <classEntry path="org.osmf.chrome.assets.Scale9Bitmap"/>
+    <classEntry path="org.osmf.chrome.assets.SymbolAsset"/>
+    <classEntry path="org.osmf.chrome.assets.SymbolResource"/>
+    <classEntry path="org.osmf.chrome.configuration.AssetsParser"/>
+    <classEntry path="org.osmf.chrome.configuration.Configuration"/>
+    <classEntry path="org.osmf.chrome.configuration.LayoutAttributesParser"/>
+    <classEntry path="org.osmf.chrome.configuration.PluginsParser"/>
+    <classEntry path="org.osmf.chrome.configuration.WidgetsParser"/>
+    <classEntry path="org.osmf.chrome.debug.FPSMeter"/>
+    <classEntry path="org.osmf.chrome.debug.MemoryMeter"/>
+    <classEntry path="org.osmf.chrome.events.ScrubberEvent"/>
+    <classEntry path="org.osmf.chrome.hint.Hint"/>
+    <classEntry path="org.osmf.chrome.metadata.ChromeMetadata"/>
+    <classEntry path="org.osmf.chrome.widgets.AlertDialog"/>
+    <classEntry path="org.osmf.chrome.widgets.AuthenticationDialog"/>
+    <classEntry path="org.osmf.chrome.widgets.AutoHideWidget"/>
+    <classEntry path="org.osmf.chrome.widgets.ButtonWidget"/>
+    <classEntry path="org.osmf.chrome.widgets.ContextMenuOverlay"/>
+    <classEntry path="org.osmf.chrome.widgets.EjectButton"/>
+    <classEntry path="org.osmf.chrome.widgets.FadingLayoutTargetSprite"/>
+    <classEntry path="org.osmf.chrome.widgets.FullScreenEnterButton"/>
+    <classEntry path="org.osmf.chrome.widgets.FullScreenLeaveButton"/>
+    <classEntry path="org.osmf.chrome.widgets.LabelWidget"/>
+    <classEntry path="org.osmf.chrome.widgets.LiveButton"/>
+    <classEntry path="org.osmf.chrome.widgets.MetadataLabel"/>
+    <classEntry path="org.osmf.chrome.widgets.PauseButton"/>
+    <classEntry path="org.osmf.chrome.widgets.PinDownButton"/>
+    <classEntry path="org.osmf.chrome.widgets.PinUpButton"/>
+    <classEntry path="org.osmf.chrome.widgets.PlayButton"/>
+    <classEntry path="org.osmf.chrome.widgets.PlayableButton"/>
+    <classEntry path="org.osmf.chrome.widgets.QualityDecreaseButton"/>
+    <classEntry path="org.osmf.chrome.widgets.QualityIncreaseButton"/>
+    <classEntry path="org.osmf.chrome.widgets.QualityLabel"/>
+    <classEntry path="org.osmf.chrome.widgets.QualityModeToggle"/>
+    <classEntry path="org.osmf.chrome.widgets.RecordButton"/>
+    <classEntry path="org.osmf.chrome.widgets.ScrubBar"/>
+    <classEntry path="org.osmf.chrome.widgets.Scrubber"/>
+    <classEntry path="org.osmf.chrome.widgets.SoundLessButton"/>
+    <classEntry path="org.osmf.chrome.widgets.SoundMoreButton"/>
+    <classEntry path="org.osmf.chrome.widgets.StopButton"/>
+    <classEntry path="org.osmf.chrome.widgets.URLInput"/>
+    <classEntry path="org.osmf.chrome.widgets.Widget"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

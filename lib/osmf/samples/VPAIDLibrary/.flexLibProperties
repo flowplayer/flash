@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
+  <includeClasses>
+    <classEntry path="org.osmf.vpaid.elements.VPAIDElement"/>
+    <classEntry path="org.osmf.vpaid.events.VPAIDEvent"/>
+    <classEntry path="org.osmf.vpaid.events.VPAIDLoadEvent"/>
+    <classEntry path="org.osmf.vpaid.media.IVPAID"/>
+    <classEntry path="org.osmf.vpaid.metadata.VPAIDMetadata"/>
+    <classEntry path="org.osmf.vpaid.model.IVPAIDBase"/>
+    <classEntry path="org.osmf.vpaid.model.VPAID_1_1"/>
+    <classEntry path="org.osmf.vpaid.traits.VPAIDLoadTrait"/>
+    <classEntry path="org.osmf.vpaid.traits.VPAIDTimeTrait"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

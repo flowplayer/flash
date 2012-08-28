@@ -1,0 +1,116 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.9.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="mp4:bbb-400"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+            {
+                log: {
+                    level: 'debug',
+                    filter: 'org.flowplayer.menu.ui.Menu'
+                },
+                clip: {
+                    autoPlay: false,
+                    provider: 'rtmp',
+
+                    urlResolvers: 'brselect',
+
+                    bitrates: [
+                        { url: "mp4:bbb-400",
+                            width: 320, bitrate: 400, isDefault: true,
+                            // label used to populate the selection items
+                            label: "400 k"
+                        },
+                        { url: "mp4:bbb-800",
+                            width: 480, bitrate: 800, label: "800 k" },
+
+                        { url: "mp4:bbb-1200",
+                            width: 480, bitrate: 1200, label: "1200 k" },
+
+                        { url: "mp4:bbb-1600",
+                            width: 480, bitrate: 1600, label: "1600 k, mycket bra quality you know" }
+                    ],
+
+                    onStart: function() {
+                        console.log("onStart");
+                    },
+                    onBegin: function() {
+                        console.log("onBegin");
+                    }
+                },
+                plugins: {
+                    menu: {
+                        url: 'flowplayer.menu.swf',
+                        items: [
+                            // you can have an optional label as the first item
+                            // the bitrate specific items are filled here based on the clip's bitrates
+                            { label: "select bitrate:", enabled: false }
+                        ],
+                        width: 300,
+                        right: 0
+                    },
+                    brselect: {
+                        url: 'flowplayer.bitrateselect.swf',
+
+                        // enable the bitrate menu
+                        menu: true,
+
+                        // show the selected file in the content box. These functions are
+                        // here just for demonstartion purposes.
+                        onStreamSwitchBegin: function(newItem, currentItem) {
+                            $f().getPlugin('content').setHtml(
+                                    "Will switch to: " + newItem.streamName +
+                                            " from " + currentItem.streamName);
+                        },
+                        onStreamSwitch: function(newItem) {
+                            $f().getPlugin('content').setHtml(
+                                    "Switched to: " + newItem.streamName);
+                        }
+                    },
+                    // RTMP streaming plugin
+                    rtmp: {
+                        url: "flowplayer.rtmp.swf",
+                        netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+                    },
+                    // a content box so that we can see the selected bitrate. (for demonstation
+                    // purposes only)
+                    content: {
+                        url: "flowplayer.content.swf",
+                        top: 0,
+                        left: 0,
+                        width: 400,
+                        height: 150,
+                        backgroundColor: 'transparent',
+                        backgroundGradient: 'none',
+                        border: 0,
+                        textDecoration: 'outline',
+                        style: {
+                            body: {
+                                fontSize: 14,
+                                fontFamily: 'Arial',
+                                textAlign: 'center',
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+
+            });
+</script>
+    </div>
+	
+
+</body></html>

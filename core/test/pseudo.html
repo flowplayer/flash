@@ -1,0 +1,68 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/Extremists.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+//        log: { level: 'debug', filter: 'org.flowplayer.pseudostreaming.*' },
+
+        onBeforeSeek: function() {
+            console.log("onBeforeSeek");
+        },
+        onSeek: function() {
+            console.log("onSeek");
+        },
+        onBegin: function() {
+            console.log("onBegin");
+        },
+
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+clip: {
+    provider: 'pseudo',
+    url: "http://www.blacktrash.org/php/streamer.php/ccc_trailer1.flv",
+//    ,url: "http://pseudo01.hddn.com/vod/demo.flowplayervod/bbb-400.mp4"
+    autoPlay: false,
+    autoBuffering: true
+},
+
+plugins: {
+    pseudo: {
+        url: 'flowplayer.pseudostreaming.swf'
+    }
+}
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

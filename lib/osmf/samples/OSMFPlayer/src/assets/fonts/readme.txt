@@ -1,0 +1,1 @@
+The Standards0755.swf uses the Standard 07_55 font by Craig Kroeger, who has kindly consented the font being used for the OSMFPlayer. Please note though, that this is *not* a free font. Please visit http://www.miniml.com for more licensing information. 

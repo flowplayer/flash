@@ -1,0 +1,66 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../../jsplugins/controls/trunk/flowplayer.controls.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+
+<div id="controls" class="hulu"></div>
+
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        onSeek: function() {
+            console.log("onSeek");
+        },
+
+        clip: {
+            url: "mp3:todestango",
+            provider: "rtmp"
+        },
+
+        plugins: {
+            rtmp: {
+                url: 'flowplayer.rtmp.swf',
+                netConnectionUrl: "rtmp://s2k10b45u2ab11.cloudfront.net/cfx/st"
+                ,
+                durationFunc: "getStreamLength"
+            },
+            controls: null
+        }
+
+    }).controls("controls");
+</script>
+	</div>
+	
+	
+</body></html>

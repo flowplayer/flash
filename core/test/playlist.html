@@ -1,0 +1,64 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://e1h13.simplecdn.net/flowplayer/flowplayer.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'info', filter: 'org.flowplayer.controller.ImageController' },
+        onBegin: function(clip) {
+            console.log("onBegin: " + clip.url);
+        },
+
+        onStart: function(clip) {
+            console.log("onStart: " + clip.url);
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        // Videos to be played:
+        playlist: [
+            'honda_accord.flv',
+            { url: 'flowplayer.flv', autoPlay: false },
+            { url: 'metacafe.flv',
+                onBeforeFinish: function() {
+                    return false;
+                }
+            }
+        ],
+        plugins: {
+            controls: {
+                autoHide: false,
+                playlist: true
+            }
+        }
+
+    });
+</script>
+	</div>
+
+
+</body></html>

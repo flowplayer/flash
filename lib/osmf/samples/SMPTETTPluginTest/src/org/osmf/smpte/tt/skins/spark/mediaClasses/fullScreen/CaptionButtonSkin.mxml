@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009">
+	
+	<fx:Metadata>
+		[HostComponent("spark.components.ToggleButton")]
+	</fx:Metadata>
+	
+	<!-- states -->
+	<s:states>
+		<s:State name="up" />
+		<s:State name="over" stateGroups="overStates" />
+		<s:State name="down" stateGroups="downStates" />
+		<s:State name="disabled" stateGroups="disabledStates" />
+		<s:State name="upAndSelected" stateGroups="selectedStates, selectedUpStates" />
+		<s:State name="overAndSelected" stateGroups="overStates, selectedStates" />
+		<s:State name="downAndSelected" stateGroups="downStates, selectedStates" />
+		<s:State name="disabledAndSelected" stateGroups="selectedUpStates, disabledStates, selectedStates" />
+	</s:states>
+	
+	<!-- layer 1: fill -->
+	<s:Rect left="1" right="1" top="1" bottom="1">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="0x585858"
+								 color.overStates="0x676767"
+								 color.downStates="0x2C2C2C"
+								 alpha="0.55" />
+				<s:GradientEntry color="0x1E1E1E"
+								 color.overStates="0x363636" 
+								 color.downStates="0x585858"
+								 alpha="0.55" />
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	<!-- layer 2: One pixel stroke inside border -->
+	<s:Rect left="1" right="1" top="1" bottom="1">
+		<s:stroke>
+			<s:LinearGradientStroke weight="1" rotation="90">
+				<s:GradientEntry color="0xFFFFFF" alpha="0.12" />
+				<s:GradientEntry color="0xFFFFFF" alpha="0.09" />
+			</s:LinearGradientStroke>
+		</s:stroke>
+	</s:Rect>
+	
+	<!-- layer 3: border - put on top of the fill so it doesn't disappear when scale is less than 1 -->
+	<s:Rect left="0" right="0" top="0" bottom="0" width="38" height="24">
+		<s:stroke>
+			<s:SolidColorStroke color="0x222222" alpha="0.66" />
+		</s:stroke>
+	</s:Rect>
+	
+	
+	<!-- layer 4: Captioning Logo-->
+	<s:Group id="captioningLogo" horizontalCenter="0" verticalCenter="0"
+			 alpha="0.75"
+			 alpha.upAndSelected="1"
+			 alpha.overAndSelected="1"
+			 alpha.downAndSelected="1"
+			 alpha.disabledStates="0.25">
+		<s:Path x="2.866" y="5.023" data="M 0 3.794 C 0 4.938 0.274 5.856 0.815 6.522 C 1.366 7.196 2.127 7.537 3.079 7.537 C 3.853 7.537 4.498 7.283 4.998 6.782 C 5.49 6.288 5.801 5.64 5.921 4.857 L 5.955 4.637 L 5.735 4.637 L 4.419 4.637 L 4.272 4.637 L 4.236 4.782 C 4.157 5.109 4.058 5.353 3.943 5.508 C 3.74 5.789 3.451 5.925 3.059 5.925 C 2.677 5.925 2.37 5.762 2.12 5.427 C 1.861 5.08 1.73 4.537 1.73 3.815 C 1.73 3.088 1.857 2.523 2.106 2.137 C 2.343 1.771 2.655 1.593 3.059 1.593 C 3.465 1.593 3.76 1.716 3.96 1.969 C 4.073 2.114 4.17 2.341 4.246 2.643 L 4.283 2.786 L 4.428 2.786 L 5.745 2.786 L 5.942 2.786 L 5.932 2.585 C 5.91 2.128 5.754 1.668 5.47 1.218 C 4.946 0.409 4.117 0 3.005 0 C 2.168 0 1.468 0.305 0.925 0.906 C 0.311 1.585 0 2.557 0 3.794 L 0 3.794 Z">
+			<s:fill>
+				<s:SolidColor color="0x000000"/>
+			</s:fill>
+		</s:Path>
+		<s:Path x="9.208" y="5.023" data="M 0 3.794 C 0 4.938 0.274 5.856 0.815 6.522 C 1.366 7.196 2.127 7.537 3.079 7.537 C 3.853 7.537 4.498 7.283 4.998 6.782 C 5.49 6.288 5.801 5.64 5.921 4.857 L 5.955 4.637 L 5.735 4.637 L 4.419 4.637 L 4.272 4.637 L 4.237 4.782 C 4.157 5.109 4.058 5.353 3.943 5.508 C 3.74 5.789 3.451 5.925 3.059 5.925 C 2.677 5.925 2.37 5.762 2.12 5.427 C 1.861 5.08 1.73 4.537 1.73 3.815 C 1.73 3.088 1.857 2.523 2.107 2.137 C 2.343 1.771 2.655 1.593 3.059 1.593 C 3.465 1.593 3.76 1.716 3.96 1.969 C 4.073 2.114 4.17 2.341 4.246 2.643 L 4.283 2.786 L 4.428 2.786 L 5.745 2.786 L 5.943 2.786 L 5.933 2.585 C 5.91 2.128 5.754 1.668 5.47 1.218 C 4.946 0.409 4.117 0 3.005 0 C 2.168 0 1.469 0.305 0.925 0.906 C 0.311 1.585 0 2.557 0 3.794 L 0 3.794 Z">
+			<s:fill>
+				<s:SolidColor color="0x000000"/>
+			</s:fill>
+		</s:Path>
+		<s:Path x="0.431" y="1.875" data="M 17.469 14.025 L 0 14.025 L 0 0 L 17.469 0 L 17.469 14.025 L 17.469 14.025 L 17.469 14.025 Z M 5.101 1.745 C 3.162 1.745 1.655 3.394 1.655 5.427 L 1.655 8.504 C 1.655 10.538 3.162 12.186 5.101 12.186 L 12.139 12.186 C 14.078 12.186 15.649 10.538 15.649 8.504 L 15.649 5.427 L 15.649 5.427 C 15.649 3.394 14.078 1.745 12.139 1.745">
+			<s:fill>
+				<s:SolidColor color="0x000000"/>
+			</s:fill>
+		</s:Path>
+		
+		<s:Path x="2.866" y="4.023" data="M 0 3.794 C 0 4.938 0.274 5.856 0.815 6.522 C 1.366 7.196 2.127 7.537 3.079 7.537 C 3.853 7.537 4.498 7.283 4.998 6.782 C 5.49 6.288 5.801 5.64 5.921 4.857 L 5.955 4.637 L 5.735 4.637 L 4.419 4.637 L 4.272 4.637 L 4.236 4.782 C 4.157 5.109 4.058 5.353 3.943 5.508 C 3.74 5.789 3.451 5.925 3.059 5.925 C 2.677 5.925 2.37 5.762 2.12 5.427 C 1.861 5.08 1.73 4.537 1.73 3.815 C 1.73 3.088 1.857 2.523 2.106 2.137 C 2.343 1.771 2.655 1.593 3.059 1.593 C 3.465 1.593 3.76 1.716 3.96 1.969 C 4.073 2.114 4.17 2.341 4.246 2.643 L 4.283 2.786 L 4.428 2.786 L 5.745 2.786 L 5.942 2.786 L 5.932 2.585 C 5.91 2.128 5.754 1.668 5.47 1.218 C 4.946 0.409 4.117 0 3.005 0 C 2.168 0 1.468 0.305 0.925 0.906 C 0.311 1.585 0 2.557 0 3.794 L 0 3.794 Z">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" id="captioningLogoFill_1"/>
+			</s:fill>
+		</s:Path>
+		<s:Path x="9.208" y="4.023" data="M 0 3.794 C 0 4.938 0.274 5.856 0.815 6.522 C 1.366 7.196 2.127 7.537 3.079 7.537 C 3.853 7.537 4.498 7.283 4.998 6.782 C 5.49 6.288 5.801 5.64 5.921 4.857 L 5.955 4.637 L 5.735 4.637 L 4.419 4.637 L 4.272 4.637 L 4.237 4.782 C 4.157 5.109 4.058 5.353 3.943 5.508 C 3.74 5.789 3.451 5.925 3.059 5.925 C 2.677 5.925 2.37 5.762 2.12 5.427 C 1.861 5.08 1.73 4.537 1.73 3.815 C 1.73 3.088 1.857 2.523 2.107 2.137 C 2.343 1.771 2.655 1.593 3.059 1.593 C 3.465 1.593 3.76 1.716 3.96 1.969 C 4.073 2.114 4.17 2.341 4.246 2.643 L 4.283 2.786 L 4.428 2.786 L 5.745 2.786 L 5.943 2.786 L 5.933 2.585 C 5.91 2.128 5.754 1.668 5.47 1.218 C 4.946 0.409 4.117 0 3.005 0 C 2.168 0 1.469 0.305 0.925 0.906 C 0.311 1.585 0 2.557 0 3.794 L 0 3.794 Z">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" id="captioningLogoFill_2"/>
+			</s:fill>
+		</s:Path>
+		<s:Path x="0.431" y="0.875" data="M 17.469 14.025 L 0 14.025 L 0 0 L 17.469 0 L 17.469 14.025 L 17.469 14.025 L 17.469 14.025 Z M 5.101 1.745 C 3.162 1.745 1.655 3.394 1.655 5.427 L 1.655 8.504 C 1.655 10.538 3.162 12.186 5.101 12.186 L 12.139 12.186 C 14.078 12.186 15.649 10.538 15.649 8.504 L 15.649 5.427 L 15.649 5.427 C 15.649 3.394 14.078 1.745 12.139 1.745">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" id="captioningLogoFill_3"/>
+			</s:fill>
+		</s:Path>
+	</s:Group>
+	
+</s:SparkSkin>

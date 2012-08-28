@@ -1,0 +1,84 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="../build/flowplayer.flv"
+                     style="display:block;width:600px;height:350px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.viralvideos.EmailView, org.flowplayer.viralvideos.ViralVideos' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+//        clip: {
+//            pageUrl: 'foo.com/foo.html'
+//        },
+        plugins: {
+            viral: {
+                url: 'flowplayer.viralvideos.swf',
+                alpha: 0.2,
+                share: {
+                    shareWindow: '_self',
+                    description: 'jkejejej',
+//                    labels: {
+                        title: 'jeejee'
+//                    }
+                },
+                embed: {
+                    fallbackUrls: ['../build/flowplayer.flv'],
+                    labels: {
+                        title: "foobar boobar"
+                    }
+                },
+                icons: {
+                    overColor: 'rgba(255,10,10,0.5)'
+                },
+                email: {
+                    labels: {
+                        title: 'Dieses Video per Email an Freunde weiterleiten',
+                        to: 'Trage hier die Mailadressen ein',
+                        toSmall: 'Mehrere Adressen mit Komma trennen',
+                        message: 'Deine Nachricht',
+                        subject: 'Das Video von TrailerSeite.de musst du gesehen haben!',
+                        from: 'Dein Name',
+                        fromAddress: 'Deine Email',
+                        send: 'Email senden'
+                    }
+                }
+            },
+            dock: {
+//                bottom: 0
+            }
+        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

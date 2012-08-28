@@ -1,0 +1,29 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                style="display:block;width:440px;height:247px"
+                id="player">
+        </a>
+
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.model.Playlist, org.flowplayer.config.RSSPlaylistParser' },
+        playlist: 'playlist2.rss'
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

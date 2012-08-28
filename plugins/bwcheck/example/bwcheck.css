@@ -1,0 +1,16 @@
+a.bitrate-disabled {
+	color: #CCCCCC;
+	text-decoration: none;
+}
+
+a.bitrate-active {
+	color: #000000;
+	text-decoration: none;
+	
+}
+
+a.bitrate-selected {
+	color: #999999;
+	font-weight: bold;
+	text-decoration: none;
+}

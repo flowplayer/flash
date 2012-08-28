@@ -1,0 +1,18 @@
+<rss version="2.0"
+  xmlns:media="http://search.yahoo.com/mrss/"
+  xmlns:fp="http://flowplayer.org/fprss/">
+  <channel>
+     <title>Playlist</title>
+
+      <item>
+          <media:content url="mp4:vod/demo.flowplayervod/bbb-400.mp4" type="video/h264" />
+           <fp:clip netConnectionUrl="rtmp://rtmp01.hddn.com/play" />
+      </item>
+
+      <item>
+          <media:content url="vod/demo.flowplayervod/Extremists.flv" type="video/h264" />
+          <fp:clip netConnectionUrl="rtmp://rtmp01.hddn.com/play" />
+      </item>
+
+  </channel>
+</rss>

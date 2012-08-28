@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<configdata>
+    <production>
+    	<antispam>akismet</antispam>
+    	<typepad>
+    		<url>http://profile.typepad.com/danrossi</url>
+    		<key>d58771be26e9a7c0c972d01ab66afa88</key>
+    	</typepad>
+    	<akismet>
+    		<url></url>
+    		<key>d795658ff129</key>
+    	</akismet>
+		<mail>
+			<backend>smtp</backend>
+			<tokenExpiry>60</tokenExpiry>
+			<!--  <backend>sendmail</backend> -->
+			<!-- <backend>smtp</backend> -->
+			<smtp>
+				<host>mail.electroteque.org</host>
+				<options>
+					<username>danielr@electroteque.org</username>
+					<password>Electro303</password>
+					<auth>login</auth>
+					<!-- <auth>plain</auth> -->
+					<!-- <auth>crammd5</auth> -->
+					<!-- <ssl>ssl</ssl> -->
+					<!-- <ssl>tls</ssl> -->
+					<!-- <port>25</port> -->
+				</options>
+			</smtp>
+		</mail>
+		<tokenSession>
+			<cache_expire>86400</cache_expire>
+			<cache_limiter>nocache</cache_limiter>
+			<gc_maxlifetime>86400</gc_maxlifetime>
+			<name>EmailToken</name>
+			<save_path>/tmp</save_path>
+			<use_cookies>1</use_cookies>
+			<use_only_cookies>on</use_only_cookies>
+			<cookie_httponly>1</cookie_httponly>
+			<remember_me_seconds>86400</remember_me_seconds>
+		</tokenSession>
+    </production>
+</configdata>

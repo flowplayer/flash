@@ -1,0 +1,23 @@
+<project name="Flowplayer pseudostreaming with byterange feature" default="deploy">
+
+	<property file="${user.home}/plugin.properties" />
+	<property file="build.properties" />
+	<property file="${devkit-dir}/plugin-build.properties" />
+	
+	<property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
+	<property name="extra-sources" value="../core/lib/corelib/src" />
+    <property name="plugin-libs" value="lib/as3crypto-1_3_patched.swc" />
+    <property name="compiler-defines" value="-define+=CONFIG::enableByteRange,'true'"/>
+	<import file="${devkit-dir}/plugin-build.xml"/>
+	
+	<property name="basename" value="flowplayer.pseudostreaming-byterange" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+
+	<property name="plugin-main-class" value="org/flowplayer/pseudostreaming/PseudoStreaming.as" />
+
+	<target name="release-remote">
+    </target>
+
+</project>

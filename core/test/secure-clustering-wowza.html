@@ -1,0 +1,66 @@
+<html>
+<head>
+    <meta http-equiv="content-type"
+          content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+    <!-- page title -->
+    <title>Minimal Flowplayer setup</title>
+
+</head>
+<body>
+
+<div id="page">
+    <a
+            href="flv:Born To Be Wild-Flash8 FLV 1280x720 16x9.flv"
+            style="display:block;width:440px;height:247px"
+            id="player">
+    </a>
+    <script>
+flowplayer("player", "../build/flowplayer.swf",
+{
+    showErrors: false,
+
+    onError: function(code) {
+        console.log("onError: " + code);
+        if (code == 201) {
+            this.play('rtmpe://stream1.sekstylion.pl:1935/vod/flv:Born To Be Wild-Flash8 FLV 1280x720 16x9.flv');
+        }
+    },
+
+    clip: {
+        url: 'rtmpe://stream1_e.sekstylion.pl:1935/vod/flv:Born To Be Wild-Flash8 FLV 1280x720 16x9.flv',
+        autoPlay: false,
+        autoBuffering: true,
+        onStart: function(clip) {
+            document.getElementById("movie-info").innerHTML = '<p style="overflow:auto;">' + clip.url + '</p>';
+        },
+        provider: 'rtmp',
+        connectionProvider: 'secure'
+        //connectionProvider: 'clustering' // how to apply two values to a connectionProvider variable ?
+    },
+    play: {
+        url: '/img/play-button-fp.png',
+        width: 86,
+        height: 85,
+        replayLabel: 'Odtwórz ponownie'
+    },
+
+    plugins: {
+        rtmp: {
+            url: 'flowplayer.rtmp.swf'
+        },
+        secure: {
+            url: 'flowplayer.securestreaming.swf',
+            token: escape('#ed%h0#w@1')
+        }
+    }
+});
+    </script>
+</div>
+
+
+</body>
+</html>

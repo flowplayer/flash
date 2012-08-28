@@ -1,0 +1,88 @@
+
+<script src="flowplayer-3.0.0.min.js"></script>
+<script src="test-player.js"></script>
+<script src="jquery-1.2.6.js"></script>
+<script src="../flowplayer.playlist.js"></script>
+
+<style>
+	body {
+		padding:50px;		
+	} 
+	
+	.player {
+		border:1px solid navy;
+		width:155px;
+		height:155px;		
+		display:block;
+		padding:5px;
+		float:left;
+		margin-right:20px;
+	} 
+	
+	img {
+		border:0;			
+	}
+	
+	div.playlist {
+		float:left;
+		width:200px;		
+	}
+	
+	div.playlist a {
+		display:block;
+		padding:5px 10px;
+		border:1px solid #ccc;
+		margin-bottom:5px;		
+		text-decoration:none;
+	}
+	
+	div.playlist a.playing {
+		background-color:#efefef;		
+	}
+	
+	div.playlist a.paused {
+		background-color:#cc0;
+	}
+	
+	div.playlist a.progress {
+		opacity:0.2;		
+	}
+</style>
+
+<script>
+$(function() {
+	flowplayer("player", "flowplayer-3.0.0.swf", {
+		playlist:[
+			{url:'tap.flv', title: 'Jotain vain'},
+			{url:'tap2.flv', title: 'Jotain toista vain zzz'},
+			{url:'tap-mega.flv'}
+		]
+		
+	}).playlist("#playlist");		
+	
+	flowplayer("player2", "flowplayer-3.0.0.swf").playlist("#playlist2");
+	
+});	
+</script>
+
+
+<a class="player" id="player">
+	<img src="splash.jpg" />
+</a>	
+
+<div id="playlist" class="playlist"></div>
+
+<br clear="all" />
+<br />	
+
+<a class="player" id="player2">
+	<img src="splash.jpg" />
+</a>	
+
+<div id="playlist2" class="playlist">
+	<a href="foo.flv">eka entry</a>
+	<a href="foo2.flv">toka entry</a>
+	<a href="foo3.flv">kolmas entry</a>
+</div>
+
+<br clear="all" />

@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*****************************************************
+*  
+*  Copyright 2009 Akamai Technologies, Inc.  All Rights Reserved.
+*  
+*****************************************************
+*  The contents of this file are subject to the Mozilla Public License
+*  Version 1.1 (the "License"); you may not use this file except in
+*  compliance with the License. You may obtain a copy of the License at
+*  http://www.mozilla.org/MPL/
+*   
+*  Software distributed under the License is distributed on an "AS IS"
+*  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+*  License for the specific language governing rights and limitations
+*  under the License.
+*   
+*  
+*  The Initial Developer of the Original Code is Akamai Technologies, Inc.
+*  Portions created by Akamai Technologies, Inc. are Copyright (C) 2009 Akamai 
+*  Technologies, Inc. All Rights Reserved. 
+*  
+*****************************************************/
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	xmlns:samples="org.osmf.samples.*" applicationComplete="initApp()"
+	backgroundColor="#000000">
+
+	<mx:Style source="DynamicStreamingSample.css" />
+	<mx:Script>
+		<![CDATA[
+			import org.osmf.traits.MediaTraitType;
+			import org.osmf.containers.MediaContainer;
+			import org.osmf.events.*;
+			import org.osmf.elements.VideoElement;
+ 			import org.osmf.media.DefaultMediaFactory;
+			import org.osmf.media.MediaElement;
+			import org.osmf.media.MediaPlayer;
+			import org.osmf.media.MediaPlayerState;
+			import org.osmf.media.MediaResourceBase;
+			import org.osmf.media.PluginInfoResource;
+			import org.osmf.media.URLResource;			
+			import org.osmf.net.DynamicStreamingResource;
+			import org.osmf.net.NetLoader;
+			import org.osmf.utils.*;
+			
+			// Force the inclusion of the PluginInfo class so we can 
+			// load the plugin statically
+			import org.osmf.smil.SMILPluginInfo;
+			private static const forceReference:SMILPluginInfo = null;
+			
+			private var sliderDragging:Boolean;
+			private var waitForSeek:Boolean;
+			private var currentDebugLineNo:int;
+			
+			private static const DEFAULT_PROGRESS_DELAY:uint = 100;
+			private static const MAX_VIDEO_WIDTH:int = 640;
+			private static const MAX_VIDEO_HEIGHT:int = 360;
+			private static const MEDIA_PLAYER_UNLOADED_ALPHA:Number = .11;	
+
+			// ------ TEST CONTENT ------
+			// SMIL
+			private static const SMIL_TEST1:String 		= "http://mediapm.edgesuite.net/ovp/content/demo/smil/elephants_dream.smil";
+			private static const SMIL_TEST2:String		= "http://www.streamflashhd.com/video/train.smil";
+			// NON-DYNAMIC PROGRESSIVE
+			private static const PROGRESSIVE_FLV:String = "http://mediapm.edgesuite.net/strobe/content/test/AFaerysTale_sylviaApostol_640_500_short.flv";
+			// NON-DYNAMIC STREAMING
+			private static const STREAMING_F4V:String	= "rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/osmf/content/test/sample1_700kbps.f4v";
+			
+				
+			[Bindable]
+			private var smilFiles:Array = [ SMIL_TEST1, SMIL_TEST2, PROGRESSIVE_FLV, STREAMING_F4V ];
+			
+			[Bindable]
+			private var _mediaPlayerState:String = "Not Loaded";
+			
+			[Bindable]
+			private var _isAutoSwitchable:Boolean = true;
+			
+			[Bindable]
+			private var _autoSwitchBtnLabel:String = "Manual";
+			
+			[Bindable]
+			private var isDynamicStream:Boolean = false;
+			
+			private var mediaFactory:DefaultMediaFactory;
+			private var mediaElement:MediaElement;
+			private var mediaPlayer:MediaPlayer;
+						
+			private function initApp():void
+			{
+				mediaContainerUIComponent.container = new MediaContainer();
+				
+				mediaFactory = new DefaultMediaFactory();
+				mediaPlayer = new MediaPlayer();
+				
+				mediaPlayer.addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange);		
+				mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onDurationChange);	
+				mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
+				mediaPlayer.addEventListener(SeekEvent.SEEKING_CHANGE, onSeekingChange);
+				mediaPlayer.addEventListener(MediaPlayerCapabilityChangeEvent.CAN_PLAY_CHANGE, onPlayingChange);
+				mediaPlayer.addEventListener(MediaPlayerCapabilityChangeEvent.IS_DYNAMIC_STREAM_CHANGE, onIsDynamicStreamChange);
+				mediaPlayer.addEventListener(MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE, onStateChange);
+				mediaPlayer.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
+				
+				mediaPlayer.currentTimeUpdateInterval = DEFAULT_PROGRESS_DELAY;
+								
+				sliderDragging = false;
+				waitForSeek = false;
+				clearDebugText();
+				
+				loadPlugin("org.osmf.smil.SMILPluginInfo");
+			}
+			
+			private function loadMedia(url:String):void
+			{
+				clear();
+				
+				var resource:URLResource = new URLResource(url);
+
+				mediaElement = mediaFactory.createMediaElement(resource);
+				setupMediaElementListeners();
+				setMediaElement(mediaElement);
+				mediaContainerUIComponent.alpha = 1.0;
+			}
+			
+			private function setMediaElement(value:MediaElement):void
+			{
+				if (mediaPlayer.media != null)
+				{
+					mediaContainerUIComponent.container.removeMediaElement(mediaPlayer.media);
+				}
+				
+				if (value != null)
+				{
+					mediaContainerUIComponent.container.addMediaElement(value);
+				}
+					
+				mediaPlayer.media = value;
+			}
+
+			private function setupMediaElementListeners(add:Boolean=true):void
+			{
+				if (mediaElement == null)
+				{
+					return;
+				}
+				
+				if (add)
+				{
+					// Listen for traits to be added, so we can adjust the UI. For example, enable the seek bar
+					// when the seekable trait is added
+					mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+					mediaElement.addEventListener(MediaElementEvent.TRAIT_REMOVE, onTraitRemove);
+					mediaElement.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
+				}
+				else
+				{
+					mediaElement.removeEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+					mediaElement.removeEventListener(MediaElementEvent.TRAIT_REMOVE, onTraitRemove);
+					mediaElement.removeEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
+				}
+			}
+
+   			private function onTraitAdd(event:MediaElementEvent):void
+   			{
+   				switch (event.traitType)
+   				{
+   					case MediaTraitType.SEEK:
+   						seekBar.enabled = seekBar.visible = true;
+   						break;
+   				}	
+   			}
+   			
+   			private function onTraitRemove(event:MediaElementEvent):void
+   			{
+   				switch (event.traitType)
+   				{
+   					case MediaTraitType.SEEK:
+   						seekBar.enabled = seekBar.visible = false;
+   						break;
+   				}	
+   			}
+
+			private function loadPlugin(source:String):void
+			{
+				var pluginResource:MediaResourceBase;
+
+				if (source.substr(0, 4) == "http" || source.substr(0, 4) == "file")
+				{
+					// This is a URL, create a URLResource
+					pluginResource = new URLResource(source);
+				}
+				else
+				{
+					// Assume this is a class
+					var pluginInfoRef:Class = flash.utils.getDefinitionByName(source) as Class;
+					pluginResource = new PluginInfoResource(new pluginInfoRef);
+				}
+				
+				loadPluginFromResource(pluginResource);
+			}
+			
+			private function loadPluginFromResource(pluginResource:MediaResourceBase):void
+			{
+				mediaFactory.addEventListener(MediaFactoryEvent.PLUGIN_LOAD, onPluginLoaded);
+				mediaFactory.addEventListener(MediaFactoryEvent.PLUGIN_LOAD_ERROR, onPluginLoadFailed);
+				mediaFactory.loadPlugin(pluginResource);
+			}
+			
+			private function onPluginLoaded(event:MediaFactoryEvent):void
+			{
+				trace("Plugin LOADED!"); 
+			}
+
+			private function onPluginLoadFailed(event:MediaFactoryEvent):void
+			{
+				trace("Plugin LOAD FAILED!");
+			}
+			
+			private function onPlayingChange(event:MediaPlayerCapabilityChangeEvent):void
+			{
+				if (event.type == MediaPlayerCapabilityChangeEvent.CAN_PLAY_CHANGE)
+				{
+					enableControls(event.enabled);
+				}	
+			}
+			
+			private function enableControls(enable:Boolean):void
+			{
+				seekBar.enabled = playBtn.enabled = autoSwitchBtn.enabled = 
+					switchDownBtn.enabled = switchUpBtn.enabled = enable;
+			}
+			
+   			private function onIsDynamicStreamChange(event:MediaPlayerCapabilityChangeEvent):void
+   			{
+   				isDynamicStream = event.enabled;
+   				if (event.enabled)
+   				{
+   					var streamMsg:String = "Current streaming profile index: " + mediaPlayer.currentDynamicStreamIndex + " of " + mediaPlayer.maxAllowedDynamicStreamIndex;
+					debug(streamMsg);
+					
+					mediaPlayer.addEventListener(DynamicStreamEvent.SWITCHING_CHANGE, onSwitchingChange);
+					updateSwitchingControls();
+				}
+   			}
+   			
+ 			private function onStateChange(event:MediaPlayerStateChangeEvent):void
+			{
+				debug("onStateChange() - state=" + event.state);
+
+				switch (event.state)
+				{
+					case MediaPlayerState.READY:
+						_mediaPlayerState = "Ready";
+						break;					
+					case MediaPlayerState.PLAYBACK_ERROR:
+						_mediaPlayerState = "Error";
+						break;
+				}
+			}
+			
+			private function onSwitchingChange(event:DynamicStreamEvent):void
+			{
+				var msg:String = "Switching change "
+				var showCurrentIndex:Boolean = false;
+				
+				if (event.switching)
+				{
+					msg += "REQUESTED";
+				}
+				else
+				{
+					msg += "COMPLETE";
+					showCurrentIndex = true;
+				}
+				
+				debug(msg);
+				
+				if (showCurrentIndex)
+				{
+					var streamMsg:String = "Current streaming profile index: " + mediaPlayer.currentDynamicStreamIndex + " of " + mediaPlayer.maxAllowedDynamicStreamIndex;
+					debug(streamMsg);
+					
+					streamMsg = "Current bitrate = " + mediaPlayer.getBitrateForDynamicStreamIndex(mediaPlayer.currentDynamicStreamIndex) + "kbps";
+					debug(streamMsg);
+				}
+				
+				updateSwitchingControls();
+			}
+			
+			private function updateSwitchingControls():void
+			{				
+				// Disable if a switch is pending or the video is not switchable
+				if (mediaPlayer.isDynamicStream == false || mediaPlayer.dynamicStreamSwitching)
+				{
+					autoSwitchBtn.enabled = false;
+					switchUpBtn.enabled = false;
+					switchDownBtn.enabled = false;
+				}
+				else if (!mediaPlayer.autoDynamicStreamSwitch)
+				{
+					autoSwitchBtn.enabled = true;
+					switchUpBtn.enabled = (mediaPlayer.currentDynamicStreamIndex == mediaPlayer.maxAllowedDynamicStreamIndex) ? false : true;
+					switchDownBtn.enabled = (mediaPlayer.currentDynamicStreamIndex  == 0) ? false : true;
+				}
+				else
+				{
+					autoSwitchBtn.enabled = true;
+					switchUpBtn.enabled = false;
+					switchDownBtn.enabled = false;
+				}
+			}
+			
+			private function debug(...args):void
+			{
+				var lineNo:int = currentDebugLineNo++;
+				taDebug.text += lineNo + ":" + args + "\n";
+				callLater(autoScroll);
+			}
+
+			private function autoScroll():void 
+			{
+				taDebug.verticalScrollPosition = taDebug.maxVerticalScrollPosition;
+			}
+
+			private function clearDebugText():void
+			{
+				taDebug.text = "";
+				currentDebugLineNo = 0;			
+			}
+			
+			private function clear(eraseDebugTxt:Boolean=true):void
+			{
+				if (eraseDebugTxt)
+				{
+					clearDebugText();
+				}
+				mediaContainerUIComponent.width = MAX_VIDEO_WIDTH;
+				mediaContainerUIComponent.height = MAX_VIDEO_HEIGHT;
+			}
+			
+			private function unload():void
+			{
+				setupMediaElementListeners(false);
+				mediaPlayer.media = null;
+				mediaContainerUIComponent.alpha = MEDIA_PLAYER_UNLOADED_ALPHA;
+				clear(false);
+			}			
+			
+			private function onMediaSizeChange(event:DisplayObjectEvent):void 
+			{
+				var width:int = event.newWidth;
+				var height:int = event.newHeight;
+				
+				// Scale to native or smaller
+				if (width > MAX_VIDEO_WIDTH || height > MAX_VIDEO_HEIGHT)
+				{
+					if ((width/height) >= (MAX_VIDEO_WIDTH/MAX_VIDEO_HEIGHT))
+					{
+						mediaContainerUIComponent.width = MAX_VIDEO_WIDTH;
+						mediaContainerUIComponent.height = MAX_VIDEO_WIDTH * (height/width);
+					}
+					else
+					{
+						mediaContainerUIComponent.width = MAX_VIDEO_HEIGHT * (width/height);
+						mediaContainerUIComponent.height = MAX_VIDEO_HEIGHT;
+					}
+				}
+				else if (width > 0 && height > 0)
+				{
+					mediaContainerUIComponent.width = event.newWidth;
+					mediaContainerUIComponent.height = event.newHeight;			
+				}
+			}
+			
+			private function onDurationChange(event:TimeEvent):void
+			{
+				seekBar.maximum = event.time;
+				lblDuration.text = TimeUtil.formatAsTimeCode(event.time);
+			}
+						
+			private function onCurrentTimeChange(event:TimeEvent):void
+			{
+				if (mediaPlayer.temporal && !sliderDragging && !waitForSeek)
+				{
+					seekBar.value = event.time;
+					lblPlayhead.text = TimeUtil.formatAsTimeCode(event.time);
+				}
+			}
+			
+			private function onSeekingChange(event:SeekEvent):void
+			{
+				if (event.seeking == false)
+				{
+					waitForSeek = false;
+					updateSwitchingControls();
+				}
+			}
+
+   			private function toggleDragging(state:Boolean):void
+   			{
+   				sliderDragging = state;
+   				if (!state)
+   				{
+   					waitForSeek = true;
+   					if (mediaPlayer.canSeek)
+   					{
+   						mediaPlayer.seek(seekBar.value); 
+   					}
+   				}
+   			}
+   			   			
+   			private function onMediaError(event:MediaErrorEvent):void
+   			{
+   				if (taDebug.text.length)
+   				{
+   					taDebug.text += "\n";
+   				}
+   				taDebug.text += taDebug.text + "error ID="+event.error.errorID+" message="+event.error.message;
+   			}
+   			   			
+			private function onSwitchUp():void
+			{
+				if (mediaPlayer.isDynamicStream && !mediaPlayer.autoDynamicStreamSwitch && !mediaPlayer.dynamicStreamSwitching)
+				{
+					if (mediaPlayer.currentDynamicStreamIndex < mediaPlayer.maxAllowedDynamicStreamIndex)
+					{
+						mediaPlayer.switchDynamicStreamIndex(mediaPlayer.currentDynamicStreamIndex + 1);
+					}
+				}
+			}
+			
+			private function onSwitchDown():void
+			{
+				if (mediaPlayer.isDynamicStream && !mediaPlayer.autoDynamicStreamSwitch && !mediaPlayer.dynamicStreamSwitching)
+				{
+					if (mediaPlayer.currentDynamicStreamIndex > 0)
+					{
+						mediaPlayer.switchDynamicStreamIndex(mediaPlayer.currentDynamicStreamIndex - 1);
+					}
+				}				
+			}
+			
+			private function onAutoSwitchable():void
+			{
+				if (mediaPlayer.isDynamicStream)
+				{
+					this._isAutoSwitchable = !this._isAutoSwitchable;
+					mediaPlayer.autoDynamicStreamSwitch = this._isAutoSwitchable; 
+					debug("Setting auto switch mode to " + this._isAutoSwitchable);
+					
+					_autoSwitchBtnLabel = (_isAutoSwitchable ? "Manual" : "Auto");
+					updateSwitchingControls();
+				}
+			}
+			
+			private function onClickPlayBtn():void
+			{
+				if (mediaPlayer.playing && mediaPlayer.canPause)
+				{
+					playBtn.label = "Play";
+					mediaPlayer.pause();
+				}
+				else if (mediaPlayer.paused && mediaPlayer.canPlay)
+				{
+					playBtn.label = "Pause";
+					mediaPlayer.play();
+				}
+			}
+						
+			private function showControls(show:Boolean=true):void
+			{
+				mainContainer.visible = mainContainer.includeInLayout = show;
+			}
+		]]>
+	</mx:Script>
+
+
+	<mx:VBox id="mainContainer" height="100%" width="100%" paddingLeft="10" paddingTop="10">
+		<mx:Label text="OSMF Dynamic Streaming Sample App" styleName="title" width="100%" textAlign="left" paddingLeft="20"/>
+		<mx:Spacer height="20" />
+		<mx:HBox id="inputContainer" height="60">
+			<mx:Spacer width="10" />
+			<mx:ComboBox id="cbMediaURL" editable="true" dataProvider="{this.smilFiles}" />
+			<mx:Button label="Load" click="{loadMedia(cbMediaURL.text)}"/>
+			<mx:Button label="Unload" click="{unload()}"/>
+			<mx:Label text="{_mediaPlayerState}"/>
+		</mx:HBox>	
+
+		<mx:Spacer height="5" />
+		<mx:HBox>
+			<mx:VBox id="videoContainer" paddingLeft="20">
+				<mx:Spacer width="10" />
+				<mx:Canvas id="mediaContainerHolder">
+				    <samples:MediaContainerUIComponent id="mediaContainerUIComponent" width="640" height="360"  />				
+				</mx:Canvas>
+			    <mx:VBox id="controlsContainer">
+		    		<mx:HSlider id="seekBar" width="100%" thumbPress="toggleDragging(true)" thumbRelease="toggleDragging(false)" />
+		    		<mx:HBox horizontalAlign="right" width="100%">
+	    				<mx:Label text="Position: " />
+						<mx:Label id="lblPlayhead" width="100" styleName="timeCode" />
+						<mx:Label text="Duration: " />
+		    			<mx:Label id="lblDuration" width="100" styleName="timeCode" />			
+						<mx:Button id="playBtn" label="Pause" click="onClickPlayBtn()" />
+						<mx:Button id="autoSwitchBtn" label="{_autoSwitchBtnLabel}" click="onAutoSwitchable()" enabled="{isDynamicStream}" />
+						<mx:Button id="switchUpBtn" label="+" click="onSwitchUp()" enabled="false" />
+						<mx:Button id="switchDownBtn" label="-" click="onSwitchDown()" enabled="false" />
+	    			</mx:HBox>
+				</mx:VBox>	    						
+			</mx:VBox>
+			<mx:Spacer width="20" />
+			<mx:VBox id="debugContainer">
+				<mx:TextArea id="taDebug" wordWrap="false" editable="false" width="640" height="360"/>
+			</mx:VBox>			
+		</mx:HBox>
+	</mx:VBox>
+</mx:Application>

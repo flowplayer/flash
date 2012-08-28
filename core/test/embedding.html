@@ -1,0 +1,41 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "http://player-tms-player.talentinsite.com/playerapi/lib/flowplayer/swf/flowplayer.unlimited-3.2.11.swf?_v=1",
+            {
+                "key":"f08efffa680a677029e",
+                "clip":{"provider":"pseudostreaming","scaling":"fit",
+                    "url":"http://streamer-eu.talentinsite.com/streamer/Data/tms_315/Video/91/Live/hq/20120711110954.mp4",
+                    "captionUrl":"/playerapi/lib/flowplayer/srt/empty.srt","autoPlay":true,"autoBuffering":false},
+                "plugins":{
+                    "pseudostreaming":{"url":"flowplayer.pseudostreaming-3.2.8.swf","queryString":"?start=${start}"},
+                    "controls":null
+                },
+                "play":{"opacity":0},
+                "playerId":"player_12419",
+                "playlist":[
+                    {"provider":"pseudostreaming","scaling":"fit",
+                        "url":"http://streamer-eu.talentinsite.com/streamer/Data/tms_315/Video/91/Live/hq/20120711110954.mp4",
+                        "captionUrl":"http://player-tms-player.talentinsite.com/playerapi/lib/flowplayer/srt/empty.srt",
+                        "autoPlay":true,"autoBuffering":false}
+                ]});
+</script>
+	</div>
+	
+	
+</body></html>

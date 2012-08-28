@@ -1,0 +1,108 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="KimAronson-TwentySeconds59483.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer-3.2.8-dev.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.controller.PlayingState, org.flowplayer.controller.PlayTimeTracker' },
+
+        key: '#$b6223bfbd646c621758',
+
+        onStart: function(clip) {
+            console.log("onStart: " + clip.url);
+        },
+
+        onFinish: function(clip) {
+            console.log("onFinish: " + clip.url);
+        },
+
+        onPause: function(clip) {
+            console.log("onPause: " + clip.url);
+        },
+
+        onResume: function(clip) {
+            console.log("onResume " + clip.url);
+        },
+
+        onSeek: function() {
+            console.log("onSeek");
+        },
+
+        clip: {
+            baseUrl: 'http://blip.tv/file/get'
+        },
+
+        // normal playlist
+        playlist: [
+
+            // 1st clip
+            {
+                url: 'KimAronson-TwentySeconds63617.flv',
+                duration: 10,
+                autoPlay: false,
+                autoBuffering: true,
+                title: 'Green grass',
+
+                // instream playlist with one clip, starts after 3 seconds
+                playlist: [{
+                    url: 'http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv',
+                    duration: 3,
+                    position: 3,
+
+                    // customized controlbar settings for instream clip
+                    controls: {
+                        backgroundColor: '#95A1AE',
+                        progressColor: '#00ffff',
+                        bufferColor: '#CCFFFF',
+                        playlist: false,
+                        enabled: {scrubber: false}
+                    }
+
+                }]
+            },
+
+            // 2nd clip
+            {
+                url: 'KimAronson-TwentySeconds59483.flv',
+                title: 'Palm trees',
+
+                // instream playlist with one clip, starts before the main clip.
+                playlist: [{
+                    url: 'http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv',
+                    duration: 4
+                }]
+            },
+
+            // 3rd and 4th clips do not have any instream playlists
+            {url: 'KimAronson-TwentySeconds64268.flv', title: 'Hotel Room 213'},
+            {url: 'KimAronson-TwentySeconds75235.flv', title: 'Two little girls'}
+
+        ],
+        plugins: {
+            controls: {
+                url: "flowplayer.controls-tube.swf",
+                playlist: true,
+                fullscreen: false,
+                volume: false
+            }
+        }
+    });
+</script>
+	</div>
+	
+	
+</body></html>

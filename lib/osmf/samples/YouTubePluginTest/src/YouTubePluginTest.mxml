@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- This is an auto generated file and is not intended for modification. -->
+
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   creationComplete="onCreationComplete()">
+	<fx:Script>
+		<![CDATA[
+			
+			import org.flexunit.listeners.*;
+			import org.flexunit.runner.FlexUnitCore;
+			
+			import org.osmf.youtube.traits.TestYoutubeTimeTrait;
+			import org.osmf.youtube.traits.TestYoutubeSeekTrait;
+			import org.osmf.youtube.traits.TestYoutubePlayTrait;
+			import org.osmf.youtube.traits.TestYoutubeDynamicStreamTrait;
+			import org.osmf.youtube.traits.TestYoutubeAudioTrait;
+			import org.osmf.youtube.net.TestYoutubeLoader;
+			import org.osmf.youtube.media.TestYoutubeElement;
+			import org.osmf.youtube.TestYoutubePluginInfo;
+			
+			public function currentRunTestSuite():Array
+			{
+				var testsToRun:Array = new Array();
+				testsToRun.push(org.osmf.youtube.TestYoutubePluginInfo);
+				testsToRun.push(org.osmf.youtube.media.TestYoutubeElement);
+				testsToRun.push(org.osmf.youtube.net.TestYoutubeLoader);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeAudioTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeDynamicStreamTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubePlayTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeSeekTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeTimeTrait);
+				return testsToRun;
+			}
+			
+			
+			
+			private function onCreationComplete():void
+			{
+				var core:FlexUnitCore = new FlexUnitCore();
+				
+				/*If you don't need graphical test results, comment out the line below and the MXML declaring
+				the TestRunnerBase. */ 
+				
+				core.addListener(new AirCIListener());
+				
+				/*If you would like to see text output in verbose mode, umcomment either of the follow listeners */
+				//core.addListener( new TraceListener() ); - For AS3 Projects
+				//core.addListener( TextListener.getDefaultTextListener( LogEventLevel.DEBUG ) ); - For Flex Projects
+				
+				core.run(currentRunTestSuite());		
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:WindowedApplication>

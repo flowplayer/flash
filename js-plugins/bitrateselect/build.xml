@@ -1,0 +1,11 @@
+
+<!-- projet name is used as a base name for distribution files -->
+<project name="bitrateselect" default="default">
+    <property file="build.properties" />
+
+	<!-- import javascript-tasks (min, pack, lint, gzip, dist) -->
+	<import file="${DEVKIT_HOME}/js.xml"/>
+ 
+	<!-- write custom tasks here -->
+	
+</project>

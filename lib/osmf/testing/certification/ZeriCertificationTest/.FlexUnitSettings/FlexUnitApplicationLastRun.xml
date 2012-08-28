@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testrun name="" >
+<testsuite  name="Default Test Suite" project="MediaTests">
+<testsuite name="flexUnitTests:Live_Adaptive_Bitrate_Playback_Test" type="testsuiteclass"/>
+<testsuite name="flexUnitTests:Live_Simple_Playback_Test" type="testsuiteclass"/>
+<testsuite name="flexUnitTests:LiveDVR_Adaptive_Bitrate_Playback_Test" type="testsuiteclass"/>
+<testsuite name="flexUnitTests:LiveDVR_Simple_Playback_Test" type="testsuiteclass"/>
+<testsuite name="flexUnitTests:TestCustomRunner" type="testsuiteclass"/>
+<testsuite name="flexUnitTests:VoD_AdaptiveBitrate_Playback_Test" type="testsuiteclass"/>
+<testsuite name="flexUnitTests:VoD_Simple_Playback_Test" type="testsuiteclass"/>
+</testsuite>
+</testrun>

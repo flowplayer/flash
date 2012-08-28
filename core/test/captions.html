@@ -1,0 +1,174 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <!-- A minimal Flowplayer setup to get you started -->
+
+
+	<!--
+		include flowplayer JavaScript file that does
+		Flash embedding and provides the Flowplayer API.
+	-->
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+	<!-- some minimal styling, can be removed -->
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+        <a
+			 href="mp4:vod/triplehorse.stream1011/hpd/Colorist_Demo_reel_Large_HP.mp4"
+			 style="display:block;width:420px;height:400px"
+			 id="player">
+		</a>
+
+		<!-- this will install flowplayer inside previous A- tag. -->
+<script>
+//    flowplayer("player", { src: "../build/flowplayer.commercial-3.2.5-16.swf", wmode: "transparent" },
+            flowplayer("player", { src: "../build/flowplayer.swf", wmode: "transparent" },
+{
+				//debug: true,
+				log : {
+					level: 'debug',
+                    filter: ['org.flowplayer.controller.*', 'org.flowplayer.pseudostreaming.*']
+//                    filter: ['org.flowplayer.pseudostreaming.*', 'org.flowplayer.captions.*' /*'org.flowplayer.view.Launcher', 'org.flowplayer.content.*'*/]
+				},
+				canvas: {
+					background: '#000000',
+					backgroundGradient: 'none'
+				},
+//				screen: {
+//					height: 200 /*video height*/, top: 0
+//				},
+				play: {
+					url: 'http:\/\/media.port-network.com\/page_elements\/video\/player_bnt.swf',
+					opacity: 0.9,
+					label: null,
+					fadeSpeed: 500
+				},
+				clip: {
+					baseUrl: "http:\/\/media.port-network.com\/video\/",
+//					provider: 'lighttpd',
+					bufferLength: 4,
+					cuepointMultiplier: 100,
+					scaling: "fit",
+            		autoPlay: true,
+					autoBuffering: true,
+					start_from: 0,
+					is_paying_hd: false,
+					subtitle_showed: false,
+                    duration: 12
+				},
+
+				playlist: [
+					{
+					url: "instance_2\/243684_2.flv",
+					hd_url: "instance_6\/243684_6.flv",
+					sd_url: "instance_2\/243684_2.flv",
+					hd_available: true,
+					showCaptions: true,
+					subtitle_text: "Iron Man 2",
+					captionUrl: "http://media.port-network.com/sponsoration_elements/development/zolee/player_light/243684_1.srt"
+                    }
+
+				],
+
+				plugins: {
+
+					lighttpd: {
+						url: '../build/flowplayer.pseudostreaming.swf'
+					},
+
+//					advert: {
+//						url: "../build/flowplayer.content.swf",
+//						top: 0,
+//						width: "100%",
+//						height: "100%",
+//						opacity: 0.1,
+//						closeButton: true,
+//						onClick: function () {
+//							window.open("http://www.port.hu/", "_blank");
+//						}
+//					},
+
+					port_logo: {
+						url: "../build/flowplayer.content.swf",
+						top: 0,
+						left: 5,
+						height: 42,
+						width: 94,
+						padding: 0,
+						backgroundColor: "transparent",
+						backgroundGradient: "none",
+						opacity: 0.9,
+						border: 0,
+						html: '<img src="http:\/\/media.port-network.com\/sponsoration_elements\/development\/zolee\/player\/port_logo_watherpix_32bit.png" hspace="0"/>'
+					},
+
+					subtitle: {
+						url: "../build/flowplayer.content.swf",
+						top: 5,
+						width: 465,
+						height: 45,
+						opacity: 1.0,
+						borderRadius: 1,
+						closeButton: true,
+						html: "",
+						style: {
+							p: {
+								color: '#FFFFFF',
+								textAlign: 'center',
+								fontSize: 14
+							}
+						},
+						onClick: function () {this.hide();}
+					},
+
+					captions: {
+						url: '../build/flowplayer.captions.swf',
+						captionTarget: 'caption',
+						button: null
+					},
+
+					caption: {
+						url: '../build/flowplayer.content.swf',
+						bottom: 29,
+						height: 35,
+						width: '100%',
+						backgroundColor: 'transparent',
+						backgroundGradient: 'none',
+						border: 0,
+						padding: 0,
+						textDecoration: 'outline',
+						style: {
+							body: {
+								fontSize: 14,
+								textAlign: 'center',
+								color: '#ffffff'
+							}
+						}
+					},
+
+					controls: {
+						all: true,
+						playlist: false,
+						backgroundGradient: [0.4, 0.2, 0.2],
+						autoHide: {
+							enabled: true,
+							fullsccreenOnly: true,
+							hideStyle: "fade",
+							hideDelay: 2000,
+							hideDuration: 500
+						}
+					}
+				}
+			}
+
+        );
+</script>
+
+
+</body></html>

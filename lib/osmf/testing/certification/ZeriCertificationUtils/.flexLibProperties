@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="org.flexunit.cases.MediaCase"/>
+    <classEntry path="org.flexunit.cases.interfaces.IMediaCase"/>
+    <classEntry path="org.flexunit.events.MediaCaseErrorEvent"/>
+    <classEntry path="org.flexunit.flexui.controls.FlexUnitLabels"/>
+    <classEntry path="org.flexunit.flexui.data.AbstractRowData"/>
+    <classEntry path="org.flexunit.flexui.data.MediaCaseRowData"/>
+    <classEntry path="org.flexunit.flexui.data.TestCaseData"/>
+    <classEntry path="org.flexunit.flexui.data.TestFunctionRowData"/>
+    <classEntry path="org.flexunit.flexui.data.filter.AllTestFunctionStatus"/>
+    <classEntry path="org.flexunit.flexui.data.filter.EmptyTestFunctionStatus"/>
+    <classEntry path="org.flexunit.flexui.data.filter.ErrorTestFunctionStatus"/>
+    <classEntry path="org.flexunit.flexui.data.filter.ITestFunctionStatus"/>
+    <classEntry path="org.flexunit.flexui.data.filter.IgnoredTestFunctionStatus"/>
+    <classEntry path="org.flexunit.flexui.data.filter.TestfFunctionStatuses"/>
+    <classEntry path="org.flexunit.flexui.patterns.AbstractPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertContainedPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertEqualsPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertEventOcurredPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertMatchPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertNoMatchPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertNotContainedPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertNotNullPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertNotUndefinedPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertNullPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertThatPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.AssertUndefinedPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.FailAsyncCallPattern"/>
+    <classEntry path="org.flexunit.flexui.patterns.GreaterThanPattern"/>
+    <classEntry path="org.flexunit.runner.MediaDescription"/>
+    <classEntry path="org.flexunit.runner.interfaces.IMediaDescription"/>
+    <classEntry path="org.flexunit.runners.MediaRunner"/>
+    <classEntry path="org.flexunit.runners.ParameterizedMediaRunner"/>
+    <classEntry path="org.osmf.logging.CollectionLogger"/>
+    <classEntry path="org.osmf.logging.CollectionLoggerFactory"/>
+    <classEntry path="org.osmf.logging.LoggerCollectionManager"/>
+    <classEntry path="org.osmf.managers.ResourceURLDataManager"/>
+    <classEntry path="org.osmf.managers.ResourceURLDataManagerImpl"/>
+    <classEntry path="org.osmf.media.DebugMediaFactory"/>
+    <classEntry path="org.osmf.net.TraceNetLoader"/>
+    <classEntry path="org.osmf.net.httpstreaming.DebugHTTPStreamingNetLoader"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

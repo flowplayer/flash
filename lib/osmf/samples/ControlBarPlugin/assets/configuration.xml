@@ -1,0 +1,79 @@
+<chrome>
+
+	<assets baseURL="ControlBarElement_">
+		<asset id="defaultFont" type="embeddedFont" url="DEFAULT_FONT" fontSize="8"/>
+		<asset id="backdrop" type="embeddedBitmap" url="BACKDROP" scale9="15,15,290,18"/>
+		<asset id="pauseDisabled" type="embeddedBitmap" url="PAUSE_DISABLED"/>
+		<asset id="pauseUp" type="embeddedBitmap" url="PAUSE_UP"/>
+		<asset id="pauseDown" type="embeddedBitmap" url="PAUSE_DOWN"/>
+		<asset id="stopDisabled" type="embeddedBitmap" url="STOP_DISABLED"/>
+		<asset id="stopUp" type="embeddedBitmap" url="STOP_UP"/>
+		<asset id="stopDown" type="embeddedBitmap" url="STOP_DOWN"/>
+		<asset id="playDisabled" type="embeddedBitmap" url="PLAY_DISABLED"/>
+		<asset id="playUp" type="embeddedBitmap" url="PLAY_UP"/>
+		<asset id="playDown" type="embeddedBitmap" url="PLAY_DOWN"/>
+		<asset id="scrubberDisabled" type="embeddedBitmap" url="SCRUBBER_DISABLED"/>
+		<asset id="scrubberUp" type="embeddedBitmap" url="SCRUBBER_UP"/>
+		<asset id="scrubberDown" type="embeddedBitmap" url="SCRUBBER_DOWN"/>
+		<asset id="scrubBarTrack" type="embeddedBitmap" url="SCRUB_BAR_TRACK"/>
+	</assets>
+	
+	<widgets>
+		<widget
+			id="controlBar"
+			type="autoHideWidget"
+			face="backdrop"
+			fadeSteps="15"
+			width="200"
+			height="50"
+			horizontalAlign="center"
+			bottom="20"
+			>
+			
+			<widget
+				layoutMode="horizontal"
+				horizontalAlign="center"
+				top="10"
+				>
+				<widget
+					id="playButton"
+					type="playButton"
+					upFace="playUp"
+					downFace="playDown"
+					disabledFace="playDisabled"
+					/>
+				<widget
+					id="pauseButton"
+					type="pauseButton"
+					upFace="pauseUp"
+					downFace="pauseDown"
+					disabledFace="pauseDisabled"
+					/>
+				<widget
+					id="stopButton"
+					type="stopButton"
+					upFace="stopUp"
+					downFace="stopDown"
+					disabledFace="stopDisabled"
+					/>
+			</widget>
+			
+			<widget
+				id="scrubBar"
+				type="scrubBar"
+				timeFieldsWidth="48"
+				timeFieldsHeight="15"
+				timeFieldSpacing="1"
+				left="12"
+				right="10"
+				top="26"
+				scrubberUp="scrubberUp"
+				scrubberDown="scrubberDown"
+				scrubberDisabled="scrubberDisabled"
+				track="scrubBarTrack"
+				/>
+			
+		</widget>
+	</widgets>
+		
+</chrome>

@@ -1,0 +1,121 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://e1h13.simplecdn.net/flowplayer/flowplayer.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.view.Screen' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+//        clip: {
+//            fadeInSpeed: 0,
+//            fadeOutSpeed: 0
+//        },
+
+        // Videos to be played:
+        playlist: [
+            {
+                url: "http://cdn.tv3.ie/content/videos/0116/midrolltest2_Tv3_4x3_1_29046.mp4",
+                autoPlay: true,
+                autoBuffering: true,
+                provider: "rtmp",
+
+                // use smil and bwcheck when resolving the clip URL
+                urlResolvers: [ "smil" ]
+            }
+        ],
+
+        // All FP Plug ins:
+        plugins:
+        {
+            controls:
+            {
+                url:"tw3.swf"
+            },
+
+            rtmp: {
+                url: "flowplayer.rtmp.swf"
+            },
+
+            // the SMIL plugin reads in and parses the SMIL, and provides
+            // the bitrates info to the bw detection plugin
+            smil: {
+                url: "flowplayer.smil.swf"
+            },
+
+            ova: {
+                "url": "flowplayer.ova-0.6.0-build-12.swf",
+
+                "playOnce": true,
+                "autoPlay": true,
+                "autoBuffering": true,
+
+
+                "ads": {
+                    "servers": [
+                        {
+                            "type": "AdTech",
+                            "apiAddress": "http://adserver.adtech.de/?adrawdata/3.0/561.1"
+                        }
+                    ],
+                    "schedule": [
+                        {
+                            "zone": "2217280/0/1725", // composed of placement/page-id/size-id
+                            "position": "pre-roll"
+                        },
+                        {
+                            "zone": "2621900/0/1726",
+                            "position": "mid-roll",
+                            "startTime": "00:01:26"
+                        }
+                    ]
+                }
+            }
+        }
+
+    });
+</script>
+        <button type="button" onclick="$f()._api().fp_toggleFullscreen();">toggle fullscreen</button>
+        <!--
+              after this line is purely informational stuff.
+              does not affect on Flowplayer functionality
+          <button type="button" onclick="info($f()._api().fp_getVersion());">get version</button>
+          <button type="button" onclick="info($f().getStatus().time);">show time3</button>
+          <button type="button" onclick="info($f().getState());">get state</button>
+          <button type="button" onclick="info($f().pause());">pause</button>
+          <button type="button" onclick="info($f().resume());">resume</button>
+          <button type="button" onclick="info($f().toggle());">toggle</button>
+          -->
+
+	</div>
+	
+	
+</body></html>

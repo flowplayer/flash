@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+			   xmlns:adobe="http://www.adobe.com/2009/flexUnitUIRunner"
+			   xmlns:flexui="org.flexunit.flexui.*"
+			   layout="vertical">
+	<mx:Script>
+		<![CDATA[
+			import flexUnitTests.LiveDVR_Adaptive_Bitrate_Playback_Test;
+			import flexUnitTests.LiveDVR_Simple_Playback_Test;
+			import flexUnitTests.Live_Adaptive_Bitrate_Playback_Test;
+			import flexUnitTests.Live_Simple_Playback_Test;
+			import flexUnitTests.VoD_AdaptiveBitrate_Playback_Test;
+			import flexUnitTests.VoD_Simple_Playback_Test;
+			
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import org.flexunit.flexui.event.TestsCompleteEvent;
+			import org.flexunit.listeners.UIListener;
+			import org.flexunit.runner.FlexUnitCore;
+			import org.osmf.managers.ResourceURLDataManager;
+			
+			[Bindable]
+			protected var hasLoadedDataFile : Boolean = false;
+			
+			protected var core:FlexUnitCore;
+			
+			public function currentRunTestSuite():Array
+			{
+				var testsToRun:Array = new Array();
+				
+				if ( testOneCB.selected )
+					testsToRun.push(flexUnitTests.VoD_Simple_Playback_Test);
+				if ( testTwoCB.selected )
+					testsToRun.push(flexUnitTests.VoD_AdaptiveBitrate_Playback_Test);
+				if ( testThreeCB.selected )
+					testsToRun.push(flexUnitTests.Live_Simple_Playback_Test);
+				if ( testFourCB.selected )
+					testsToRun.push(flexUnitTests.Live_Adaptive_Bitrate_Playback_Test);
+				if ( testFiveCB.selected )
+					testsToRun.push(flexUnitTests.LiveDVR_Simple_Playback_Test);
+				if ( testSixCB.selected )
+					testsToRun.push(flexUnitTests.LiveDVR_Adaptive_Bitrate_Playback_Test);
+				
+				trace( "currentRunTestSuite() - ", testsToRun );
+				return testsToRun;
+			}
+			
+			public function runMe():void
+			{
+				trace( "runMe()" ); 
+				core = new FlexUnitCore();
+				core.addListener(new UIListener(uiListener));
+				core.run( currentRunTestSuite() );
+				runBtn.enabled = loadDataBtn.enabled = false;
+			}
+
+			protected function setupURLData( xml : XML ):void
+			{
+				ResourceURLDataManager.xmlList = new XMLList( xml );
+				hasLoadedDataFile = true;
+			}
+
+			protected  var m_FileRef:FileReference = new FileReference();
+			
+			public function loadResourceData() : void
+			{
+				m_FileRef = new FileReference();
+				m_FileRef.addEventListener(Event.SELECT, onBrowse);
+				var textFilters:FileFilter = new FileFilter("Text", "*.txt;*.xml;*.csv");
+				
+				m_FileRef.browse([textFilters]);
+			}
+			
+			public function onBrowse(e:Event):void {
+				m_FileRef.addEventListener(Event.COMPLETE, onComplete);
+				m_FileRef.load();
+			}
+			
+			public function onComplete(e:Event):void {
+				 setupURLData( new XML( m_FileRef.data.toString() ) );
+			}
+			
+			protected var instructions : InstructionsForm;
+			
+			protected function popupInstructions() : void
+			{
+				if ( instructionsBtn.selected )
+				{
+					instructions = new InstructionsForm();
+					instructions.addEventListener( CloseEvent.CLOSE, instructionsCloseHandler, false, 0, true );
+					PopUpManager.addPopUp( instructions, this );
+					PopUpManager.centerPopUp( instructions );
+				}
+				else if ( instructions )
+				{
+					closeInstructions();
+				}
+					
+			}
+			
+			protected function instructionsCloseHandler( event : CloseEvent ) : void
+			{
+				instructionsBtn.selected = false;
+				closeInstructions();
+			}
+			
+			protected function closeInstructions() : void
+			{
+				PopUpManager.removePopUp( instructions );
+				instructions.removeEventListener( CloseEvent.CLOSE, instructionsCloseHandler );
+				instructions = null;
+			}
+
+			protected function selAllCB_changeHandler(event:Event):void
+			{
+				if ( !selAllCB.selected )
+					return;
+				
+				selNoneCB.selected = false;
+				
+				testOneCB.selected = testTwoCB.selected = testThreeCB.selected =
+					testFourCB.selected = testFiveCB.selected = testSixCB.selected = true;
+			}
+
+			protected function selNoneCB_changeHandler(event:Event):void
+			{
+				if ( !selNoneCB.selected )
+					return;
+				
+				selAllCB.selected = false;
+				
+				testOneCB.selected = testTwoCB.selected = testThreeCB.selected =
+					testFourCB.selected = testFiveCB.selected = testSixCB.selected = false;
+			}
+			
+			protected function updateGroupSelCBs( selected : Boolean = false ) : void
+			{
+				selAllCB.selected = selNoneCB.selected = selected;
+			}
+
+			protected function uiListener_testsCompleteHandler(event:TestsCompleteEvent):void
+			{
+				runBtn.enabled = loadDataBtn.enabled = true;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%">
+		<mx:Button id="loadDataBtn" label="Load Resource Data" click="loadResourceData()" width="50%"/>
+		<mx:Button id="runBtn" label="Run Tests" click="runMe()" enabled="{hasLoadedDataFile}" width="50%"/>
+		<mx:Button id="instructionsBtn" label="Instructions" toggle="true" click="popupInstructions()" width="50%"/>
+	</mx:HBox>
+	<mx:HBox verticalAlign="middle">
+		<mx:Label id="includeTestsLbl" text="Select:" fontWeight="bold"/>
+		<mx:CheckBox id="selAllCB" label="All" change="selAllCB_changeHandler(event)"/>
+		<mx:CheckBox id="selNoneCB" label="None" change="selNoneCB_changeHandler(event)"/>
+	</mx:HBox>
+	<mx:HBox verticalAlign="middle">
+		<mx:Label id="testSelLbl" text="Tests:" fontWeight="bold"/>
+		<mx:CheckBox id="testOneCB" label="VoD Simple Playback" selected="true" click="updateGroupSelCBs()"/>
+		<mx:CheckBox id="testTwoCB" label="VoD Adaptive Bitrate" selected="true" click="updateGroupSelCBs()"/>
+		<mx:CheckBox id="testThreeCB" label="Live Simple Playback" selected="true" click="updateGroupSelCBs()"/>
+		<mx:CheckBox id="testFourCB" label="Live Adaptive Bitrate" selected="true" click="updateGroupSelCBs()"/>
+		<mx:CheckBox id="testFiveCB" label="Live+DVR Seek/Playback" selected="true" click="updateGroupSelCBs()"/>
+		<mx:CheckBox id="testSixCB" label="Live+DVR Adaptive Bitrate Seek/Playback" selected="true" click="updateGroupSelCBs()"/>
+	</mx:HBox>
+	<adobe:TestRunnerBase id="uiListener" width="100%" height="100%" testsComplete="uiListener_testsCompleteHandler(event)"/>
+</mx:Application>

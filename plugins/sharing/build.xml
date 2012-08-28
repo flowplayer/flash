@@ -1,0 +1,28 @@
+<project name="Sharing plugin for Flowplayer" default="deploy">
+
+	<property file="${user.home}/plugin.properties" />
+	<property file="build.properties" />
+	
+	<property file="${devkit-dir}/plugin-build.properties" />
+	<import file="${devkit-dir}/plugin-build.xml"/>
+	<property name="library-path" value="../viralvideos/src/flash src/flash ../../lib/common/src/flash"/>
+    <property name="extra-sources" value="../viralvideos/src/actionscript ../../lib/common/src/actionscript" />
+
+	<property name="shortname" value="sharing" />
+    <property name="basename" value="flowplayer.${shortname}" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+	<property name="plugin-main-class" value="org/flowplayer/sharing/Sharing.as" />
+
+	<target name="release" description="makes a release" depends="build">
+		<copyrelease targetdir="flowplayer.sharing">
+			<releasefiles>
+				<fileset dir="${build-dir}">
+				    <include name="${plugin-binary-versioned}"/>
+				</fileset>
+			</releasefiles>
+		</copyrelease>
+	</target>
+
+</project>

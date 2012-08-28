@@ -1,0 +1,13 @@
+<smil>
+  <head>
+    <meta base="rtmp://vod01.netdna.com/play" />
+  </head>
+  <body>
+    <switch>
+      <video src="mp4:vod/demo.flowplayer/bbb-1600.mp4" system-bitrate="1600000" width="1080" />
+      <video src="mp4:vod/demo.flowplayer/bbb-1200.mp4" system-bitrate="1200000" width="720" />
+      <video src="mp4:vod/demo.flowplayer/bbb-800.mp4" system-bitrate="800000" width="480" />
+      <video src="mp4:vod/demo.flowplayer/bbb-400.mp4" system-bitrate="400000" width="320" />
+    </switch>
+  </body>
+</smil>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"  minWidth="955" minHeight="600"
+			    xmlns:adobe="http://www.adobe.com/2009/flexUnitUIRunner">
+
+<!--	<fx:Script>
+		<![CDATA[
+			import flexUnitTests.VoD_Simple_Playback_Test;
+			import flexUnitTests.VoD_AdaptiveBitrate_Playback_Test;
+			
+			import mx.events.FlexEvent;
+			
+			import org.flexunit.listeners.UIListener;
+			import org.flexunit.runner.FlexUnitCore;
+			
+			protected var core:FlexUnitCore;
+			
+			public static function test() : void
+			{
+				trace("test");
+			}
+			
+			public function currentRunTestSuite():Array
+			{
+				var testsToRun:Array = new Array();
+				testsToRun.push(flexUnitTests.VoD_Simple_Playback_Test);
+				testsToRun.push(flexUnitTests.VoD_AdaptiveBitrate_Playback_Test);
+				trace( "currentRunTestSuite() - ", testsToRun );
+				return testsToRun;
+			}
+			
+			public function runMe():void
+			{
+				trace( "runMe()" );
+				core = new FlexUnitCore();
+				core.addListener(new UIListener(uiListener));
+				core.run( currentRunTestSuite() ); 
+			}
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				trace("application1_creationCompleteHandler( " + event + " )" );
+				runMe();
+			}
+			
+		]]>
+	</fx:Script>
+	<adobe:TestRunnerBase id="uiListener" width="100%" height="100%"  />-->
+</mx:Application>

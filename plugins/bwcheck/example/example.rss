@@ -1,0 +1,15 @@
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" >
+ <channel>
+   <item>
+     <title>RSS Example</title>
+     <link>http://www.bigbuckbunny.org/</link>
+     <description>Big Buck Bunny is a short animated film by the Blender Institute.</description>
+     <media:group>
+	    <media:content type="video/x-flv" url="vod/demo.flowplayer/bbb_160x90" width="160" height="90" bitrate="100"/>
+	    <media:content type="video/x-flv" url="vod/demo.flowplayer/bbb_320x180" width="320" height="180" bitrate="180"/>
+	    <media:content type="video/x-flv" url="vod/demo.flowplayer/bbb_480x270" width="480" height="270" bitrate="270"/>
+	    <media:content type="video/x-flv" url="vod/demo.flowplayer/bbb_640x360" width="640" height="360" bitrate="360"/>
+	</media:group>
+   </item>
+ </channel>
+</rss>

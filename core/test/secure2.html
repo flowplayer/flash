@@ -1,0 +1,58 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+        <a href="filename"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "http://portal.raystream.com/salesportal/flowplayer_token/swf/flowplayer.commercial-3.2.7.swf",
+                  {
+                  key: '\#$a4e68257bee814535e7',
+
+          // context menu
+          clip:  {
+
+                   //baseUrl: '',
+                   url: 'http://portal.raystream.com/salesportal/flowplayer_token/video/fb172bb6bc052e306d0fb030d4e46a97.mp4',
+                   autoPlay: false,
+                   autoBuffering: true,
+                   debug: false,
+                   scaling: 'scale',
+                   accelerated: true,
+                   provider: 'h264streaming'//,
+         },
+            plugins: {
+                  h264streaming: {
+                          //url: 'http://portal.raystream.com/salesportal/flowplayer_token/swf/flowplayer.h264streaming-3.0.5.swf'
+                          url: 'http://portal.raystream.com/salesportal/flowplayer_token/swf/flowplayer.pseudostreaming-3.2.7.swf'
+                          },
+				          lighttpd:      {
+				                          url: 'http://portal.raystream.com/salesportal/flowplayer_token/swf/flowplayer.pseudostreaming-3.2.7.swf'
+
+                  },
+                  secure: {
+												// path to latest version
+												url: 'http://portal.raystream.com/salesportal/flowplayer_token/swf/flowplayer.securestreaming-3.2.1-raystream.swf',
+
+												// URL used to fetch a timestamp from the server
+												timestamp: '4ec25305',
+
+												// identical to lighttpd.conf / secdownload.secret
+												token: '3db432jk64wafn5'
+									}
+            }
+          });
+</script>
+	</div>
+	
+	
+</body></html>

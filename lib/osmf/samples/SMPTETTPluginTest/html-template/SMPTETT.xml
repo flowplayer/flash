@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns:tts="http://www.w3.org/2006/10/ttaf1#styling"
+    xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
+    xmlns:m608="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608">
+   <head>
+      <ttm:title>SCCconvert </ttm:title>
+      <ttm:desc>converted document; </ttm:desc>
+      <ttm:copyright>Copyright (C) Computer Prompting and Captioning Co.</ttm:copyright>
+      <smpte:information
+         xmlns:m608="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608"
+         origin="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608"
+         mode="Preserved" m608:channel="CC1" m608:programName="Demo" m608:captionService="F1C1CC"
+      />
+      <metadata>
+         <smpte:data encoding="BASE64" datatype="ttp://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608" begin='00:00:02:05'>
+            lCCAgJSugICRWICAkTeAgJQvgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICU9ICA
+            SSCAgONhgIBup4CA9CCAgGTvgIAg9ICAaOmAgHOhgICUL4CAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICUIICAlK6AgJTQgIDZ74CAdSCAgOZhgIDp7ICAIGKAgOXjgIBhdYCA
+            c+WAgJRwgIB574CAdSCAgPTygIDp5YCAZCCAgPTvgICUL4CAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgJQggICUroCAlNCAgOPvgIBu9ICA8u+AgOwggID0aICA
+            5YCAgJRwgIDl7ICA5W2AgOVugID0c4CAIPeAgOn0gIBoIICAee+AgHXygIAgYoCA
+            72SAgHmugICUL4CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            lCCAgJSugICU0ICA2e+AgHUggIBtdYCAc/SAgCDsgIDlYYCA8m6AgCD0gIDvIICA
+            dXOAgOWAgICUcICAbu+AgPQggIDqdYCAc/SAgCB5gIDvdYCA8iCAgGLvgIBkeYCA
+            LICAgJQvgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICUIICAlK6AgJTQgIBidYCA9CCAgHnvgIB18oCA
+            IG2AgOlugIBkgICAlHCAgGFugIBkIICAee+AgHXygIAgaICA5WGAgPL0gICugICA
+            lC+AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICUIICAlK6AgJTQgIBS5YCAbeWAgG1igIDl8oCA
+            INCAgGHsgIBhZICA6W6AgCyAgICUcICA9GiAgOUggIBt6YCAbmSAgCBhgIBuZICA
+            IPSAgGjlgIAgaICA5WGAgPL0gICUL4CAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAlCCAgJSugICU0ICAYfKAgOUggIDpboCA5umAgG7pgID05YCA
+            7HmAgCBtgIDv8oCA5YCAgJRwgIBw74CA9+WAgPLmgIB17ICAIPSAgGhhgIBuIICA
+            9GiAgOUggIBi74CAZHmAgK6AgICUL4CAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICU1oCA
+            0++AgCBJgIAg44CAYW6AgCDjgIDvboCA9PKAgO/sgIAg9ICAaOWAgJT0gICXooCA
+            5eyAgOVtgIDlboCA9HOAgCD3gIDp9ICAaCCAgG15gIAgbYCA6W6AgGS/gICUL4CA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICUIICAlK6AgJTQgIBJ5oCAIHmAgO91gIAg9ICA8nmAgCD0gIDvIICA
+            YuWAgCDpgIBugICAlHCAgOPvgIBu9ICA8u+AgOwggIDv5oCAIPSAgGjlgIAg5YCA
+            7OWAgG3lgIBu9ICAc4CAgJQvgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICUIICAlK6AgJRwgIB574CA
+            dSCAgPfpgIDs7ICAIGGAgOxzgIDvIICA5mGAgOnsgICugICAlC+AgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICUIICAlK6AgJTQgIDZ74CAdSCAgONhgIBuIICA
+            bu+AgCBtgIDv8oCA5SCAgOPvgIBu9ICA8u+AgOyAgICUcICA9GiAgOUggIDl7ICA
+            5W2AgOVugID0c4CAIPSAgGhhgIBugICAlC+AgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgJQggICUroCAlNCAgGEggIDm7ICA
+            7/eAgOXygIAg44CAYW6AgCDygIBh6YCAc+WAgJRwgICXoYCA9GiAgOUggIBzdYCA
+            biCAgOVhgIDjaICAIGSAgGF5gICugICAlC+AgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICUIICAlK6AgJTQgIBXaICAYfSAgCB5gIDvdYCAIGSAgO+AgICUcICA
+            bu+AgPQggIB1boCAZOWAgPJzgID0YYCAbmSAgJQvgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICU0ICA6XOAgCD0gIBoYYCA
+            9CCAgPRogIDlIICA5eyAgOVtgIDlboCA9HOAgJRwgIBh8oCA5SCAgO9ugIDlIICA
+            9+mAgPRogIAgdYCAc66AgJQvgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICUeoCAT26AgOUggID36YCA
+            9GiAgCB1gIBzv4CAlC+AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgJQggICUroCAlNCAgEV2gIDl8oCA
+            efSAgGjpgIBuZ4CAIPSAgJQsgIBoYYCA9CCAgHnvgIB1IICAc+WAgOWAgICUcICA
+            6XOAgCBwgIBh8oCA9CCAgO/mgIAgYYCAIOyAgOl2gIDpboCAZyyAgJQvgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAlCCAgJSugICUcICAYvKAgOVhgID0aICA6W6AgGcggIDv8oCA
+            Z2GAgG7pgIBzbYCAroCAgJQvgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgJQggICUroCAlNCAgNnvgIB1IICAYfKAgOUggIDs6YCA
+            a+WAgCBhgICUcICA7OWAgGHmgIAg74CAbiCAgGEggID08oCA5eWAgK6AgICUL4CA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICUIICA
+            lK6AgJTQgIDB7ICA726AgOUggIBhboCAZCCAgPflgIBha4CALICAgJRwgIDlYYCA
+            c+mAgOx5gIAgYoCA8u+AgGvlgIBuroCAlC+AgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICU0ICA
+            wnWAgPQggID074CAZ+WAgPRogIDl8oCALCCAgGFzgICUcICAcGGAgPL0gIAg74CA
+            5iCAgGEggID3aICA7+yAgOUsgICUL4CAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICUIICA
+            lK6AgJTQgIB574CAdSCAgGHygIDlIICAYYCAgJRwgIBt6YCAZ2iAgPR5gIAg9ICA
+            8uWAgOWugICUL4CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICUIICAlK6AgJTQgIBM74CA72uAgCBhgID0IICAee+AgHWugICUcICA
+            2e+AgHUggIBh8oCA5SCAgPRogIBh9ICAIPSAgPLlgIDlroCAlC+AgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICU0ICA
+            2e+AgHUggIBh8oCA5SCAgPRogIDlIICA92GAgPTlgIDygICAlHCAgOlugIAg9ICA
+            aOmAgHMggIBw74CAbmSAgCyAgICUL4CAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAlCCAgJSugICU0ICA9GiAgOUggIDlYYCA8vSAgGgggIBi5YCA
+            buWAgGH0gIBogICAlHCAgHnvgIB18oCAIOaAgOXlgID0LICAlC+AgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAlCCAgJSugICU0ICA9GiAgOUggIBh6YCA8iCAgHnvgIB1IICA
+            YvKAgOVhgID0aICA5YCAgJRwgIDpboCAIHmAgO91gIDyIICA7HWAgG5ngIBzroCA
+            lC+AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            lCCAgJSugICU0ICAweyAgOwggID0aICA5SCAgOXsgIDlbYCA5W6AgPRzgICUcICA
+            YfKAgO91gIBuZICAIHWAgHOugICUL4CAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICUVICAlyOAgEkggIBhbYCA
+            IHWAgG5zgIB18oCA5SCAgGjvgID3IICA9O+AgCBigIDlgICAlPSAgJcjgIBt74CA
+            8uWAgCD0gIBoYYCAbiCAgPRogIDpc4CAIGKAgO9kgIB5roCAlC+AgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgJQggICUroCAlNCAgFLlgIDs5YCAYXOAgOUggIB574CA
+            dfKAgHPlgIDs5oCAlHCAgGFugIBkIICAYuWAgCD0gIBo5YCAIOWAgOzlgIBt5YCA
+            bvSAgHOugICUL4CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICUIICAlK6AgJTQgIBJ5oCA
+            IHmAgO91gIAgZICA7yCAgPRogIDpc4CAIHmAgO91gICUcICA9+mAgOzsgIAgYoCA
+            5SCAgHBhgIDy9ICAIO+AgOYggIBhIICA5u+AgPLjgIDlgICAlC+AgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgJQggICUroCAlNCAgPRogIBh9ICAIOmAgHMggIBn8oCA5WGAgPTlgIDygICA
+            lHCAgPRogIBhboCAIHmAgO91gIAgYYCAbmSAgCBJgICugICAlC+AgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJQggICUroCA
+            lNCAgNnvgIB1IICA9+mAgOzsgIAgYoCA5YCAgJRwgIBh44CA9OmAgG5ngIAg94CA
+            6fSAgGgggIBhIICA5u+AgPLjgIDlgICAlC+AgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAlCCAgJSugICU0ICA
+            6W6AgCBhgIDs7ICAIPSAgGhhgID0gICAlHCAgHN1gIDy8oCA73WAgG5kgIBzIICA
+            dXOAgK6AgICUL4CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgJQggICUroCAlPiAgEn0gICnc4CAIOmAgG1wgIDvc4CA
+            c+mAgGLsgIDlroCAlC+AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+            gICAgICAgICAgICAgICAgICAgIA=
+         </smpte:data >
+      </metadata>
+      <styling>
+         <style xml:id='basic' tts:color='white' tts:fontFamily='proportionalSansSerif' 
+         		tts:lineHeight='8%' 
+         		tts:fontSize='8%' 
+         		tts:fontWeight='bold'
+         		tts:textOutline='black 8% 8%' />
+      </styling>
+      <layout>
+         <region xml:id='pop1' tts:backgroundColor='transparent'></region>
+         <region xml:id='pop2' tts:backgroundColor='transparent'></region>
+         <region xml:id='pop3' tts:backgroundColor='transparent'></region>
+         <region xml:id='pop4' tts:backgroundColor='transparent'></region>
+         <region xml:id='paint' tts:backgroundColor='transparent'></region>
+         <region xml:id='rollup2' tts:backgroundColor='transparent'></region>
+         <region xml:id='rollup3' tts:backgroundColor='transparent'></region>
+         <region xml:id='rollup4' tts:backgroundColor='transparent'></region>
+       </layout>
+   </head>
+   <body>
+      <div>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:02:05' end='00:00:06:16' tts:origin='47% 10%'>
+            <span>♫</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:06:16' end='00:00:08:05' tts:origin='27% 84%'>
+            <span>I can&apos;t do this!</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:08:05' end='00:00:09:17' tts:origin='10% 78%'>
+            <span>You fail because</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:08:05' end='00:00:09:17' tts:origin='10% 84%'>
+            <span>you tried to</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:09:17' end='00:00:11:16' tts:origin='10% 78%'>
+            <span>control the</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:09:17' end='00:00:11:16' tts:origin='10% 84%'>
+            <span>elements with your body.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:11:16' end='00:00:13:27' tts:origin='10% 78%'>
+            <span>You must learn to use</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:11:16' end='00:00:13:27' tts:origin='10% 84%'>
+            <span>not just your body,</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:13:27' end='00:00:16:14' tts:origin='10% 78%'>
+            <span>but your mind</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:13:27' end='00:00:16:14' tts:origin='10% 84%'>
+            <span>and your heart.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:16:14' end='00:00:19:20' tts:origin='10% 78%'>
+            <span>Remember Paladin,</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:16:14' end='00:00:19:20' tts:origin='10% 84%'>
+            <span>the mind and the heart</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:19:20' end='00:00:21:27' tts:origin='10% 78%'>
+            <span>are infinitely more</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:19:20' end='00:00:21:27' tts:origin='10% 84%'>
+            <span>powerful than the body.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:21:27' end='00:00:25:07' tts:origin='37% 78%'>
+            <span>So I can control the</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:21:27' end='00:00:25:07' tts:origin='32% 84%'>
+            <span>elements with my mind?</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:25:07' end='00:00:27:11' tts:origin='10% 78%'>
+            <span>If you try to be in</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:25:07' end='00:00:27:11' tts:origin='10% 84%'>
+            <span>control of the elements</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:27:11' end='00:00:29:09' tts:origin='10% 84%'>
+            <span>you will also fail.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:29:09' end='00:00:31:10' tts:origin='10% 78%'>
+            <span>You can no more control</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:29:09' end='00:00:31:10' tts:origin='10% 84%'>
+            <span>the elements than</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:31:10' end='00:00:34:28' tts:origin='10% 78%'>
+            <span>a flower can raise</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:31:10' end='00:00:34:28' tts:origin='10% 84%'>
+            <span>the sun each day.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:34:28' end='00:00:36:25' tts:origin='10% 78%'>
+            <span>What you do</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:34:28' end='00:00:36:25' tts:origin='10% 84%'>
+            <span>not understand</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:36:25' end='00:00:41:05' tts:origin='10% 78%'>
+            <span>is that the elements</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:36:25' end='00:00:41:05' tts:origin='10% 84%'>
+            <span>are one with us.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:41:05' end='00:00:44:24' tts:origin='57% 84%'>
+            <span>One with us?</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:45:14' end='00:00:48:00' tts:origin='10% 78%'>
+            <span>Everything that you see</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:45:14' end='00:00:48:00' tts:origin='10% 84%'>
+            <span>is part of a living,</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:48:00' end='00:00:50:08' tts:origin='10% 84%'>
+            <span>breathing organism.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:50:08' end='00:00:52:03' tts:origin='10% 78%'>
+            <span>You are like a</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:50:08' end='00:00:52:03' tts:origin='10% 84%'>
+            <span>leaf on a tree.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:52:03' end='00:00:56:02' tts:origin='10% 78%'>
+            <span>Alone and weak,</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:52:03' end='00:00:56:02' tts:origin='10% 84%'>
+            <span>easily broken.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:56:02' end='00:00:58:23' tts:origin='10% 78%'>
+            <span>But together, as</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:56:02' end='00:00:58:23' tts:origin='10% 84%'>
+            <span>part of a whole,</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:00:58:23' end='00:01:02:06' tts:origin='10% 78%'>
+            <span>you are a</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:00:58:23' end='00:01:02:06' tts:origin='10% 84%'>
+            <span>mighty tree.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:02:06' end='00:01:06:02' tts:origin='10% 78%'>
+            <span>Look at you.</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:02:06' end='00:01:06:02' tts:origin='10% 84%'>
+            <span>You are that tree.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:06:02' end='00:01:07:24' tts:origin='10% 78%'>
+            <span>You are the water</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:06:02' end='00:01:07:24' tts:origin='10% 84%'>
+            <span>in this pond,</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:07:24' end='00:01:09:03' tts:origin='10% 78%'>
+            <span>the earth beneath</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:07:24' end='00:01:09:03' tts:origin='10% 84%'>
+            <span>your feet,</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:09:03' end='00:01:11:20' tts:origin='10% 78%'>
+            <span>the air you breathe</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:09:03' end='00:01:11:20' tts:origin='10% 84%'>
+            <span>in your lungs.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:11:20' end='00:01:14:08' tts:origin='10% 78%'>
+            <span>All the elements</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:11:20' end='00:01:14:08' tts:origin='10% 84%'>
+            <span>around us.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:14:08' end='00:01:17:17' tts:origin='35% 78%'>
+            <span>I am unsure how to be</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:14:08' end='00:01:17:17' tts:origin='37% 84%'>
+            <span>more than this body.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:17:17' end='00:01:21:00' tts:origin='10% 78%'>
+            <span>Release yourself</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:17:17' end='00:01:21:00' tts:origin='10% 84%'>
+            <span>and be the elements.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:21:00' end='00:01:23:12' tts:origin='10% 78%'>
+            <span>If you do this you</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:21:00' end='00:01:23:12' tts:origin='10% 84%'>
+            <span>will be part of a force</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:23:12' end='00:01:24:27' tts:origin='10% 78%'>
+            <span>that is greater</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:23:12' end='00:01:24:27' tts:origin='10% 84%'>
+            <span>than you and I.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:24:27' end='00:01:26:11' tts:origin='10% 78%'>
+            <span>You will be</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:24:27' end='00:01:26:11' tts:origin='10% 84%'>
+            <span>acting with a force</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:26:11' end='00:01:30:11' tts:origin='10% 78%'>
+            <span>in all that</span>
+         </p>
+         <p region='pop2' style='basic' xml:space='preserve' begin='00:01:26:11' end='00:01:30:11' tts:origin='10% 84%'>
+            <span>surrounds us.</span>
+         </p>
+         <p region='pop1' style='basic' xml:space='preserve' begin='00:01:30:11' end='00:01:31:28' tts:origin='47% 84%'>
+            <span>It&apos;s impossible.</span>
+         </p>
+      </div>
+   </body>
+</tt>

@@ -1,0 +1,104 @@
+/*****************************************************
+*  
+*  Copyright 2009 Akamai Technologies, Inc.  All Rights Reserved.
+*  
+*****************************************************
+*  The contents of this file are subject to the Mozilla Public License
+*  Version 1.1 (the "License"); you may not use this file except in
+*  compliance with the License. You may obtain a copy of the License at
+*  http://www.mozilla.org/MPL/
+*   
+*  Software distributed under the License is distributed on an "AS IS"
+*  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+*  License for the specific language governing rights and limitations
+*  under the License.
+*   
+*  
+*  The Initial Developer of the Original Code is Akamai Technologies, Inc.
+*  Portions created by Akamai Technologies, Inc. are Copyright (C) 2009 Akamai 
+*  Technologies, Inc. All Rights Reserved. 
+*  
+*****************************************************/
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+@font-face {
+	src: local("Verdana");
+	embedAsCFF: false;
+	fontFamily: "Verdana";
+	unicodeRange:'U+0020-U+007E'; 
+}
+
+@font-face {
+	src: local("Verdana");
+	embedAsCFF: false;
+	fontFamily: "Verdana";
+	fontWeight: bold;
+	unicodeRange:'U+0020-U+007E'; 
+}
+
+global {
+   color: #FFFFFF;
+   fontFamily: "Verdana";
+   fontSize: 11px;
+   fontWeight: normal;
+}
+
+.title {
+	fontSize: 20px;
+	fontWeight: normal;
+}
+
+.timeCode {
+	fontSize: 10px;
+	color: #999999;
+}
+
+.error {
+	fontSize: 10px;
+	color: #FF1111;
+}
+
+mx|Label {
+	fontSize: 10px;
+	color: #aaaaaa;
+}
+
+mx|ComboBox {
+	color: #333333;
+	themeColor: "haloSilver";
+}
+
+mx|Button {
+	themeColor: "haloSilver";
+}
+
+mx|RadioButton {
+	themeColor: "haloSilver";
+}
+
+mx|TextInput {
+	color: #000000;
+}
+
+mx|TextArea {
+	color: #111111;
+	disabledColor: #111111;
+}
+
+mx|HSlider {
+	themeColor: "haloSilver";
+    dataTipStyleName: "dataTip";
+    dataTipOffset: 6;
+}
+
+mx|TileList {
+	themeColor: "haloSilver";
+	backgroundColor: #000000;
+	color: #111111;
+	borderColor: #111111;
+}
+
+.dataTip {
+    backgroundColor: black;
+}
+

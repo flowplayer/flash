@@ -1,0 +1,99 @@
+<html>
+<head>
+    <meta http-equiv="content-type"
+          content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+    <!-- page title -->
+    <title>Minimal Flowplayer setup</title>
+
+</head>
+<body>
+
+<div id="page">
+    <a
+            href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+            style="display:block;width:440px;height:247px"
+            id="player">
+    </a>
+    <script>
+        flowplayer("player", "../build/flowplayer.swf",
+        {
+            log: { level: 'debug', filter: 'org.flowplayer.captions.Captione' },
+
+            onBegin: function() {
+                console.log("Begin");
+            },
+
+            onStart: function() {
+                console.log("onStart");
+            },
+
+            onFinish: function() {
+                console.log("onFinish");
+            },
+
+            onPause: function() {
+                console.log("onPause");
+            },
+
+            onResume: function() {
+                console.log("onResume");
+            },
+
+            clip: {
+
+                // here is our high quality movie
+                url: 'http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv',
+
+                // this is the SubRib file with captions info
+                captionUrl: '../build/tt.xml'
+            },
+            plugins:  {
+
+                // the captions plugin
+                captions: {
+                    url: 'flowplayer.captions.swf',
+
+                    // pointer to a content plugin (see below)
+                    captionTarget: 'content'
+                },
+
+                /*
+                 configure a content plugin so that it
+                 looks good for showing subtitles
+                 */
+                content: {
+                    url: "flowplayer.content.swf",
+                    bottom: 25,
+                    width: '80%',
+                    height:40,
+                    backgroundColor: 'transparent',
+                    backgroundGradient: 'low',
+                    borderRadius: 4,
+                    border: 0,
+
+                    style: {
+                        'body': {
+                            fontSize: '14',
+                            fontFamily: 'Arial',
+                            textAlign: 'center',
+                            color: '#000000'
+                        }
+                    }
+                },
+                    // change default skin to "tube"
+                    controls: {
+                    url: 'flowplayer.controls.swf'
+                }
+
+            }
+        });
+    </script>
+</div>
+
+
+</body>
+</html>

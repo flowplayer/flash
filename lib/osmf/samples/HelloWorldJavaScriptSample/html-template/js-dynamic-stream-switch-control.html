@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>JavaScript Dynamic Stream Switch Control</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <script type="text/javascript" src="swfobject.js"></script>
+    <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+    <style type="text/css">       
+        .playing
+		{
+			font-weight:bold;
+		}	
+     </style>
+    <script type="text/javascript">
+    	function loadStrobeMediaPlayback()
+    	{  
+			var flashvars = false;
+			var params = {};
+			var attributes = {
+			  id: "JavaScriptDynamicStreamSwitchControl",
+			  name: "JavaScriptDynamicStreamSwitchControl"
+			};
+	
+			swfobject.embedSWF("JavaScriptDynamicStreamSwitchControl.swf", "player", "640", "352", "10.0.0", "expressInstall.swf", flashvars, params, attributes);    	
+	 	}
+	
+	
+		window.onload = loadStrobeMediaPlayback;
+		
+		var player = null;
+		function onHelloWorldJavaScriptLoaded(playerId)
+		{
+			if (player == null) {
+				player = document.getElementById(playerId);
+				
+				// Add event listeners that will update the 
+				player.addEventListener("isDynamicStreamChange", "updateDynamicStreamItems");
+				player.addEventListener("switchingChange", "updateDynamicStreamItems");
+				player.addEventListener("autoSwitchChange", "updateDynamicStreamItems");
+				
+			}
+		}
+		
+		function changeSwitchMode()
+		{
+			player.setAutoDynamicStreamSwitch(!player.getAutoDynamicStreamSwitch());
+		}
+		
+		function updateDynamicStreamItems()
+		{
+			document.getElementById("dynamic-stream-switch-control").style.display = "block";
+			var dynamicStreams = player.getStreamItems();
+			
+			var ds = document.getElementById("dynamic-stream-switch-control-items");
+			var switchMode = player.getAutoDynamicStreamSwitch() ? "Auto" : "Manual"; 
+							
+			var dsItems = '<strong><a href="#" onclick="changeSwitchMode(); return false;"> Switch Mode: ' + switchMode + '</a></strong><br /><br />\n';
+			var currentStreamIndex = player.getCurrentDynamicStreamIndex();
+			
+			for (var i = 0; i < dynamicStreams.length; i ++)
+			{
+				var playing = "";
+				if (currentStreamIndex == i)
+				{
+					playing = "playing";
+				}
+				dsItems += '<a href="#" class="' + playing + '" onclick="switchDynamicStreamIndex(' + i + '); return false;">' + dynamicStreams[i].streamName +' : ' + dynamicStreams[i].bitrate + '</a><br />\n';
+			}
+			ds.innerHTML = dsItems;
+		}
+		
+		function switchDynamicStreamIndex(index)
+		{
+			if (player.getAutoDynamicStreamSwitch())
+			{
+				player.setAutoDynamicStreamSwitch(false);	
+			}
+			player.switchDynamicStreamIndex(index);
+		}
+	</script>
+  </head>
+  <body>
+  	<h2>JavaScript Dynamic Stream Switch Control</h2>
+    <div id="player">
+      <p>Alternative content</p>
+    </div>
+    <div id="dynamic-stream-switch-control" style="display:none">
+        <h4>Video Quality Control</h4>
+		<div id="dynamic-stream-switch-control-items">
+			The available qualities will be loaded once the playback starts...
+		</div>
+	</div>
+  </body>
+</html>

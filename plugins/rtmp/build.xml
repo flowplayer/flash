@@ -1,0 +1,31 @@
+<project name="Flowplayer RTMP" default="deploy">
+
+    <property file="${user.home}/plugin.properties" />
+    <property file="build.properties" />
+
+	<property name="devkit-dir" value="../../lib/devkit" />
+	
+	<property file="${devkit-dir}/plugin-build.properties" />
+	<import file="${devkit-dir}/plugin-build.xml"/>
+    <property name="compiler-defines" value="-define+=CONFIG::FLASH_10_1,'true'"/>
+	
+	<property name="shortname" value="rtmp" />
+    <property name="basename" value="flowplayer.${shortname}" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+	<property name="plugin-swc" value="${basename}.swc" />
+	
+	<property name="plugin-main-class" value="org/flowplayer/rtmp/RTMPStreaming.as" />
+
+	<target name="release" description="makes a release" depends="build">
+		<copyrelease targetdir="flowplayer.rtmp">
+			<releasefiles>
+				<fileset dir="${build-dir}">
+				    <include name="${plugin-binary-versioned}"/>
+				</fileset>
+			</releasefiles>
+		</copyrelease>
+	</target>
+
+</project>

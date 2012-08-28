@@ -1,0 +1,50 @@
+<root>
+	<!-- root node must contain children representing the 6 different test cases supported by the system -->
+	
+	<!-- 
+		each testcase node must have the following attributes:
+		@id -			The identifier of the test case.  These map to the requirement document (where 001 is represented here as "1").
+		@time - 		In standard implementations, defines the time, in seconds, a stream should play for a given test case before 
+						case-specific actions are taken.  For example, in the VoD adaptive bitrate test (002), this will be the time 
+						a stream should play until it starts switching streams through its available bitrates.  In a live simple 
+						playback, however, it is the time a live stream should play before pausing the live stream.  
+		@description - 	an explanation of what this test case is testing.
+		
+		1 or more URI's, with the fully qualified url of the f4m file to be tested must be nested as children of the testcase node
+	-->	
+	<testCase id='1' time='10.0' description='These uris should be single bitrate, VoD f4m files'>
+		<uri>http://zeridemo-f.akamaihd.net/content/darkknight2-mbr/darkknight_720p_3500kbps.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/omniture/TEST_Omniture_032810_Full_2128.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/beach-mbr/Beach_Sequence_640_3000.f4m</uri>
+		<uri>rtmp://cp67126.fail.edgefcs.net/ondemand/mediapm/strobe/content/test/SpaceAloneHD_sounas_640_500_short</uri>
+	</testCase>
+	<testCase id='2' time='10.0' description='These uris should be adaptive bitrate, VoD f4m files'>
+		<uri>http://zeridemo-f.akamaihd.net/content/darkknight2-mbr/darkknight_720p_3500kbps.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/omniture/TEST_Omniture_032810_Full_2128.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/beach-mbr/Beach_Sequence_640_3000.f4m</uri>
+	</testCase>
+	<testCase id='3' time='1800.0' description='These uris should be single bitrate, Live stream f4m files'>
+		<uri>http://192.150.12.61:8134/live/events/certdvr/events/_definst_/dtvdvrevent.f4m</uri>
+		<!-- <uri>http://zeridemo-f.akamaihd.net/content/darkknight2-mbr/darkknight_720p_3500kbps.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/omniture/TEST_Omniture_032810_Full_2128.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/beach-mbr/Beach_Sequence_640_3000.f4m</uri> -->
+	</testCase>
+	<testCase id='4' time='1800.0' description='These uris should be adaptive bitrate, Live stream f4m files'>
+		<uri>http://192.150.12.61:8134/live/events/certdvr/events/_definst_/dtvdvrevent.f4m</uri>
+		<!-- <uri>http://zeridemo-f.akamaihd.net/content/darkknight2-mbr/darkknight_720p_3500kbps.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/omniture/TEST_Omniture_032810_Full_2128.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/beach-mbr/Beach_Sequence_640_3000.f4m</uri> -->
+	</testCase>
+	<testCase id='5' time='1800.0' description='These uris should be single bitrate, Live+DVR f4m files'>
+		<uri>http://192.150.12.61:8134/live/events/certdvr/events/_definst_/dtvdvrevent.f4m</uri>
+		<!-- <uri>http://zeridemo-f.akamaihd.net/content/darkknight2-mbr/darkknight_720p_3500kbps.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/omniture/TEST_Omniture_032810_Full_2128.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/beach-mbr/Beach_Sequence_640_3000.f4m</uri> -->
+	</testCase>
+	<testCase id='6' time='1800.0' description='These uris should be single bitrate, Live+DVR f4m files'>
+		<uri>http://192.150.12.61:8134/live/events/certdvr/events/_definst_/dtvdvrevent.f4m</uri>
+		<!-- <uri>http://zeridemo-f.akamaihd.net/content/darkknight2-mbr/darkknight_720p_3500kbps.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/omniture/TEST_Omniture_032810_Full_2128.f4m</uri>
+		<uri>http://zeridemo-f.akamaihd.net/content/beach-mbr/Beach_Sequence_640_3000.f4m</uri> -->
+	</testCase>
+</root>

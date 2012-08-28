@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>OSMF Player</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  	<script type="text/javascript" src="scripts/swfobject.js"></script>
+  	<script type="text/javascript" src="scripts/ParsedQueryString.js"></script>
+    <script type="text/javascript">
+    
+    		// Collect query parameters in an object that we can
+    		// forward to SWFObject:
+    		
+    		var pqs = new ParsedQueryString();
+    		var parameterNames = pqs.params(false);
+    		var parameters =
+    			{	id: "1"
+    			,	configuration: "assets/configuration.xml"
+    			,	url: "http://mediapm.edgesuite.net/strobe/content/test/AFaerysTale_sylviaApostol_640_500_short.flv"
+    			,	backgroundColor: "none"
+    			,	autoHideControlBar: "false"
+    			,	autoSwitchQuality: "true"
+    			,	autoPlay: "true"
+    			};
+    		
+    		for (var i=0; i<parameterNames.length; i++)
+    		{
+    			var parameterName = parameterNames[i];
+    			parameters[parameterName]
+    				=	pqs.param(parameterName)
+    				||	parameters[parameterName];
+    		}
+    		
+    		// Embed the player SWF:
+    		
+    		swfobject.embedSWF
+				( "OSMFPlayer.swf"
+				, "player"
+				, "640", "360"
+				, "10.0.0"
+				, {}
+				, parameters
+				, { allowFullScreen: "true" }
+				, { name: "OSMFPlayer" }
+				);
+			
+     </script>
+  	<style type="text/css">
+	<!--
+	.Verdana {
+		font-family: Verdana, Geneva, sans-serif;
+	}
+	-->
+	</style>
+ 	</head>
+	<body>
+	<table width="100%" border="0" cellspacing="5">
+  <tr>
+    <td width="43"><img src="images/adobe-lq.png" alt="" width="43" height="72" /></td>
+    <td width="320" class="Verdana">OSMF Player</td>
+    <td width="262"><img src="images/osmf_horizontal_red.png" width="262" height="57"/></td>
+    <td width="*"></td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="5">
+  <tr>
+    <td>
+     <div id="player">
+      <p>Alternative content</p>
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td><p>Click on one of the links below to have it loaded, or use the eject button on the player to enter a URL by hand:</p>
+    <p>
+    <script type="text/javascript">
+    	
+    	// Construct the HTML required to reload with any of the
+		// listed media links:
+				
+		var linkingCode = "";
+		var links
+			= 	[ "http://mediapm.edgesuite.net/osmf/content/test/manifest-files/dynamic_Streaming.f4m"
+				, "http://mediapm.edgesuite.net/osmf/content/test/manifest-files/progressive.f4m"
+				, "http://mediapm.edgesuite.net/osmf/content/test/train_1500.mp3"
+				, "http://mediapm.edgesuite.net/strobe/content/test/AFaerysTale_sylviaApostol_640_500_short.flv"
+				, "images/vegetation.jpg"
+				];
+				
+		for (var i=0; i<links.length; i++)
+		{
+			var link = links[i];
+			linkingCode = linkingCode
+				+ '<a href="OSMFPlayer.html?url='
+				+ encodeURI(link)
+				+ '">'
+				+ link
+				+ '</a><br/>';
+		}
+		
+		document.write(linkingCode);
+	</script>
+	</p>
+	</td>
+  </tr>
+</table>
+ 
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="flowplayer.playlist-3.0.8.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+
+        <a
+                     href="http://e1h13.simplecdn.net/flowplayer/flowplayer.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<!-- the playlist -->
+<div id="myplaylist">
+	<div>${title}</div>
+</div>
+
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.rtmp.*' },
+        clip: {
+            provider: 'rtmp'
+        },
+
+        playlist: [
+            { url: 'rtmp://herbalife.flash.internapcdn.net/herbalife_vitalstream_com/_definst_/AM/6000/6811-us-en-bowerman-tips-healthy-dining-tips-16x9-bb', title: "first" },
+            { url: 'rtmp://herbalife.flash.internapcdn.net/herbalife_vitalstream_com/_definst_/AM/6000/6774-us-en-resolutions-3-good-sleep-4x3-bb', title: "second" }
+        ],
+
+        plugins: {
+            rtmp: {
+                url:'flowplayer.rtmp.swf'
+            },
+
+            controls: {
+                playlist: true
+            }
+        }
+
+    }).playlist("#myplaylist", {loop:true});
+;
+</script>
+	</div>
+
+</body></html>

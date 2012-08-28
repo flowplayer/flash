@@ -1,0 +1,39 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="mp4:vod/demo.flowplayervod/bbb-800.mp4"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.rtmp.*' },
+
+        clip: {
+            provider: 'rtmp'
+        },
+        plugins:
+        {
+            rtmp: {
+                url: 'flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://rtmp01.hddn.com/play'
+            }
+        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

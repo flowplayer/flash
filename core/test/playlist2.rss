@@ -1,0 +1,60 @@
+<rss version="2.0"
+    xmlns:media="http://search.yahoo.com/mrss/"
+    xmlns:fp="http://flowplayer.org/fprss/">
+
+    <channel>
+        <title>Example media RSS playlist</title>
+        <link>http://www.flowplayer.org</link>
+
+        <item>
+            <!-- The title goes to the clip as a custom property -->
+            <title>Happy Feet</title>
+
+            <!-- description goes to the clip as a custom property -->
+            <description>A custom property for a clip</description>
+
+            <!-- media:credit goes to the clip as a custom
+                        property called 'media:credit' -->
+            <media:credit role="author">Kim Aronson</media:credit>
+
+            <!-- media:content is used as the clip URL -->
+            <media:content
+                url="../build/honda_accord.flv" type="video/x-flv" />
+
+            <!-- media:thumbnail is used to set a splash image into the playlist. -->
+            <media:thumbnail url="../build/play.png" />
+
+            <!-- you can set flowplayer specific properties for the thumbnail
+                    using a fp:thumbnail element -->
+            <fp:thumbnail scaling="orig" />
+        </item>
+        <item>
+            <title>Beach and palms</title>
+            <description>test</description>
+            <media:credit role="author">Kim Aronson</media:credit>
+            <media:content
+                url="../build/metacafe.flv" type="video/x-flv" />
+        </item>
+        <item>
+            <title>Brown Carpet</title>
+
+            <!-- the link element is mapped to the clip's linkUrl property -->
+            <link>http://flowplayer.org</link>
+            <description>test</description>
+            <media:credit role="author">Kim Aronson</media:credit>
+
+            <!-- custom duration -->
+            <media:content url="KimAronson-TwentySeconds71844.flv"
+                duration="5"  type="video/x-flv" />
+        </item>
+        <item>
+            <title>Stuff on a table</title>
+            <description>test</description>
+            <media:credit role="author">Kim Aronson</media:credit>
+            <media:content
+                url="KimAronson-TwentySeconds73213.flv" type="video/x-flv" />
+        </item>
+
+    </channel>
+
+</rss>

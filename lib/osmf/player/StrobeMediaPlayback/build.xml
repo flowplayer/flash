@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="OSMF.StrobeMediaPlayback" default="build" >
+
+	<property environment="env" />
+	<!-- load external values -->
+	<property name="properties.file" value="./build.properties"/>
+	<property file="${properties.file}" />
+
+	<import file ="${buildtools.dir}/utils.xml" />
+	
+	<!-- compile project -->
+	<target name="build" depends="clean-bin" >	
+		<OSMF.smp.compile project="StrobeMediaPlayback" projectDir="${basedir}" />
+	</target>
+
+	<!-- cleans the output directory -->
+	<target name="clean-bin">
+		<sequential>
+			<delete includeemptydirs="true" quiet="true">
+				<fileset dir="${basedir}">
+					<include name="${output.bin}/**/*" />
+				</fileset>
+			</delete>
+		</sequential>
+	</target>
+
+
+</project>

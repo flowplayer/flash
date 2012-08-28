@@ -1,0 +1,82 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="flowplayer.playlist-3.0.8.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+
+        <a
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+
+        <!-- configure entries inside playlist using standard HTML -->
+        <div class="clips petrol" style="float:left" id="myplaylist">
+
+            <!-- single playlist entry -->
+            <a href="rtmp://herbalife.flash.internapcdn.net/herbalife_vitalstream_com/_definst_/AM/6000/6811-us-en-bowerman-tips-healthy-dining-tips-16x9-bb" class="first">
+                Susan
+                <span>HTTP Streaming</span>
+                <em>0:20 min</em>
+            </a>
+
+
+            <a href="rtmp://herbalife.flash.internapcdn.net/herbalife_vitalstream_com/_definst_/AM/6000/6774-us-en-resolutions-3-good-sleep-4x3-bb">
+                Luigi
+                <span>HTTP Streaming</span>
+                <em>0:20 min</em>
+            </a>
+
+
+
+        </div>
+
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.rtmp.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+            provider: 'rtmp',
+            netConnectionUrl: 'rtmp://herbalife.flash.internapcdn.net/herbalife_vitalstream_com/_definst_/AM/6000'
+        },
+
+        plugins: {
+            rtmp: {
+                url:'flowplayer.rtmp.swf'
+            },
+
+            controls: {
+                playlist: true
+            }
+        }
+
+    }).playlist("div.clips:first", {loop:true});
+;
+</script>
+	</div>
+
+</body></html>

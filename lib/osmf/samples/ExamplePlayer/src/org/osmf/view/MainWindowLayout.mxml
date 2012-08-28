@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/*****************************************************
+*  
+*  Copyright 2009 Adobe Systems Incorporated.  All Rights Reserved.
+*  
+*****************************************************
+*  The contents of this file are subject to the Mozilla Public License
+*  Version 1.1 (the "License"); you may not use this file except in
+*  compliance with the License. You may obtain a copy of the License at
+*  http://www.mozilla.org/MPL/
+*   
+*  Software distributed under the License is distributed on an "AS IS"
+*  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+*  License for the specific language governing rights and limitations
+*  under the License.
+*   
+*  
+*  The Initial Developer of the Original Code is Adobe Systems Incorporated.
+*  Portions created by Adobe Systems Incorporated are Copyright (C) 2009 Adobe Systems 
+*  Incorporated. All Rights Reserved. 
+*  
+*****************************************************/
+-->
+<mx:Canvas 
+	xmlns:mx					="http://www.adobe.com/2006/mxml"
+	xmlns:samples				="org.osmf.samples.*"
+	>
+		
+	<mx:HBox 
+			width				="100%"
+			height				="100%">
+				 	
+		<!-- Upper Left Region -->
+		
+		<mx:VBox
+			styleName				="panel"
+			height					="100%"
+			width					="300"
+			verticalGap				="2"
+			>
+				
+			<mx:Label
+				text				="OSMF Examples"
+				color				="white"
+				fontWeight			="bold"
+				fontSize			="20"
+				/>
+			
+			<mx:HBox width="100%">
+					
+				<mx:Label
+					id					="version"
+					color				="white"
+					fontStyle			="italic"
+					fontSize			="8"
+					/>
+				
+				<mx:Spacer width="100%" />
+				
+				<mx:MenuBar				
+					labelField			="@label"
+					id					="playOptions"
+					>
+					<mx:dataProvider>
+						<mx:XML format="e4x">
+							<root label="Play Options">			
+								<autoPlay label="Auto Play" type="check" toggled="true"/>
+								<autoRewind label="Auto Rewind" type="check" toggled="true"/>
+								<loop label="Loop" type="check" toggled="false"/>
+							</root>
+						</mx:XML>
+					</mx:dataProvider>
+					
+				</mx:MenuBar>
+							
+			</mx:HBox>	
+			
+			<mx:Label
+				text				="Select an example from the list:"
+				color				="gray"
+				fontSize			="12"
+				/>
+							
+			<mx:Tree
+				id					="exampleTree"
+				labelField			="name"
+				color				="white"
+				width				="100%"
+				height				="100%"
+				alpha				="0.8"
+				backgroundAlpha		="0"
+				borderThickness		="0"
+				/>
+
+		</mx:VBox>
+		
+		<mx:HBox
+			width			="100%"
+			height			="100%"
+			borderStyle		="outset"
+			borderColor		="gray"
+			>	
+			<samples:MediaContainerUIComponent				
+				id 						="mediaContainerUIComponent"
+				width					="100%"
+				height					="100%"
+				/>
+		</mx:HBox>
+		
+	</mx:HBox>
+	<!-- Upper Right Region -->
+
+	<mx:Text
+		filters					="{textFilters}"
+		id						="exampleDescription"
+		top						="0"
+		right					="0"
+		width					="500"
+		color					="white"
+		fontSize				="12"
+		/>
+	
+	<!-- Lower Right Region -->
+	
+	<mx:HBox
+		filters					="{textFilters}"
+		right					="0"
+		width					="500"
+		height					="30"
+		bottom					="180"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+
+		<mx:Button
+			styleName			="buttonPlay"
+			id					="buttonPlay"
+			label				=""
+			visible				="false"
+			/>
+		<mx:Button
+			styleName			="buttonPause"
+			id					="buttonPause"
+			label				=""
+			visible				="false"
+			/>
+
+	</mx:HBox>
+
+	
+	<mx:HBox
+		filters					="{textFilters}"
+		id						="timeTraitControls" 
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="160"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+		
+		<mx:Label			
+			text				="Position:"
+			/>
+		<mx:Label			
+			id					="position"
+			text				="0"
+			/>
+		<mx:HSlider 			
+			width				="100%" 			
+			id					="seekBar" 
+			/>			
+		<mx:Label
+			id					="duration"
+			/>
+			
+	</mx:HBox>
+	
+	<mx:HBox
+		filters					="{textFilters}"
+		id						="bufferTraitControls"
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="140"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+		
+		<mx:Label
+			text				="Buffering: "
+			/>
+		<mx:Label
+			id					="buffering"
+			/>
+		<mx:Label
+			text				="Buffer Time: "
+			/>
+		<mx:Label
+			id					="bufferTime"
+			/>
+		<mx:Label
+			text				="Buffer Length: "
+			/>
+		<mx:Label
+			id					="bufferLength"
+			/>
+
+	</mx:HBox>
+	
+	<mx:HBox
+		filters					="{textFilters}"
+		id						="loadTraitControls"
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="120"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+		
+		<mx:Label
+			text				="Bytes Loaded: "
+			/>
+		<mx:Label
+			id					="bytesLoaded"
+			/>
+		<mx:Label
+			text				="Bytes Total: "
+			/>
+		<mx:Label
+			id					="bytesTotal"
+			/>
+
+	</mx:HBox>
+	
+	<mx:HBox
+		id						="audioTraitControls" 
+		filters					="{textFilters}"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="100"
+		color					="white"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+		
+		<mx:Label
+			text				="Volume:"
+			/>
+		<mx:HSlider 			
+			value				="1"	
+			width				="100%"
+			maximum				="1"
+			id					="volumeSlider" 
+			/>
+		<mx:CheckBox
+			id					="muteToggle"
+			toggle				="true"
+			label				="Mute"
+			textRollOverColor	="white"
+			textSelectedColor	="white"
+			/>
+		<mx:Label
+			text				="Pan:"
+			/>	
+		<mx:HSlider 
+			width				="100%" 
+			minimum				="-1"
+			value				="0"
+			maximum				="1"
+			id					="panControl" 
+			/>
+			
+	</mx:HBox>
+	
+	<mx:HBox
+		id						="stateControls"
+		filters					="{textFilters}"
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="80"
+		visible					="false"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+		
+		<mx:Label
+			text				="Player State: "
+			/>
+		<mx:Text
+			id					="playerState"
+			/>
+
+	</mx:HBox>
+	
+	<mx:HBox
+		id						="scaleModeBox"
+		filters					="{textFilters}"
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="60"
+		visible					="false"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+
+		<mx:Label
+			text				="Scale Mode: "
+			/>
+		<mx:PopUpMenuButton
+			id					="scaleModeButton"
+			color				="black"
+			/>
+			
+	</mx:HBox>
+
+	<mx:HBox
+		filters					="{textFilters}"
+		id						="errorIDBox"
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="40"
+		visible					="false"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+
+		<mx:Label
+			text				="Error ID: "
+			/>
+		<mx:Label
+			id					="errorID"
+			text				=""
+			/>
+			
+	</mx:HBox>
+	
+	<mx:HBox
+		filters					="{textFilters}"
+		id						="errorMessageBox"
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="20"
+		visible					="false"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+	
+		<mx:Label
+			text				="Error Message: "
+			/>
+		<mx:Label
+			
+			id					="errorMessage"
+			text				=""
+			/>
+	</mx:HBox>
+
+	<mx:HBox
+		filters					="{textFilters}"
+		id						="errorDetailBox"
+		color					="white"
+		right					="10"
+		width					="500"
+		height					="20"
+		bottom					="0"
+		visible					="false"
+		verticalAlign			="middle"
+		horizontalScrollPolicy	="off"
+		>
+	
+		<mx:Label
+			text				="Error Detail: "
+			/>
+		<mx:Label			
+			id					="errorDetail"
+			width				="100%"
+			toolTip				="{errorDetail.text}"
+			/>
+	</mx:HBox>
+	
+	<mx:Array id="textFilters">
+		{[new DropShadowFilter(1.5,45,0,1.0,2.5,2.5,2)]}
+	</mx:Array>
+	
+</mx:Canvas>
+

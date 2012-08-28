@@ -1,0 +1,29 @@
+<project name="Flowplayer Menu" default="deploy">
+    <property file="build.generated.properties"/>
+
+	<property file="${user.home}/plugin.properties" />
+	<property file="build.properties" />
+	
+	<property file="${devkit-dir}/plugin-build.properties" />
+	<import file="${devkit-dir}/plugin-build.xml"/>
+
+	<property name="shortname" value="menu" />
+    <property name="basename" value="flowplayer.${shortname}" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+	<property name="plugin-main-class" value="org/flowplayer/menu/MenuPluginFactory.as" />
+    <property name="extra-sources" value="../../lib/common/src/actionscript" />
+    <property name="library-path" value="src/flash ../../lib/common/src/flash ../content/src/actionscript"/>
+
+	<target name="release" description="makes a release" depends="build">
+		<copyrelease targetdir="flowplayer.menu">
+			<releasefiles>
+				<fileset dir="${build-dir}">
+				    <include name="${plugin-binary-versioned}"/>
+				</fileset>
+			</releasefiles>
+		</copyrelease>
+	</target>
+
+</project>

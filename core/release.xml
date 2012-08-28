@@ -1,0 +1,129 @@
+<project name="Flowplayer release" default="release">
+	<property file="build.properties" />
+	<property file="../release/cache.properties" />
+	<import file="${devkit-dir}/remotecopy.xml"/>
+	<import file="build.xml"/>
+
+    <target name="release-core-resources">
+        <remotecopy bucketname="flowplayer-releases/flowplayer" keyfile="${keyfile}" pass="${remotepass}" >
+            <releasefiles>
+                <fileset dir="${dist-dir}">
+                    <include name="${dist-name}"/>
+                    <include name="${commercial-dist-name}"/>
+                    <include name="${source-dist-name}"/>
+                    <include name="${multidomain-dist-name}"/>
+                </fileset>
+                <fileset dir="${build-dir}">
+                    <include name="${player-binary}"/>
+                    <include name="${player-binary-versioned}"/>
+                    <include name="${commercial-player-binary}"/>
+                    <include name="${commercial-player-binary-versioned}"/>
+                </fileset>
+            </releasefiles>
+        </remotecopy>
+        <remotecopy bucketname="flowplayer-releases/flowplayer.devkit" keyfile="${keyfile}" pass="${remotepass}" >
+            <releasefiles>
+                <fileset dir="${dist-dir}">
+                    <include name="${devkit-dist-name}"/>
+                </fileset>
+            </releasefiles>
+        </remotecopy>
+        <remotecopy bucketname="flowplayer-releases/swf" keyfile="${keyfile}" pass="${remotepass}">
+            <releasefiles>
+                <fileset dir="${build-dir}">
+                    <!--<include name="${player-binary}"/>-->
+                    <include name="${player-binary-versioned}"/>
+                    <include name="${commercial-player-binary}"/>
+                    <include name="${commercial-player-binary-versioned}"/>
+                </fileset>
+            </releasefiles>
+        </remotecopy>
+    </target>
+
+    <target name="release-core-resources-dev">
+        <remotecopy-dev remotedir="${swfremotedir}" keyfile="${keyfile}" pass="${remotepass}">
+            <releasefiles>
+                <fileset dir="${build-dir}">
+                    <!--<include name="${player-binary}"/>-->
+                    <include name="${player-binary-versioned}"/>
+                    <include name="${commercial-player-binary}"/>
+                    <include name="${commercial-player-binary-versioned}"/>
+                </fileset>
+            </releasefiles>
+        </remotecopy-dev>
+    </target>
+
+    <target name="zip-core-swfs">
+        <delete file="${dist-dir}/latest.zip" verbose="true"/>
+        <updatezip zip="${dist-dir}/latest.zip">
+            <zipfiles>
+                <fileset dir="${build-dir}">
+                    <include name="${player-binary-versioned}"/>
+                    <include name="${commercial-player-binary-versioned}"/>
+                </fileset>
+            </zipfiles>
+        </updatezip>
+    </target>
+
+    <target name="release-swf-zip">
+        <remotecopy bucketname="flowplayer-releases" keyfile="${keyfile}" pass="${remotepass}">
+            <releasefiles>
+                <fileset dir="${dist-dir}">
+                    <include name="latest.zip"/>
+                </fileset>
+            </releasefiles>
+        </remotecopy>
+    </target>
+
+	<target name="release-apidoc">
+		<remotecopy bucketname="flowplayer-releases/asdoc-latest" keyfile="${keyfile}" pass="${remotepass}" >
+			<releasefiles>
+				<fileset dir="${apidoc-dir}" />
+			</releasefiles>
+		</remotecopy>
+	</target>
+
+    <target name="release" description="Release to S3" depends="prepare, dist, release-core-resources">
+        <iterate-plugins target="release-remote" />
+        <antcall target="zip-swfs" />
+        <antcall target="release-swf-zip" />
+        <antcall target="release-url-file" />
+    </target>
+
+    <target name="release-dev" description="Release to the dev server" depends="prepare, dist, release-core-resources-dev">
+        <iterate-plugins target="release-remote-dev" />
+    </target>
+
+    <target name="zip-swfs" depends="zip-core-swfs">
+        <iterate-plugins target="zip-swfs" />
+    </target>
+
+    <target name="release-url-file" depends="generate-url-file">
+        <remotecopy bucketname="flowplayer-releases/info" keyfile="${keyfile}" pass="${remotepass}" >
+            <releasefiles>
+                <fileset dir="${core-dir}/dist">
+                    <include name="dist.html" />    
+                </fileset>
+            </releasefiles>
+        </remotecopy>
+    </target>
+
+    <target name="generate-url-file" description="generates a text file with paths to plugin zip files in flowplayer.org">
+        <property name="url-file" value="${core-dir}/dist/dist.html" />
+        <delete file="${url-file}" />
+        <echo message="writing zip urls to ${url-file}" />
+
+<echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/${dist-name}"&#62;${dist-name}&#60;/a&#62; &#60;br /&#62;
+</echo>
+<echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/${commercial-dist-name}"&#62;${commercial-dist-name}&#60;/a&#62; &#60;br /&#62;
+</echo>
+<echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/${source-dist-name}"&#62;${source-dist-name}&#60;/a&#62; &#60;br /&#62;
+</echo>
+        <iterate-plugins target="write-zip-url" />
+<echo file="${url-file}" append="true">
+&#60;br /&#62;
+&#60;a href="http://flowplayer-releases.s3.amazonaws.com/latest.zip"&#62;latest.zip: All latest dev-version swf files in one zip&#60;/a&#62; &#60;br /&#62;
+</echo>
+    </target>
+
+</project>

@@ -1,0 +1,30 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="flowplayer.ipad-3.2.2.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        clip: {
+            url: encodeURIComponent('http://wpm.naturalnews.tv/3732.mp4?ec_rate=100&ec_prebuf=15'),
+            ipadUrl: encodeURIComponent('http://wpm.naturalnews.tv/3732.mp4?ec_rate=100&ec_prebuf=15')
+        }
+    }).ipad( { simulateiDevice: true } );
+</script>
+	</div>
+	
+	
+</body></html>

@@ -1,0 +1,14 @@
+
+<!-- projet name is used as a base name for distribution files -->
+<project name="controls" default="default">
+    <property file="build.properties" />
+
+	<!-- required property -->
+	<property name="DEVKIT_HOME" value="../../../../builder"/>
+	
+	<!-- import javascript-tasks (min, pack, lint, gzip, dist) -->
+	<import file="${DEVKIT_HOME}/js.xml"/>
+ 
+	<!-- write custom tasks here -->
+	
+</project>

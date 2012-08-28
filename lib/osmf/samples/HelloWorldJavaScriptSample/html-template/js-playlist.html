@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>SWFObject dynamic embed - step 3</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <script type="text/javascript" src="swfobject.js"></script>
+    <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+    
+    <script type="text/javascript">
+    	function loadStrobeMediaPlayback()
+    	{  
+			var flashvars = false;
+			var params = {};
+			var attributes = {
+			  id: "JavaScriptPlaylist",
+			  name: "JavaScriptPlaylist"
+			};
+	
+			swfobject.embedSWF("JavaScriptPlaylist.swf", "player", "640", "352", "10.0.0", "expressInstall.swf", flashvars, params, attributes);    	
+	 	}
+	
+	
+		window.onload = loadStrobeMediaPlayback;
+		
+   		/**
+   		* This function will be called by the JavaScriptPlaylist.swf
+   		* once it registered the javascript callback functions.
+   		*/
+   		function onHelloWorldJavaScriptLoaded(objectID)
+		{
+			var player = document.getElementById(objectID);
+			
+			$("#playlist a").click(function(event)	{
+				event.preventDefault();
+				player.setResourceURL(this.href);				
+			});
+		}
+		
+	</script>
+  </head>
+  <body>
+  	<h2>JavaScript Playlist<h2>
+    <div id="player">
+      <p>Alternative content</p>
+    </div>
+    <div id="playlist">
+    	<a href="http://mediapm.edgesuite.net/osmf/content/test/manifest-files/dynamic_Streaming.f4m" >http://mediapm.edgesuite.net/osmf/content/test/manifest-files/dynamic_Streaming.f4m</a> <br />
+    	<a href="http://mediapm.edgesuite.net/osmf/content/test/manifest-files/progressive.f4m" >http://mediapm.edgesuite.net/osmf/content/test/manifest-files/progressive.f4m</a> <br />
+    	<a href="rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/osmf/content/test/sample1_700kbps.f4v" >rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/osmf/content/test/sample1_700kbps.f4v</a> <br />
+    </div>
+  </body>
+</html>

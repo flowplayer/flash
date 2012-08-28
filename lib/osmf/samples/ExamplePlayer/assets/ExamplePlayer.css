@@ -1,0 +1,37 @@
+/* CSS file */
+
+/*
+@font-face {
+    src:url("assets.swf");
+    fontStyle: condensed;
+    fontFamily: "Myriad Pro";
+    
+}
+*/
+
+
+.buttonPlay
+{
+	 icon: Embed(source="assets.swf#PlayIcon");
+}
+
+.buttonPause
+{
+	 icon: Embed(source="assets.swf#PauseIcon");
+}
+
+.panel
+{
+	backgroundColor: white;
+	backgroundAlpha: 0.1;
+	
+	paddingLeft: 8;
+	paddingRight: 8;
+	paddingBottom: 8;
+	paddingTop: 8;
+	
+	cornerRadius: 8;
+	borderStyle: solid;
+	borderColor: #333333;
+	borderAlpha: 0.1;
+}

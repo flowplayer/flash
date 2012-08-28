@@ -1,0 +1,112 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+            urlResolvers: null,
+            bwcheck: false,
+            provider: 'rtmp',
+            autoPlay: false,
+            scaling: 'fit',
+
+            // available bitrates and the corresponding files. We specify also the video width
+            // here, so that the player does not use a too large file. It switches to a
+            // file/stream with larger dimensions when going fullscreen if the available bandwidth permits.
+            bitrates: [
+                {
+                    url: "mp4:vod/demo.flowplayervod/bbb-400.mp4", width: 320, height: 180, bitrate: 400,
+                    // this is the default bitrate, the playback kicks off with this and after that
+                    // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                    isDefault: true
+                },
+                { url: "mp4:vod/demo.flowplayervod/bbb-800.mp4", width: 480, bitrate: 800 },
+                { url: "mp4:vod/demo.flowplayervod/bbb-1200.mp4", width: 720, bitrate: 1200 },
+                { url: "mp4:vod/demo.flowplayervod/bbb-1600.mp4", width: 1080, bitrate: 1600 }
+            ]
+        },
+        plugins: {
+
+            // bandwidth check plugin
+            bwcheck: {
+                url: 'flowplayer.bwcheck.swf',
+
+                // HDDN uses Wowza servers
+                serverType: 'wowza',
+
+                // we use dynamic switching, the appropriate bitrate is switched on the fly
+                dynamic: true,
+
+                netConnectionUrl: 'rtmp://rtmp01.hddn.com/play',
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                            " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                }
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: 'flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://rtmp01.hddn.com/play'
+            },
+
+            // a content box so that we can see the selected bitrate. This is not normally
+            // used in real installations.
+            content: {
+                url: 'flowplayer.content.swf',
+                top: 0, left: 0, width: 400, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+</script>
+	</div>
+	
+	
+</body></html>

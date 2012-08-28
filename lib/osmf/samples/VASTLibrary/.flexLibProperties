@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
+  <includeClasses>
+    <classEntry path="org.osmf.vast.loader.VAST1DocumentProcessor"/>
+    <classEntry path="org.osmf.vast.loader.VAST2DocumentProcessor"/>
+    <classEntry path="org.osmf.vast.loader.VASTDocumentProcessedEvent"/>
+    <classEntry path="org.osmf.vast.loader.VASTDocumentProcessor"/>
+    <classEntry path="org.osmf.vast.loader.VASTLoadTrait"/>
+    <classEntry path="org.osmf.vast.loader.VASTLoader"/>
+    <classEntry path="org.osmf.vast.media.CacheBuster"/>
+    <classEntry path="org.osmf.vast.media.CompanionElement"/>
+    <classEntry path="org.osmf.vast.media.DefaultVAST2MediaFileResolver"/>
+    <classEntry path="org.osmf.vast.media.DefaultVASTMediaFileResolver"/>
+    <classEntry path="org.osmf.vast.media.ICacheBuster"/>
+    <classEntry path="org.osmf.vast.media.IVAST2MediaFileResolver"/>
+    <classEntry path="org.osmf.vast.media.IVASTMediaFileResolver"/>
+    <classEntry path="org.osmf.vast.media.VAST1MediaGenerator"/>
+    <classEntry path="org.osmf.vast.media.VAST2ImpressionProxyElement"/>
+    <classEntry path="org.osmf.vast.media.VAST2MediaGenerator"/>
+    <classEntry path="org.osmf.vast.media.VAST2TrackingProxyElement"/>
+    <classEntry path="org.osmf.vast.media.VASTImpressionProxyElement"/>
+    <classEntry path="org.osmf.vast.media.VASTMediaGenerator"/>
+    <classEntry path="org.osmf.vast.media.VASTTrackingProxyElement"/>
+    <classEntry path="org.osmf.vast.metadata.VASTMetadata"/>
+    <classEntry path="org.osmf.vast.model.VAST2MediaFile"/>
+    <classEntry path="org.osmf.vast.model.VAST2Translator"/>
+    <classEntry path="org.osmf.vast.model.VASTAd"/>
+    <classEntry path="org.osmf.vast.model.VASTAdBase"/>
+    <classEntry path="org.osmf.vast.model.VASTAdPackageBase"/>
+    <classEntry path="org.osmf.vast.model.VASTCompanionAd"/>
+    <classEntry path="org.osmf.vast.model.VASTDataObject"/>
+    <classEntry path="org.osmf.vast.model.VASTDocument"/>
+    <classEntry path="org.osmf.vast.model.VASTInlineAd"/>
+    <classEntry path="org.osmf.vast.model.VASTMediaFile"/>
+    <classEntry path="org.osmf.vast.model.VASTNonLinearAd"/>
+    <classEntry path="org.osmf.vast.model.VASTResourceType"/>
+    <classEntry path="org.osmf.vast.model.VASTTrackingEvent"/>
+    <classEntry path="org.osmf.vast.model.VASTTrackingEventType"/>
+    <classEntry path="org.osmf.vast.model.VASTUrl"/>
+    <classEntry path="org.osmf.vast.model.VASTVideo"/>
+    <classEntry path="org.osmf.vast.model.VASTVideoClick"/>
+    <classEntry path="org.osmf.vast.model.VASTWrapperAd"/>
+    <classEntry path="org.osmf.vast.parser.VAST1Parser"/>
+    <classEntry path="org.osmf.vast.parser.VAST2Parser"/>
+    <classEntry path="org.osmf.vast.parser.VASTParser"/>
+    <classEntry path="org.osmf.vast.parser.base.Parser"/>
+    <classEntry path="org.osmf.vast.parser.base.TagParserBase"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2CompanionElement"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2CreativeElement"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2Element"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2InLineElement"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2LinearElement"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2NonLinearElement"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2Time"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2TrackingData"/>
+    <classEntry path="org.osmf.vast.parser.base.VAST2WrapperElement"/>
+    <classEntry path="org.osmf.vast.parser.base.errors.Errors"/>
+    <classEntry path="org.osmf.vast.parser.base.errors.ParserErrors"/>
+    <classEntry path="org.osmf.vast.parser.base.events.ParserErrorEvent"/>
+    <classEntry path="org.osmf.vast.parser.base.events.ParserEvent"/>
+    <classEntry path="org.osmf.vast.parser.base.interfaces.IParser"/>
+    <classEntry path="org.osmf.vast.parser.base.interfaces.ITagParserBase"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

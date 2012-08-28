@@ -1,0 +1,37 @@
+<project name="httpstreamingm3u8" default="deploy">
+    <property file="build.generated.properties"/>
+
+	<property file="${user.home}/plugin.properties" />
+	<property file="build.properties" />
+	
+	<property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
+    <property name="plugin-libs" value=""/>
+    <property name="extra-sources" value="../common/src/actionscript ${osmf-dir} ../apple-osmf/src"/>
+	<property name="library-path" value=""/>
+	<property name="compiler-defines" value="-define+=CONFIG::LOGGING,true -define+=CONFIG::FLASH_10_1,'true'"/>
+
+	<property file="${devkit-dir}/plugin-build.properties" />
+	<import file="${devkit-dir}/plugin-build.xml"/>
+	
+	<property name="basename" value="flowplayer.httpstreaminghls" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-swc" value="${basename}.swc" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+	
+	<property name="plugin-main-class" value="org/electroteque/m3u8/HttpStreamingHlsPlugin.as" />
+
+	<target name="release" description="makes a release" depends="build">
+		<copyrelease targetdir="flowplayer.httpstreaminghls">
+			<releasefiles>
+				<fileset dir="${build-dir}">
+				    <include name="${plugin-binary-versioned}"/>
+				</fileset>
+			</releasefiles>
+		</copyrelease>
+	</target>
+	
+	<target name="demo" >
+			<example player-swf="flowplayer.swf" main-swf="${plugin-binary-versioned}" />
+	</target>
+</project>

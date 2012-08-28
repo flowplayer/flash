@@ -1,0 +1,740 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+		<title>Flowplayer - Flash Video Player for the Web</title>
+		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
+		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
+	
+
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="Distribution" content="Global" />
+	<meta name="Author" content="Tero Piirainen" />
+	<meta name="Robots" content="index,follow" /> 
+ 
+	<link rel="shortcut icon" href="/img/favicon.png" type="image/png" />
+		
+		<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css" />
+	
+	<script type="text/javascript" src="jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="flowplayer-3.1.4.min.js"></script>
+	 
+
+
+
+	<script type="text/javascript"
+		src="http://www.flowplayer.org/js/tools/1.1.2/all/jquery.tools.min.js?v=1"></script>
+		
+	<script type="text/javascript" src="http://static.flowplayer.org/js/global-0.36.js"></script>
+	
+	<script>var account = {admin: false };</script>
+	
+	
+	
+
+	<!--[if lt IE 7]>
+		<style>
+			@import "http://static.flowplayer.org/css/ie6.css?v=0.2";
+		</style>
+	<![endif]-->
+	
+	<!--[if lt IE 8]>
+		<style>
+			html { overflow-x:hidden; }
+			#content ol, #content ul  {margin-left: 50px; }
+		</style>
+	<![endif]-->	
+
+</head>
+
+<body id="plugins_shareembed">
+
+		
+	
+		
+	
+	
+	<div id="wrap">	
+			
+
+		
+                
+		
+
+		
+		
+		
+		
+		 
+		
+		
+		<div id="content"> 
+		
+		
+
+
+
+
+
+<h1 style="background-image:url(http://www.flowplayer.org/img/title/streaminge.png)">
+	Flash plugin: <strong>shareembed</strong>
+	<em>Video sharing plugin</em>
+</h1>
+
+
+<h2>Introduction</h2>
+
+<p>
+    
+    The Video Share plugin is used to share video links via email, social networking sites, and embed the code directly into a website. Most viral video sharing
+    functions out there are javascript based, relying on javascript API's which is an issue embedding a video into a site that strips out javascript like Myspace. 
+    Being a flash based plugin this works around this issue, and therefore video link sharing, embedding and emailing can continue regardless of these limitations imposed by these sites. 
+</p>
+
+<p>
+	<small>(Version <strong>3.1.4</strong>)</small>
+</p>
+
+<h2>Features</h2>
+
+<ul>
+  <li>
+		Video embed code function without relying on javascript API's. 
+  </li>
+  <li>
+		Video sharing link function to various social networking sites.  
+  </li>
+  <li>
+		Video link emailing to friends using either a server-side email system or locally using the end users email client.
+  </li>
+  <li>
+        Token based authentication support, to protect the server-side email system from spammers.
+  </li>
+  <li>
+        Video link support to the following social networkingt sites:
+        
+        <ul>
+            <li>Facebook</li>
+            <li>Myspace</li>
+            <li>Twitter</li>
+            <li>Bebo</li>
+            <li>Orkut</li>
+            <li>Digg</li>
+            <li>Stumbleupon</li>
+            <li>Livespaces</li>
+        </ul>
+  </li>
+</ul>
+
+
+
+<h2>Configuration With Email Script and Token Script</h2>
+
+<p>
+    Here we can configure email sharing with a server-side email system with support for a token based authentication system enabled with the <samp>emailScriptURL</samp> config property. 
+    The token here is requested from a specified script url using the <samp>emailScriptTokenURL</samp>
+</p>
+
+<p>
+    The config property <samp>emailSubject</samp> is required here along with the config property <samp>shareTitle</samp> which is used as the title for the link in the email message determined by the email template. 
+    The config property <samp>emailTemplate</samp> is used to determine how the email message is formatted. 
+</p>
+
+<p>
+    Enabled by default, the email, embed and share link icon buttons can be enabled / disabled using the <samp>enableEmail</samp>, <samp>enableEmbed</samp> and <samp>enableShare</samp> config properties.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+<!-- player container-->
+
+<a
+	href="flowplayer.flv"
+	style="display:block;width:425px;height:300px;"
+	id="player">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+flowplayer("player", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		// share plugin configuration
+		share: {
+                url:'/swf/flowplayer.shareembed.swf',
+                emailScriptURL: "http://localhost/Flash/flowplayer/shareembed/src/server/php/zendfw/html/",
+                emailScriptTokenURL: "http://localhost/Flash/flowplayer/shareembed/src/server/php/zendfw/html/token",
+                emailSubject: "Video you might be interested in",
+                emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+                shareTitle: "The Video Title",
+                shareBody: "The video text",
+                shareCategory: "music",
+                usePopup: true,
+                enableEmail: true,
+                enableEmbed, true,
+                enableShare: true,
+                style: {
+                    'body': {
+                    fontSize: '14',
+                    fontFamily: 'Arial',
+                    textAlign: 'center',
+                    color: '#ffffff'
+                    //backgroundColor:'#000000'
+                    }
+                }
+            }
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});
+
+</script>
+
+</div>
+
+<p>
+	The configuration is shown below. 
+</p>
+
+<div class="box code">
+<pre><code class="javascript">
+
+flowplayer("player", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		share: {
+			url:'/swf/flowplayer.shareembed.swf',
+			emailScriptURL: "http://localhost/Flash/flowplayer/shareembed/src/server/php/zendfw/html/",
+			emailScriptTokenURL: "http://localhost/Flash/flowplayer/shareembed/src/server/php/zendfw/html/token",
+			emailSubject: "Video you might be interested in",
+			emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+			shareTitle: "The Video Title",
+			shareBody: "The video text",
+			shareCategory: "music",
+			usePopup: true,		
+            enableEmail: true,
+            enableEmbed, true,
+            enableShare: true,
+			style: {
+	       			'body': {
+	                fontSize: '14',
+	                fontFamily: 'Arial',
+	                textAlign: 'center',
+	                color: '#ffffff'
+	                //backgroundColor:'#000000'
+	                }
+	        }
+        }			
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});</code></pre>
+</div>
+
+
+<a name="config"></a>
+<h2>Configuration</h2>
+
+<p>
+    Here is a list of the configuration options:
+</p>
+
+<table class="listing">
+	<thead>
+		<tr>
+			<th nowrap>property / datatype</th>
+			<th>default</th>
+			<th>description</th>
+		</tr>
+	</thead>
+
+	 <tr>
+		  <td class="code">emailScriptURL <div class="type">string</div></td>
+		  <td class="code default"></td>
+		  <td class="description">
+				Email server side script url. 
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">emailScriptToken<div class="type">string</div></td>
+		  <td class="code default"></td>
+		  <td class="description">
+				Email script authentication token. 
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">emailScriptTokenURL<div class="type">string</div></td>
+		  <td class="code default"></td>
+		  <td class="description">
+				Email script authentication token script url. If set this script is requested to obtain the token before posting to the email system. <br><br>
+                The token script requires to return the token in a json config like so {"token": "3435952382509853908250925"}
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">emailSubject<div class="type">string</div></td>
+		  <td class="code default">Video you might be interested in</td>
+		  <td class="description">
+				The subject for the email. 
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">emailTemplate<div class="type">string</div></td>
+		  <td class="code default">{0} \n\n Video Link: <a href="{1}">{2}</a></td>
+		  <td class="description">
+				Where {0} is the message body sent in the form, {1} is the video url, {2} is either the video url or the shareTitle config property if set. 
+		  </td>
+	 </tr>
+     <tr>
+        <td class="code">shareTitle<div class="type">string</div></td>
+        <td class="code default"></td>
+        <td class="description">
+				Title of the video used in the email message, and share links to social networking sites.
+        </td>
+	 </tr>
+    <tr>
+        <td class="code">shareBody<div class="type">string</div></td>
+        <td class="code default"></td>
+        <td class="description">
+            Blurb text used for the share links to social networking sites.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">shareCategory<div class="type">string</div></td>
+        <td class="code default"></td>
+        <td class="description">
+				Category required for the share link to livespaces.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">usePopup<div class="type">boolean</div></td>
+        <td class="code default">true</td>
+        <td class="description">
+				To determine if the share links use a popup window using defined window dimensions or to use a full blank window.
+        </td>
+    </tr>    
+    <tr>
+        <td class="code">enableEmail<div class="type">boolean</div></td>
+        <td class="code default">true</td>
+        <td class="description">
+				Enable / disable the email function.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">enableEmbed<div class="type">boolean</div></td>
+        <td class="code default">true</td>
+        <td class="description">
+				Enable / disable the embed function.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">enableShare<div class="type">boolean</div></td>
+        <td class="code default">true</td>
+        <td class="description">
+				Enable / disable the share link function.
+        </td>
+    </tr>
+</table>
+
+
+<a name="email_script_system"></a>
+<h2>Email Script System</h2>
+
+<p>
+	The email script system handles the server-side emailing of the email share function. <br><br>
+	  
+    The email function if configured will send a token to this script for authentication using the "token" post variable. <br><br>
+	  
+    The token script if requested and configured is required to return a token in JSON format like {"token": "3435952382509853908250925"} <br><br>
+	  
+    The script is required to handle the following post variables. <br><br>
+    
+    <ul>
+	  <li>name - The sender's name (required)</li>
+	  <li>email - The sender's email (required)</li>
+	  <li>subject - The email subject (required)</li>
+	  <li>message - The email message (required)</li>
+	  <li>to - A comma delimitered list of emails to send to (required)</li>
+	  <li>token - The token to authenticate before allowing to email (optional)</li>
+	  </ul>
+	  
+	  NOTE: It is advisable to filter the post variables for email headers, as well as run spam checks. <br><br> 
+	  
+	  The emailing system supplied in the source provides an example for filtering and validating input and running spam checks against the akismet and typepad spam services. 
+</p>
+
+
+<h2>Configuration With Email Script and Token</h2>
+
+
+<p>
+    Here we can configure email sharing with a server-side email system with support for a token based authentication system enabled with the <samp>emailScriptURL</samp> config property. 
+    The token here is configured using the config property <samp>emailScriptToken</samp> assuming the system does not expire the token until the email function is requested. 
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+<!-- player container-->
+
+<a
+	href="flowplayer.flv"
+	style="display:block;width:425px;height:300px;"
+	id="player2">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+
+flowplayer("player2", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		// share plugin configuration
+		share: {
+                url:'/swf/flowplayer.shareembed.swf',
+                emailScriptURL: "http://localhost/Flash/flowplayer/shareembed/src/server/php/zendfw/html/",
+                emailScriptToken: "<?=$this->emailToken;?>",
+                emailSubject: "Video you might be interested in",
+                emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+                shareTitle: "The Video Title",
+                shareBody: "The video text",
+                shareCategory: "music",
+                usePopup: true,
+                style: {
+                    'body': {
+                    fontSize: '14',
+                    fontFamily: 'Arial',
+                    textAlign: 'center',
+                    color: '#ffffff'
+                    //backgroundColor:'#000000'
+                    }
+                }
+            }
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});
+
+</script>
+
+</div>
+
+<p>
+	The configuration is shown below. 
+</p>
+
+<div class="box code">
+<pre><code class="javascript">
+
+flowplayer("player2", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		share: {
+			url:'/swf/flowplayer.shareembed.swf',
+			emailScriptURL: "http://localhost/Flash/flowplayer/shareembed/src/server/php/zendfw/html/",
+            emailScriptToken: "<?=$this->emailToken;?>",
+			emailSubject: "Video you might be interested in",
+			emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+			shareTitle: "The Video Title",
+			shareBody: "The video text",
+			shareCategory: "music",
+			usePopup: true,		
+			style: {
+	       			'body': {
+	                fontSize: '14',
+	                fontFamily: 'Arial',
+	                textAlign: 'center',
+	                color: '#ffffff'
+	                //backgroundColor:'#000000'
+	                }
+	        }
+        }			
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});</code></pre>
+</div>
+
+
+<h2>Configuration With Client-side Email</h2>
+
+<p>
+    Here we can configure email sharing with client-side email support using the client's email client. Here we remove all 3 config properties <samp>emailScriptURL</samp>, <samp>emailScriptTokenURL</samp> and <samp>emailScriptTokenURL</samp>.
+    When a video is embedded using the generated embedded code it will remove the email script configs from the code and therefore use the client-side email system only. 
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+<!-- player container-->
+
+<a
+	href="flowplayer.flv"
+	style="display:block;width:425px;height:300px;"
+	id="player3">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+
+flowplayer("player3", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		// share plugin configuration
+		share: {
+                url:'/swf/flowplayer.shareembed.swf',
+                emailSubject: "Video you might be interested in",
+                emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+                shareTitle: "The Video Title",
+                shareBody: "The video text",
+                shareCategory: "music",
+                usePopup: true,
+                style: {
+                    'body': {
+                    fontSize: '14',
+                    fontFamily: 'Arial',
+                    textAlign: 'center',
+                    color: '#ffffff'
+                    //backgroundColor:'#000000'
+                    }
+                }
+            }
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});
+
+</script>
+
+</div>
+
+<p>
+	The configuration is shown below. 
+</p>
+
+<div class="box code">
+<pre><code class="javascript">
+
+flowplayer("player3", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		share: {
+			url:'/swf/flowplayer.shareembed.swf',
+			emailSubject: "Video you might be interested in",
+			emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+			shareTitle: "The Video Title",
+			shareBody: "The video text",
+			shareCategory: "music",
+			usePopup: true,		
+			style: {
+	       			'body': {
+	                fontSize: '14',
+	                fontFamily: 'Arial',
+	                textAlign: 'center',
+	                color: '#ffffff'
+	                //backgroundColor:'#000000'
+	                }
+	        }
+        }			
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});</code></pre>
+</div>
+
+
+<h2>Configuration With Panel CSS Styling</h2>
+
+
+<p>
+    Here is an example to CSS style the background of the panels using a <samp>backgroundColor</samp> config property, and to CSS style the text elements using the <samp>style</samp> config property. 
+    
+    You can find more information about CSS styling <a href="http://flowplayer.org/plugins/flash/content.html#css">here</a> and <a href="http://flowplayer.org/documentation/configuration/plugins.html#styling-properties">here</a>. 
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+<!-- player container-->
+
+<a
+	href="flowplayer.flv"
+	style="display:block;width:425px;height:300px;"
+	id="player4">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+
+flowplayer("player4", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		// share plugin configuration
+		share: {
+                url:'/swf/flowplayer.shareembed.swf',
+                emailSubject: "Video you might be interested in",
+                emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+                shareTitle: "The Video Title",
+                shareBody: "The video text",
+                shareCategory: "music",
+                usePopup: true,
+                backgroundColor:'#CCCCCC',
+                borderRadius: 20,
+                border: "2px solid #000000",
+                style: {
+                    'body': {
+                    fontSize: '14',
+                    fontFamily: 'Arial',
+                    textAlign: 'center',
+                    color: '#ffffff'
+                    //backgroundColor:'#000000'
+                    }
+                }
+            }
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});
+
+</script>
+
+</div>
+
+<p>
+	The configuration is shown below. 
+</p>
+
+<div class="box code">
+<pre><code class="javascript">
+
+flowplayer("player4", "/swf/flowplayer.swf", {
+	log: { level: 'debug', filter: 'org.flowplayer.shareembed.*' },
+    plugins:  {
+
+		share: {
+			url:'/swf/flowplayer.shareembed.swf',
+			emailSubject: "Video you might be interested in",
+			emailTemplate: "{0} \n\n Video Link: <a href=\"{1}\">{2}</a>",
+			shareTitle: "The Video Title",
+			shareBody: "The video text",
+			shareCategory: "music",
+			usePopup: true,	
+            backgroundColor:'#CCCCCC',
+            borderRadius: 20,
+            border: "1px solid #000000",	
+			style: {
+	       			'body': {
+	                fontSize: '14',
+	                fontFamily: 'Arial',
+	                textAlign: 'center',
+	                color: '#ffffff'
+	                //backgroundColor:'#000000'
+	                }
+	        }
+        }			
+
+    },
+
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        baseUrl: 'http://e1h13.simplecdn.net/flowplayer/',  
+        autoPlay: false    
+    }
+});</code></pre>
+</div>
+		</div>
+		
+		<div class="clear"></div> 
+		
+		<div id="footer">
+			
+		</div> 
+		
+		
+	</div>
+
+
+	
+	
+	
+	
+			
+</body>
+
+</html>

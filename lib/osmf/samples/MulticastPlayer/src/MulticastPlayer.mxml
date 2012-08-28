@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:samples="org.osmf.samples.*" layout="absolute" applicationComplete="initApp()" creationPolicy="all">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.ItemClickEvent;
+			
+			import org.osmf.containers.MediaContainer;
+			import org.osmf.events.MediaPlayerCapabilityChangeEvent;
+			import org.osmf.media.DefaultMediaFactory;
+			import org.osmf.media.MediaElement;
+			import org.osmf.media.MediaFactory;
+			import org.osmf.media.MediaPlayer;
+			import org.osmf.media.MediaResourceBase;
+			import org.osmf.media.URLResource;
+			import org.osmf.net.*;
+			import org.osmf.traits.MediaTraitType;
+			
+			private var factory:MediaFactory;
+			private var player:MediaPlayer;
+			private var loadTrait:NetStreamLoadTrait;
+			private var messageDataProvider:ArrayCollection;
+			private var messageData:Array;
+			
+			/*
+			 * This sample player is developed specifically to demonstrate multicast feature
+			 * of OSMF. To play a multicast stream, the user can either specify an F4M to the 
+			 * stream or provide specifics of the stream, such as connection string, RTMFP Groupspec
+			 * and RTMFP StreamName. The player can load and playback the multicast stream
+			 * in either way. The user can also subscribe/unsubscribe to a stream multiple times.
+			 */
+			private function initApp():void
+			{	
+				mediaContainer.container = new MediaContainer();
+				factory = new DefaultMediaFactory();
+				
+				player = new MediaPlayer();
+				player.autoPlay = true;
+				player.autoRewind = true;
+				player.addEventListener(MediaPlayerCapabilityChangeEvent.CAN_PLAY_CHANGE, onCanPlayChange);
+				
+				messageData = new Array();
+				messageDataProvider = new ArrayCollection(messageData);
+				messages.dataProvider = messageDataProvider;
+			}
+			
+			private function onCanPlayChange(event:MediaPlayerCapabilityChangeEvent):void
+			{
+				if (!player.canPlay)
+				{
+					loadTrait = null;
+				}
+				else
+				{
+					loadTrait = player.media.getTrait(MediaTraitType.LOAD) as NetStreamLoadTrait;
+					/*
+					 * At this stage, we know for sure that the media has been successfully loaded and
+					 * there is a NetGroup object available on the LoadTrait.
+					 */
+					loadTrait.netGroup.addEventListener(NetStatusEvent.NET_STATUS, onNetGroupNetStatus);
+				}
+			}
+			
+			private function onNetGroupNetStatus(event:NetStatusEvent):void
+			{
+				messageData.push(event.info.code);
+				messages.dataProvider = messageDataProvider;
+			}
+			
+			private function onResourceType(vent:ItemClickEvent):void
+			{
+				streamingResources.visible = !f4mResource.selected;
+				f4mUrl.visible = f4mResource.selected;
+			}
+			
+			private function onSubscribe(event:Event):void
+			{
+				if (player.media == null)
+				{
+					doSubscribe();
+				}
+				else
+				{
+					doUnsubscribe();
+				}
+			}
+			
+			private function doUnsubscribe():void
+			{
+				loadTrait.netGroup.removeEventListener(NetStatusEvent.NET_STATUS, onNetGroupNetStatus);
+				player.stop();
+				loadTrait = null;
+				player.media = null;
+
+				subscribe.label = "Subscribe";
+			}
+			
+			private function doSubscribe():void
+			{
+				var resource:MediaResourceBase;
+				if (f4mResource.selected)
+				{
+					resource = getResourceByF4M(f4mUrl.text);
+				}
+				else
+				{
+					resource = getResourceByStreamInfo(multicastConnectionString.text, rtmfpGroupspec.text, rtmfpStreamName.text);
+				}
+				player.media = factory.createMediaElement(resource);
+				mediaContainer.container.addMediaElement(player.media);
+				
+				subscribe.label = "Unsubscribe";
+			}
+			
+			private function getResourceByF4M(url:String):MediaResourceBase
+			{
+				return new URLResource(url);
+			}
+			
+			private function getResourceByStreamInfo(connectionString:String, groupSpec:String, streamName:String):MediaResourceBase
+			{
+				var resource:MulticastResource = new MulticastResource(connectionString, "live");
+				resource.groupspec = groupSpec;
+				resource.streamName = streamName;
+				
+				return resource;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" paddingTop="10" paddingLeft="10" paddingBottom="10" paddingRight="10">
+		<mx:VBox width="100%">
+			<mx:RadioButtonGroup id="resourceType" itemClick="onResourceType(event);"/>
+			<mx:HBox width="100%">
+				<mx:RadioButton groupName="resourceType" id="f4mResource" label="F4M" selected="true"/>
+				<mx:TextInput id="f4mUrl" width="400"/>
+			</mx:HBox>
+			<mx:RadioButton groupName="resourceType" id="streamingResource" label="Streaming Resource" selected="false"/>
+			<mx:HBox id="streamingResources" visible="false">
+				<mx:Label text="Connection String:"/>
+				<mx:TextInput id="multicastConnectionString" width="200"/>
+				<mx:Label text="RTMFP Groupspec:"/>
+				<mx:TextInput id="rtmfpGroupspec" width="200"/>
+				<mx:Label text="RTMFP Stream Name:"/>
+				<mx:TextInput id="rtmfpStreamName" width="200"/>
+			</mx:HBox>
+			<mx:Button id="subscribe" label="Subscribe" click="onSubscribe(event);"/>
+		</mx:VBox>
+		<mx:HBox width="100%">
+			<mx:Canvas backgroundColor="black">
+				<samples:MediaContainerUIComponent id="mediaContainer" width="640" height="480"/>
+			</mx:Canvas>
+			<mx:VBox height="100%" width="100%">
+				<mx:Label text="Messages:"/>				
+				<mx:List id="messages" height="100%" width="100%" selectable="false"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Application>

@@ -1,0 +1,93 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <!-- A minimal Flowplayer setup to get you started -->
+  
+
+	<!-- 
+		include flowplayer JavaScript file that does  
+		Flash embedding and provides the Flowplayer API.
+	-->
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+	<!-- some minimal styling, can be removed -->
+	<!--<link rel="stylesheet" type="text/css" href="style.css">-->
+	
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://e1h13.simplecdn.net/flowplayer/flowplayer.flv"
+                     style="display:block;width:500px;height:300px"
+                     id="player">
+                </a>
+
+		<!-- this will install flowplayer inside previous A- tag. -->
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bitrateselect.*' },
+
+clip: {
+    bitrates: [
+        { url: "mp4:bbb-800", width: 480, bitrate: 800, normal: true },
+        { url: "mp4:bbb-1200", width: 720, bitrate: 1200, hd: true, isDefault: true }
+    ],
+    provider: 'rtmp',
+    autoPlay: false
+},
+
+plugins: {
+
+    rtmp: {
+        url: 'flowplayer.rtmp-3.2.3.swf',
+        netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+    },
+
+    hdtoggle: {
+        url: 'flowplayer.bitrateselect.swf',
+
+        // button config is optional, it defaults to "controls"
+        // possible values "dock", "controls", "both"
+        hdButton: {
+            place: 'both'
+        },
+
+        // this is also optional, defaults are "HD is on" and "HD is off"
+        splash: {
+            onLabel: 'HD',
+            offLabel: 'SD'
+        }
+    },
+
+    dock: {
+        autoHide: 'fullscreen'
+    },
+
+    controls: {
+        autoHide: {enabled: false},
+        alpha: 0.3
+    }
+}
+    });
+</script>
+        <button type="button" onclick="$f()._api().fp_toggleFullscreen();">toggle fullscreen</button>
+        <!--
+              after this line is purely informational stuff.
+              does not affect on Flowplayer functionality
+          <button type="button" onclick="info($f()._api().fp_getVersion());">get version</button>
+          <button type="button" onclick="info($f().getStatus().time);">show time3</button>
+          <button type="button" onclick="info($f().getState());">get state</button>
+          <button type="button" onclick="info($f().pause());">pause</button>
+          <button type="button" onclick="info($f().resume());">resume</button>
+          <button type="button" onclick="info($f().toggle());">toggle</button>
+          -->
+
+	</div>
+	
+	
+</body></html>

@@ -1,0 +1,1 @@
+﻿package com.anttikupila.revolt.presets {	import com.anttikupila.revolt.presets.LineFourier;		public class LineNoFourier extends LineFourier {		function LineNoFourier() {			super();			fourier = false;		}				override public function toString():String {			return "Line without fourier transformation";		}	}}

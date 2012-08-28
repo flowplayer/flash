@@ -1,0 +1,75 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+
+    <!--<script src="../example/flowplayer-3.2.6.min.js"></script>-->
+
+    <script src="../src/javascript/flashembed.js"></script>
+    <script src="../src/javascript/flowplayer.js/flowplayer-src.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="../build/apunk.mp3"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+            <img src="../build/play.png" />
+
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'error', filter: 'org.flowplayer.controller.NetStreamClient' },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        onBeforeStop: function() {
+            console.log("onBeforeStop");
+        },
+
+        onStop: function() {
+            console.log("onStop");
+            this.unload();
+        },
+
+        clip: {
+            endLimit: 1,
+
+            onMetaData: function(clip1) {
+                console.log("metadata", clip1.metaData);
+                console.log("onMetadata, fullDuration == " + clip1.fullDuration);
+                console.log("onMetadata, duration == " + clip1.duration);
+            },
+
+            onStart: function(clip2) {
+                console.log("metadata", clip2.metaData);
+                console.log("onStart, fullDuration == " + clip2.fullDuration);
+                console.log("onStart, duration == " + clip2.duration);
+            }
+        },
+        plugins:
+        {
+            controls: { stop: true }
+        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

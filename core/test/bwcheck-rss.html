@@ -1,0 +1,47 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://e1h13.simplecdn.net/flowplayer/flowplayer.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {'plugins':{
+        'bwcheck':{
+            'netConnectionUrl':'rtmp://bogus-fms.08C8.edgecastcdn.net/0008C8/twistage-staging',
+            'url':'flowplayer.bwcheck.swf','serverType':'fms','rememberBitrate':false,'dynamic':true,
+            'streamSelectionStrategy':'resizable','maxWidth':2000,'switchOnFullscreen':false,'checkOnStart':true
+        },
+        'rtmp':{
+            'netConnectionUrl':'rtmp://bogus-fms.08C8.edgecastcdn.net/0008C8/twistage-staging',
+            'url':'flowplayer.rtmp.swf'
+        }
+    },
+        'playlist':'http://dev-staging.twistage.com/test/dev/bwcheck.rss',
+
+        'clip':{
+            'scaling':'fit'
+            ,'autoPlay':false,'auth_token':'${AUTH_TOKEN}','video_id':'${VIDEO_ID}'
+        },
+
+        'canvas':{'backgroundGradient':[0.2,0.0],'backgroundColor':'#000000'},
+
+        'log':{'level':'debug','filter':'org.flowplayer.bwcheck.*','trace':true}
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

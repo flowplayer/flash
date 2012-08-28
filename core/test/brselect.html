@@ -1,0 +1,115 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jquerytools.org/1.2.5/full/jquery.tools.min.js"></script>
+    <script type="text/javascript" src="../../jsplugins/bitrateselect/trunk/flowplayer.bitrateselect-3.2.8.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+    <style type="text/css" media="screen">
+    .bitrate-selected {
+        border-style: dashed
+    }
+    </style>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+
+
+        <!-- container for the available bitrates. Populated by the JS plugin. -->
+        <div style="display:none;margin-top:12px">
+
+            <b>Choose Video Bitrate:</b> <br/>
+            <div id="options" style="display:none;">
+                <a id="tmpl" href="{bitrate}" style="">{label}</a>
+            </div>
+
+        </div>
+
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bitrateselect.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+            bitrates: [
+                {
+                    url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                    // this is the default bitrate, the playback kicks off with this and after that
+                    // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                    label: '400'
+                },
+                { url: "mp4:bbb-800", width: 480, bitrate: 800, isDefault: true, label: '800' },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200, label: '1200' },
+                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600, label: '1600' }
+            ],
+            urlResolvers: 'bitrateselect',
+            provider: 'rtmp'
+        },
+        plugins: {
+            bitrateselect: {
+                url: 'flowplayer.bitrateselect.swf',
+
+                hdButton: {
+                    place: 'none',
+                    splash: false
+                },
+
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                   $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                   console.log("new item", newItem);
+                },
+                onStreamSwitch: function (newItem) {
+                   $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                }
+            },
+            rtmp: {
+                url: 'flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            },
+            content: {
+                url: 'flowplayer.content.swf',
+                top: 0, left: 0, width: 400, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+
+    }).bitrateselect('#options');
+</script>
+	</div>
+	
+	
+</body></html>

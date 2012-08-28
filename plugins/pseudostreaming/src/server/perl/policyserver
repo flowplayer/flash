@@ -1,0 +1,186 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+require Net::Daemon;
+
+package PolicyServer;
+@PolicyServer::ISA = qw(Net::Daemon);
+
+use Sys::Hostname;
+use vars qw/@POLICY_DATA/;
+
+# Treat command line option in the constructor
+sub new ($$;$) {
+
+      my($class, $attr, $args) = @_;
+      my($self) = $class->SUPER::new($attr, $args);
+
+        # Set specific modes here:
+    #
+    #   --nocatchint            Try to catch interrupts when calling system
+        #                       functions like bind(), recv()), ...
+    #   --childs <num>          Set number of preforked childs, implies mode=single.
+    #   --chroot <dir>          Change rootdir to given after binding to port.
+    #   --configfile <file>     Read options from config file <file>.
+    #   --debug                 Turn debugging mode on
+    #   --facility <facility>   Syslog facility; defaults to 'daemon'
+    #   --group <gid>           Change gid to given group after binding to port.
+    #   --help                  Print this help message
+    #   --localaddr <ip>        IP number to bind to; defaults to INADDR_ANY
+    #   --localpath <path>      UNIX socket domain path to bind to
+    #   --localport <port>      Port number to bind to
+    #   --logfile <file>        Force logging to <file>
+    #   --loop-child            Create a child process for loops
+    #   --loop-timeout <secs>   Looping mode, <secs> seconds per loop
+    #   --mode <mode>           Operation mode (threads, fork or single)
+    #   --pidfile <file>        Use <file> as PID file
+    #   --proto <protocol>        transport layer protocol: tcp (default) or unix
+    #   --user <user>           Change uid to given user after binding to port.
+    #   --version               Print version number and exit
+
+      my $policyfile = "/home/venetubo/www/home/crossdomain.xml";
+      
+      # Read the policy file
+      open('POLICY',$policyfile);
+      @POLICY_DATA = <POLICY>;
+      close POLICY;
+
+      my $pid_file = 'policy_server.pid';
+      system("touch $pid_file") unless (-f $pid_file);
+
+      $self->{'pidfile'} = $pid_file;
+      $self->{'childs'} = 10;
+
+      # Hardcoded
+      $self->{'user'} = 'nobody';
+      $self->{'group'} = 'nobody';
+
+      my $host = hostname;
+      my $port= $attr->{'localport'};
+
+      my $start = 0;
+      open (DEBUG, ">>/tmp/policy_server.log");
+        if (@ARGV and $ARGV[0] eq 'start') {
+                print DEBUG "Policy Server $host is running on port $port\n";
+                print "Policy Server $host is running on port $port\n";
+        $start = 1;
+        }
+        elsif (@ARGV and $ARGV[0] eq 'stop') {
+        my $pid = do $pid_file || '';
+        system("kill $pid") if $pid;
+                print DEBUG "Policy Server stopped\n";
+                print "Policy Server stopped\n";
+        }
+        elsif (@ARGV and $ARGV[0] eq 'restart') {
+                print DEBUG "Restarting Policy Server\n";
+                my $pid = do $pid_file;
+                system("kill $pid");
+                print DEBUG "Policy Server $host is running on port $port\n";
+                print "Policy Server restarting on $host on port $port\n";
+                $start = 1;
+        }
+    else {
+        print "Usage: policy_server start|stop|restart\n";
+    }
+      close DEBUG;
+
+      exit unless $start;
+
+      $self;
+}
+
+sub Run ($) {
+# This is what runs by default
+#
+
+      my($self) = @_;
+
+      open (LOGGER, ">>/tmp/policy_server_data.log");
+
+      my($copy, $line, $sock, $remote_host);
+      $sock = $self->{'socket'};
+      $remote_host = eval { $sock->peerhost }; 
+
+      my $timeout = 2;
+      local $SIG{ALRM} = sub { close LOGGER; die } if $timeout;
+      alarm $timeout if $timeout;
+
+      # Uncomment this for interactive...
+      my $interactive = 0;
+      while (1) {
+        $sock->blocking(0) if !$sock->eof;
+
+            if (!defined($line = $sock->getline) ) {
+                if ($sock->error()) {
+                        $self->Error("Client connection error %s",
+                                $sock->error());
+                }
+                $sock->close();
+                return;
+            }
+
+                $line =~ tr/\x80-\xFF//d;
+        $line =~ s/\s+$//; # Remove CRLF
+                $line =~ s/\r?\n//;
+
+        # If we need an interactive server we set it up here...
+                if ($line eq 'begin') {
+                        $sock->write("200 OK\n");
+            $interactive = 1;
+                }
+        # This one is used for Benchmarking
+        elsif ($line =~ /^GET/) {
+                $line = "Parse a sample policy file here";
+            last;
+        }
+
+                last if ($line and $sock->eof and !$interactive);
+        $interactive = 0;
+
+        # Terminate the connection..
+                last if ($line eq 'quit' or $line eq 'exit');
+
+        $sock->blocking(1);
+        alarm $timeout if $timeout;
+      }
+      alarm 0 if $timeout;
+
+      # Regular expressions for all known trackers
+      my $response = parse_policy($line);
+
+      if ($response->{error}) {
+        $sock->write("ERR - Unknown request\n");
+        print LOGGER "$remote_host -> $response->{error}";
+      }
+      else {
+    $sock->write("$response->{data}");
+      }
+
+      $sock->close();
+
+      close LOGGER;
+
+      return;
+}
+
+sub parse_policy {
+
+      my $line = shift;
+      my $data;
+      if ($line =~ /^\<policy\-file\-request\/\>\0$/) {
+    $data->{data} = "@POLICY_DATA";
+      }
+      else {
+    $data->{error} = 'ERROR';   
+      }
+      return $data;
+}
+
+package main;
+
+my $server = PolicyServer->new({
+                'pidfile'   => 'none',
+                                'localport'     => 843
+            });
+$server->Bind();

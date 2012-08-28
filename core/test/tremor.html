@@ -1,0 +1,94 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+            autoPlay:true,
+            baseUrl: 'http://stream.africam.com',
+            live: true,
+            provider: 'rtmp'
+        },
+        playlist :[
+
+            {
+                url:'http://www.africam.com/images/af_flashintro2.swf',
+                autoPlay:true
+            },
+
+            {
+                url: 'live-nk',
+                netConnectionUrl: 'rtmp://stream.africam.com/nk' ,
+//                autoPlay:false,
+                title: 'Nkorho'
+            },
+
+            {
+                url: 'live-ep',
+                netConnectionUrl: 'rtmp://stream.africam.com/ep' ,
+                //              autoPlay:false,
+                title: 'EP'
+            },
+
+            {
+                url: 'live-tm',
+                netConnectionUrl: 'rtmp://mail.africam.com/rtplive',
+                //          autoPlay:false,
+                title: 'Tembe'
+            },
+            {
+                url: 'live-be',
+                netConnectionUrl: 'rtmp://stream.africam.com/be',
+                //          autoPlay:false,
+                title: 'Pot Owl'
+            },
+            {
+                url: 'test',
+                netConnectionUrl: 'rtmp://stream.africam.com/rhino',
+                //          autoPlay:false,
+                title: 'Rhino'
+            }
+
+        ],
+        plugins:
+        {
+        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

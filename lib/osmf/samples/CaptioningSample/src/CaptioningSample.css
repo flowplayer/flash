@@ -1,0 +1,88 @@
+/*****************************************************
+*  
+*  Copyright 2009 Akamai Technologies, Inc.  All Rights Reserved.
+*  
+*****************************************************
+*  The contents of this file are subject to the Mozilla Public License
+*  Version 1.1 (the "License"); you may not use this file except in
+*  compliance with the License. You may obtain a copy of the License at
+*  http://www.mozilla.org/MPL/
+*   
+*  Software distributed under the License is distributed on an "AS IS"
+*  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+*  License for the specific language governing rights and limitations
+*  under the License.
+*   
+*  
+*  The Initial Developer of the Original Code is Akamai Technologies, Inc.
+*  Portions created by Akamai Technologies, Inc. are Copyright (C) 2009 Akamai 
+*  Technologies, Inc. All Rights Reserved. 
+*  
+*****************************************************/
+
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+global {
+	color: #ffffff;
+	fontFamily: "Verdana";
+	fontSize: 11px;
+	fontWeight: normal;
+	disabledColor: #3d3d3d;
+}
+
+.title {
+	fontSize: 20px;
+}
+
+.timeCode {
+	fontSize: 10px;
+	color: #999999;
+}
+
+.error {
+	fontSize: 10px;
+	color: #FF1111;
+}
+
+mx|Label {
+	fontSize: 10px;
+	color: #aaaaaa;
+}
+
+mx|Button {
+	themeColor: "haloSilver";
+}
+
+mx|TextArea {
+	color: #ffffff;
+	disabledColor: #ffffff;
+	backgroundColor: #000000;
+	backgroundDisabledColor: #000000;
+	borderColor: #000000;
+}
+
+mx|HSlider {
+	themeColor: "haloSilver";
+    dataTipStyleName: "dataTip";
+    dataTipOffset: 6;
+}
+
+mx|ToolTip {
+	color: #ffffff;
+	backgroundColor: #333333;
+}
+
+.dataTip {
+    backgroundColor: black;
+}
+
+.captionStyle {
+	paddingLeft: 5;
+	paddingRight: 5;
+	paddingTop: 5;
+	alpha: 0;
+	background-color: #000000;
+	background-alpha: 0.33;
+	textAlign: "center";
+	fontSize: 14px;
+}

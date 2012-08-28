@@ -1,0 +1,182 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+		<title>Flowplayer - Flash Video Player for the Web</title>
+		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
+		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
+	
+
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="Distribution" content="Global" />
+	<meta name="Author" content="Tero Piirainen" />
+	<meta name="Robots" content="index,follow" /> 
+ 
+		
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css" />
+	
+	
+	<script type="text/javascript" src="http://static.flowplayer.org/js/flowplayer-3.2.2.min.js"></script>	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+	<script type="text/javascript"  src="http://cdn.jquerytools.org/1.2.3/jquery.tools.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/overlay-apple.css"/>
+	<script type="text/javascript"  src="http://flowplayer.org/tools/download/1.2.3/overlay/overlay.apple.min.js"></script>		
+
+	
+
+	<style type="text/css">
+		div.overlay {
+		width:1024px; 
+		height:432px;
+
+		}
+		
+		
+		
+	</style>
+	
+
+	<!--[if lt IE 7]>
+		<style type="text/css">
+			@import "http://static.flowplayer.org/css/ie6.css?v=0.2";
+		</style>
+	<![endif]-->
+	
+	<!--[if lt IE 8]>
+		<style>
+			html { overflow-x:hidden; }
+			#content ol, #content ul  {margin-left: 50px; }
+		</style>
+	<![endif]-->	
+
+</head>
+
+<body id="plugins_infopanel">
+
+<div id="wrap">	
+
+		<div id="content"> 
+
+<h1>
+	Flash plugin: <strong>Info Panel</strong>
+
+</h1>
+
+
+
+
+<h2>Basic example</h2>
+
+<p>
+	The following shows example of a toggle button to manage the visibility of a content plugin overlay panel. 
+</p>
+
+<!-- player container-->
+<a 
+	href="http://vod01.netdna.com/vod/demo.flowplayer/flowplayer-700.flv" 
+	style="display:block;width:640px;height:384px;" 
+	id="player">
+	 
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+	
+</a>
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+$f("player", "@PLAYER_SWF@", {
+	clip: { 
+
+	},
+	log: {
+		level: 'error',
+		filter: 'org.flowplayer.info.*'
+	},
+	plugins:  {
+		
+		// the captions plugin
+		info: {
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// pointer to a content plugin (see below)
+			infoTarget: 'content',
+			icons: {
+               bottom: 35,
+               right: 5,
+               width: 50,
+               height: 30
+           }  
+		},
+		content: {
+			url:'../flowplayer.content.swf',
+			bottom: 25,
+			height:100,
+			width:200,
+			html: "Test",
+			style: { 
+				body: { 
+					fontSize: 14, 
+					fontFamily: 'Arial',
+					textAlign: 'center',
+					color: '#ffffff'
+				} 
+			} 
+		},
+		
+		
+		// change default skin to "tube"
+		controls: {
+			url: '../flowplayer.controls.swf'
+		}
+		
+	}
+});
+</script>	
+
+
+
+<h2>Configuration</h2>
+
+
+<table class="listing">
+	<tr>
+		<th>property</th>
+
+		<th>description</th>
+	</tr>
+	<tr>
+		<td><code>infoTarget</code></td>
+		<td>
+			The name of a Content plugin configured to show the info. The plugin needs to be specified in the player's initial configuration.
+		</td>
+
+	</tr>
+
+   
+    <tr>
+        <td><code>button</code></td>
+        <td>
+            <a href="/documentation/configuration/plugins.html#display-properties">Display properties</a> for the CC-button. The default
+            properties are: <samp>{ width: 20, height: 15, right: 5, bottom: 30, label: 'CC' }</samp>. Specify <samp>null</samp> and the button
+            is not shown at all. The <samp>label</samp> property in this object specifies the label text for the button. If you want to make the captions initially hidden, specify <samp>display: 'none'</samp> in the Content plugin that is used to show the captions. Once the CC button is clicked, the captions become visible.
+        </td>
+    </tr>
+
+</table>
+
+		</div>  
+	</div>
+</body>
+</html>

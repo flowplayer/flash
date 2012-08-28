@@ -1,0 +1,1563 @@
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+    <title>Flowplayer - Flash Video Player for the Web</title>
+    <meta name="Description"
+          content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother."/>
+    <meta name="Keywords"
+          content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video"/>
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <meta name="Distribution" content="Global"/>
+    <meta name="Author" content="Tero Piirainen"/>
+    <meta name="Robots" content="index,follow"/>
+
+
+    <link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css"/>
+
+    <link rel="stylesheet" type="text/css" href="bwcheck.css"/>
+    <script type="text/javascript" src="http://static.flowplayer.org/js/flowplayer-3.2.4.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jquerytools.org/1.2.4/full/jquery.tools.min.js"></script>
+    <script type="text/javascript" src="flowplayer.bitrateselect-3.2.8.js"></script>
+
+
+    <style type="text/css">
+        div.overlay {
+            width: 1024px;
+            height: 432px;
+
+        }
+
+
+    </style>
+
+
+    <!--[if lt IE 7]>
+    <style type="text/css">
+        @import "http://static.flowplayer.org/css/ie6.css?v=0.2";
+    </style>
+    <![endif]-->
+
+    <!--[if lt IE 8]>
+    <style>
+        html {
+            overflow-x: hidden;
+        }
+
+        #content ol, #content ul {
+            margin-left: 50px;
+        }
+    </style>
+    <![endif]-->
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('.checkBandwidthBtn').click(function() {
+                var content = $f().getPlugin('content');
+                content.setHtml("Detecting Bandwidth Please Wait ...");
+                $f().getPlugin("bwcheck").checkBandwidth();
+            });
+
+        });
+
+    </script>
+
+</head>
+
+<body id="plugins_bwcheck">
+
+
+<div id="wrap">
+
+
+<div id="content">
+
+
+<h1 style="background-image:url(http://www.flowplayer.org/img/title/streaminge.png)">
+    <strong>Bandwidth</strong> detection
+    <em>Make sure you reach your entire audience with good quality</em>
+</h1>
+
+
+<h2>Introduction</h2>
+
+
+<div style="float: right; margin-left:50px;margin-bottom:20px;">
+    <img src="http://static.flowplayer.org/img/demos/bandwidthdetection.png"/>
+</div>
+
+<p>
+    The Bandwidth detection plugin monitors the bandwidth that is available to the player. Based on
+    this detection, the plugin selects the stream or file that is best suited to the available bandwidth.
+</p>
+
+<p>
+    The goal is to offer the best viewing experience possible for an audience with varying Internet connection speeds.
+    People with fast connections are served with HD content; people with slow connections are served with smaller files
+    (i.e. lower bitrate). Playback needs to be uninterrupted while maintaining the best possible video quality.
+</p>
+
+<p>
+    Video files are encoded with several different bitrates so that good matches are available for the
+    connection speeds that are being targeted.
+</p>
+
+
+<a name="features"></a>
+
+<h2>Features</h2>
+
+<ul>
+    <li>Quality Of Service monitoring and dynamic stream switching.</li>
+    <li>Support for progressive download, pseudostreaming, and RTMP.</li>
+    <li>Manual selection of the bitrate. Users can be offered the option to select their preferred bitrate.</li>
+    <li>HD button feature to toggle between a hd and sd clip.</li>
+</ul>
+
+<div class="box">
+    <strong>Quality Of Service monitoring</strong> makes sure that playback continues uninterrupted using the best
+    possible quality.
+    The plugin continuously monitors and calculates the following metrics: available
+    <em style="color:blue;">maximum bandwidth</em>; number of <em style="color:blue;">dropped video frames</em>; the
+    amount of data currently
+    <em style="color:blue;">buffered</em>; and the available video <em style="color:blue;">screen size</em>.
+    Based on these factors, it determines the optimal bitrate. If needed
+    the stream is dynamically switched during playback (requires Wowza 2 or Adobe FCS). Continuous monitoring and
+    control is required
+    to ensure good results as the available bandwidth fluctuates.
+</div>
+
+<p>
+    The player dimensions are considered when selecting the appropriate file. The plugin never selects a file that has
+    dimensions larger than the player's screen. Selecting too large a file would waste bandwidth. When going fullscreen,
+    the player switches to a larger file if available bandwidth permits.</p>
+
+<p>
+
+
+<h2>Dynamic Stream Switching Example</h2>
+
+<p>
+    The player shown below uses dynamic stream switching with Amazon CloudFront. Here is a tutorial about <a
+        href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=4112 categoryID=268"
+        class="external">configuring Amazon CloudFront streaming using Flowplayer</a>.
+</p>
+
+<div style="width:848px;height:505px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="player">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("player", "@PLAYER_SWF@", {
+            clip: {
+				urlResolvers: 'bwcheck',
+				bitrates: [
+                {
+                url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                // this is the default bitrate, the playback kicks off with this and after that
+                // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                isDefault: true
+                },
+                { url: "mp4:bbb-800", width: 480, bitrate: 800 },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200 },
+                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600 }
+            ],
+				provider: "rtmp",
+				scaling: 'fit'
+			},
+            plugins: {
+
+                // bandwidth check plugin
+                bwcheck: {
+                    url: '@MAIN_PLAYER_SWF@',
+                    // we use dynamic switching, the appropriate bitrate is switched on the fly, we don't set server detection, the default clip will be used.
+                    dynamic: true,
+
+                    // show the selected file in the content box. This is not used in real installations.
+                    onStreamSwitchBegin: function (newItem, currentItem) {
+                        $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                                " from " + currentItem.streamName);
+                    },
+                    onStreamSwitch: function (newItem) {
+                        $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                    },
+                    qos: ["bwUp", "bwDown", "buffer"]
+                },
+
+                // RTMP streaming plugin
+                rtmp: {
+                    url: '../flowplayer.rtmp.swf',
+                    proxyType: "best",
+                    netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+                },
+
+                // a content box so that we can see the selected video dimensions. This is not used in real
+                // installations.
+                content: {
+                    url: '../flowplayer.content.swf',
+                    bottom: 30, left: 0, width: 250, height: 150,
+                    backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                    textDecoration: 'outline',
+                    style: {
+                        body: {
+                            fontSize: 14,
+                            fontFamily: 'Arial',
+                            textAlign: 'center',
+                            color: '#ffffff'
+                        }
+                    }
+                }
+            },
+            log: {
+                level: 'debug',
+                filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+            }
+        });
+    </script>
+
+</div>
+
+
+
+
+
+<h2>Server Bandwidth Detection Example</h2>
+
+<p>
+    Detecting bandwidth on startup via cloudfront.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="detectionplayer">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("detectionplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: ['bitrateselect','bwcheck'],
+            provider: 'rtmp',
+            autoPlay: false,
+            scaling: 'fit',
+
+            // available bitrates and the corresponding files. We specify also the video width
+            // here, so that the player does not use a too large file. It switches to a
+            // file/stream with larger dimensions when going fullscreen if the available bandwidth permits.
+            bitrates: [
+                {
+                url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                // this is the default bitrate, the playback kicks off with this and after that
+                // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                isDefault: true
+                },
+                { url: "mp4:bbb-800", width: 480, bitrate: 800 },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200 },
+                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600 }
+            ]/*
+            bitrates: [
+                    {
+                        url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                        isDefault: true
+                    },
+                    { url: "mp4:bbb-1200", width: 720, bitrate: 1200 }
+                ]*/
+        },
+        plugins: {
+            bitrateselect: {
+                url: '../flowplayer.bitrateselect-3.2.8.swf',
+                hdButton: {
+                    place: false
+                },
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+                onStreamSwitchFailed: function (message) {
+                    $f().getPlugin('content').setHtml("Switched failed with error: " + message);
+                }
+            },
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+                // we use dynamic switching, the appropriate bitrate is switched on the fly.
+                dynamic: false,
+
+                //cloudfront uses fms 3.5
+                serverType: 'fms',
+
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st',
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: false,
+
+                maxWidth: 1000,
+
+                // show the selected file in the content box. This is not used in real installations.
+                /*onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName + " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }*/
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: '../flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.net.*, org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+      }).bitrateselect('#bitrateMenu',{seperator: " | "});
+    </script>
+
+</div>
+
+<button type="button" class="checkBandwidthBtn">Check Bandwidth</button>
+
+<div style="display:none;">
+    <b>Choose Video Bitrate:</b> <br/>
+
+    <div id="bitrateMenu" style="display:none;">
+        <label><input type="radio" name="bitrateBtn" value="{bitrate}"/>{label}</label>
+    </div>
+</div>
+
+<div class="box code">
+<pre><code class="javascript">flowplayer("detectionplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bwcheck',
+            provider: 'rtmp',
+            autoPlay: false,
+            scaling: 'fit',
+
+            // available bitrates and the corresponding files. We specify also the video width
+            // here, so that the player does not use a too large file. It switches to a
+            // file/stream with larger dimensions when going fullscreen if the available bandwidth permits.
+            bitrates: [
+                {
+                url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                // this is the default bitrate, the playback kicks off with this and after that
+                // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                isDefault: true
+                },
+                { url: "mp4:bbb-800", width: 480, bitrate: 800 },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200 },
+                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600 }
+            ]
+        },
+        plugins: {
+
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+                // we use dynamic switching, the appropriate bitrate is switched on the fly.
+                dynamic: true,
+
+                //cloudfront uses fms 3.5
+                serverType: 'fms',
+
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st',
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: true,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName + " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: '../flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+      });
+</code></pre>
+</div>
+
+
+<h2>Server Bandwidth Detection with HD Button Example</h2>
+
+<p>
+    Detecting bandwidth on startup via cloudfront, with HD button feature, and increasing max width to allow for HD clip to be selected.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="detectionhdplayer">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("detectionhdplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: ['bitrateselect','bwcheck'],
+            provider: 'rtmp',
+            autoPlay: false,
+            scaling: 'fit',
+
+            bitrates: [
+                    {
+                        url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400
+                    },
+                    { url: "mp4:bbb-800", width: 480, bitrate: 800 }
+                    //{ url: "mp4:bbb-1200", width: 720, bitrate: 1200 }
+            ]
+        },
+        plugins: {
+            bitrateselect: {
+                url: '../flowplayer.bitrateselect.swf',
+                hdButton: { place: "both" }
+            },
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+
+
+                //cloudfront uses fms 3.5
+                serverType: 'fms',
+
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st',
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+
+                maxWidth: 720,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: false,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName + " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: '../flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+      });
+    </script>
+
+</div>
+
+<button type="button" class="checkBandwidthBtn">Check Bandwidth</button>
+
+
+<div class="box code">
+<pre><code class="javascript">flowplayer("detectionhdplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bwcheck',
+            provider: 'rtmp',
+            autoPlay: false,
+            scaling: 'fit',
+
+            bitrates: [
+                    {
+                        url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400
+                    },
+                    { url: "mp4:bbb-1200", width: 720, bitrate: 1200 }
+            ]
+        },
+        plugins: {
+
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+
+
+                //cloudfront uses fms 3.5
+                serverType: 'fms',
+
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st',
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                hdButton: { place: "both" },
+
+                maxWidth: 720,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: false,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName + " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: '../flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+      });
+</code></pre>
+</div>
+
+
+<h2>Http Streaming with HD Button Example</h2>
+
+<p>
+    Http streaming with HD button feature example.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="httpplayer">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("httpplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: ['bitrateselect','bwcheck'],
+            autoPlay: false,
+            scaling: 'fit',
+            baseUrl: 'http://vod01.netdna.com/vod/demo.flowplayer/',
+
+            bitrates: [
+                {url: "bbb_480x270.flv", width: 480, height: 270, bitrate: 270, label: "270k"},
+                {url: "bbb_640x360.flv", width: 640, height: 360, bitrate: 360, label: "360k"}
+            ]
+        },
+        plugins: {
+            bitrateselect: {
+                url: '../flowplayer.bitrateselect.swf',
+                hdButton: { place: "both" }
+            },
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+
+                serverType: 'http',
+
+                //using http detection set the url to a file minimum of 100kb to download
+                netConnectionUrl: 'http://releases.flowplayer.org/swf/flowplayer-3.1.5.swf',
+                bitrateProfileName: 'HTTPBitrateProfile',
+
+                //hdButton: { place: "both" },
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: true,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+      });
+    </script>
+
+</div>
+
+
+<div class="box code">
+<pre><code class="javascript">flowplayer("httpplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bwcheck',
+            autoPlay: false,
+            scaling: 'fit',
+            baseUrl: 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/',
+
+            bitrates: [
+                {url: "bbb_480x270.flv", width: 480, height: 270, bitrate: 270, label: "270k"},
+                {url: "bbb_640x360.flv", width: 640, height: 360, bitrate: 360, label: "360k"}
+            ]
+        },
+        plugins: {
+
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+
+                serverType: 'http',
+
+                //using http detection set the url to a file minimum of 100kb to download
+                netConnectionUrl: 'http://releases.flowplayer.org/swf/flowplayer-3.1.5.swf',
+                bitrateProfileName: 'HTTPBitrateProfile',
+
+                hdButton: { place: "both" },
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: true,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+      });</code></pre>
+</div>
+
+<h2>Pseudo Streaming with HD Button Example</h2>
+
+<p>
+    Pseudo streaming with HD button feature example.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="pseudoplayer">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("pseudoplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bwcheck',
+            provider: 'pseudo',
+            autoPlay: false,
+            scaling: 'fit',
+            baseUrl: 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/',
+
+            bitrates: [
+                {url: "bbb_480x270.flv", width: 480, height: 270, bitrate: 270, label: "270k"},
+                {url: "bbb_640x360.flv", width: 640, height: 360, bitrate: 360, label: "360k"}
+            ]
+        },
+        plugins: {
+            pseudo: {
+                url: '../flowplayer.pseudostreaming.swf'
+            },
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+
+                serverType: 'http',
+
+                //using http detection set the url to a file minimum of 100kb to download
+                netConnectionUrl: 'http://releases.flowplayer.org/swf/flowplayer-3.1.5.swf',
+                bitrateProfileName: 'HTTPBitrateProfile',
+
+                hdButton: { place: "both" },
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: true,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+     });
+    </script>
+
+</div>
+
+
+<div class="box code">
+<pre><code class="javascript">flowplayer("pseudoplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bwcheck',
+            provider: 'pseudo',
+            autoPlay: false,
+            scaling: 'fit',
+            baseUrl: 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/',
+
+            bitrates: [
+                {url: "bbb_480x270.flv", width: 480, height: 270, bitrate: 270, label: "270k"},
+                {url: "bbb_640x360.flv", width: 640, height: 360, bitrate: 360, label: "360k"}
+            ]
+        },
+        plugins: {
+            pseudo: {
+                url: '../flowplayer.pseudostreaming.swf'
+            },
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+
+                serverType: 'http',
+
+                //using http detection set the url to a file minimum of 100kb to download
+                netConnectionUrl: 'http://releases.flowplayer.org/swf/flowplayer-3.1.5.swf',
+                bitrateProfileName: 'HTTPBitrateProfile',
+
+                hdButton: { place: "both" },
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: true,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+     });</code></pre>
+</div>
+
+
+<h2>Javascript Plugin Example</h2>
+
+<p>
+    Using the bwcheck javascript plugin to provide a bitrates menu.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="javascriptplayer">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("javascriptplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bitrateselect',
+            provider: 'rtmp',
+            autoPlay: false,
+            scaling: 'fit',
+
+            // available bitrates and the corresponding files. We specify also the video width
+            // here, so that the player does not use a too large file. It switches to a
+            // file/stream with larger dimensions when going fullscreen if the available bandwidth permits.
+            bitrates: [
+                {
+                url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                // this is the default bitrate, the playback kicks off with this and after that
+                // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                isDefault: true
+                },
+                { url: "mp4:bbb-800", width: 480, bitrate: 800 },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200 },
+                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600 }
+            ]
+        },
+        plugins: {
+            bitrateselect: {
+                url: '../flowplayer.bitrateselect.swf',
+                hdButton: {
+                    place: false
+                },
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                }
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: '../flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+    }).bitrateselect('#bitratesMenu',{seperator: " | "});
+    </script>
+
+</div>
+
+<button type="button" class="checkBandwidthBtn">Check Bandwidth</button>
+
+<div style="display:none;">
+    <b>Choose Video Bitrate:</b> <br/>
+
+    <div id="bitratesMenu" style="display:none;">
+        <label><input type="radio" name="bitrateBtn" value="{bitrate}"/>{label}</label>
+    </div>
+</div>
+
+
+<div class="box code">
+<pre><code class="javascript">flowplayer("javascriptplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bwcheck',
+            provider: 'rtmp',
+            autoPlay: false,
+            scaling: 'fit',
+
+            // available bitrates and the corresponding files. We specify also the video width
+            // here, so that the player does not use a too large file. It switches to a
+            // file/stream with larger dimensions when going fullscreen if the available bandwidth permits.
+            bitrates: [
+                {
+                url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                // this is the default bitrate, the playback kicks off with this and after that
+                // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                isDefault: true
+                },
+                { url: "mp4:bbb-800", width: 480, bitrate: 800 },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200 },
+                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600 }
+            ]
+        },
+        plugins: {
+
+            // bandwidth check plugin
+            bwcheck: {
+                url: '@MAIN_PLAYER_SWF@',
+                // we use dynamic switching, the appropriate bitrate is switched on the fly.
+                dynamic: true,
+
+                //cloudfront uses fms 3.5
+                serverType: 'fms',
+
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st',
+
+                //detect bandwidth on startup
+                checkOnStart: true,
+
+                //remember the bitrate so detection happens only once
+                rememberBitrate: true,
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                    $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                },
+
+                onBwDone: function(mappedBitrate, detectedBitrate) {
+                    var content = $f().getPlugin('content');
+                    var info = "Your speed is: " + detectedBitrate + "<br/> Your chosen bitrate: " + mappedBitrate.bitrate + "<br/>Video file served: " + mappedBitrate.url;
+                    content.setHtml(info);
+                }
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: '../flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+            },
+
+            // a content box so that we can see the selected video dimensions. This is not used in real
+            // installations.
+            content: {
+                url: '../flowplayer.content.swf',
+                bottom: 30, left: 0, width: 250, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+    }).bwcheck('#bitrateMenu',{seperator: " | "});
+</code></pre>
+</div>
+
+
+<br/><br/><b>Configuration:</b>
+<table class="listing">
+    <thead>
+    <tr>
+        <th nowrap="nowrap">property / datatype</th>
+        <th>default</th>
+        <th>description</th>
+    </tr>
+    </thead>
+
+    <tr>
+        <td class="code">checkOnStart
+            <div class="type">boolean</div>
+        </td>
+        <td class="code default">true</td>
+        <td class="description">
+            If <samp>true</samp> (the default) the plugin checks the bandwidth for every clip once their playback starts
+            <em>even when the clips don't specify this plugin as their <samp>urlResolver</samp>.</em> Specify <samp>false</samp>
+            here if you have clips in the playlist for which the bandwidth should not be checked.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">selectedBitrateClass
+            <div class="type">string</div>
+        </td>
+        <td class="code default">bitrate-selected</td>
+        <td class="description">
+            The selected bitrate link class.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">activeClass
+            <div class="type">string</div>
+        </td>
+        <td class="code default">bitrate-active</td>
+        <td class="description">
+            The active bitrate link class.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">disabledClass
+            <div class="type">string</div>
+        </td>
+        <td class="code default">bitrate-disabled</td>
+        <td class="description">
+            The disabled bitrate link class.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">bwCheckPlugin
+            <div class="type">string</div>
+        </td>
+        <td class="code default">bwcheck</td>
+        <td class="description">
+            The name of the bandwidth check plugin in the player configuration.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">template
+            <div class="type">string</div>
+        </td>
+        <td class="code default"><a href="{bitrate}">{bitrate} k</a></td>
+        <td class="description">
+            The template config to be used for generating the links. The fields of the bitrates clip config are used as
+            the template variables ie {bitrate}.
+            If the wrapper has the template set, it will be used instead of the template config.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">disabledText
+            <div class="type">string</div>
+        </td>
+        <td class="code default">(not valid with this player size )</td>
+        <td class="description">
+            The text to display if the item is disabled due to size constraints and the selection strategy.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">fadeTime
+            <div class="type">int</div>
+        </td>
+        <td class="code default">100</td>
+        <td class="description">
+            The interval time for fading the wrapper in and out. Useful for hiding the wrapper if a template is set in
+            it.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">seperator
+            <div class="type">string</div>
+        </td>
+        <td class="code default"></td>
+        <td class="description">
+            A seperator character to use for seperating the links ie <br/> or | .
+        </td>
+    </tr>
+</table>
+
+
+<h2>JavaScript API</h2>
+
+<h3>Methods</h3>
+
+<table class="listing">
+    <thead>
+    <tr>
+        <th class="col1">method</th>
+        <th class="col2">returns</th>
+        <th class="col3">description</th>
+    </tr>
+    </thead>
+    <tr>
+        <td class="code">
+            getBitrate()
+        </td>
+        <td class="code type">int</td>
+        <td class="description">
+            Gets the current bitrate. The returned value is the bitrate in use after the latest bitrate transition has
+            been completed. If
+            a bitrate switch is in progress the value reflects the bitrate right now being used, not the one we are
+            switching to.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">
+            setBitrate(bitrate)
+        </td>
+        <td class="code type"></td>
+        <td class="description">
+            Changes the stream to the specified bitrate. The specified value should be one of the values contained in
+            the <samp>bitrates</samp> array. If the player is currently playing a clip, the stream corresponding to the
+            specified bitrate is started. If dynamic stream switching is enabled, the stream switches dynamically while
+            playing; otherwise, the stream plays from the start of the clip. <strong>Note:</strong> QoS monitoring and
+            dynamic stream switching is disabled when this method is called so that the dynamic switching does not
+            override the bitrate specified using this method. You can enable dynamic switching again using the <samp>enableDynamic()</samp>
+            method (see below).
+        </td>
+    </tr>
+    <tr>
+        <td class="code">
+            enableDynamic(enabled)
+        </td>
+        <td class="code type"></td>
+        <td class="description">
+            Enables or disables dynamic stream switching. The specified <samp>enabled</samp> value is a Boolean
+            specifying the enabled state.
+        </td>
+    </tr>
+    <tr>
+        <td class="code">
+            checkBandwidth()
+        </td>
+        <td class="code type"></td>
+        <td class="description">
+            Initiates a new bandwidth check. The detected bandwidth is stored in the client browser if the config option
+            <samp>rememberBitrate</samp> is set to <samp>true</samp>. If the player is currently playing a clip, a new
+            stream based on the detected bandwidth is selected and started. If dynamic stream switching is enabled, the
+            stream switches dynamically while playing; otherwise, the stream plays from the start of the clip. When the
+            bandwidth check is successfully called, the <samp>onBwDone</samp> event is called allowing you to get the
+            results.
+        </td>
+    </tr>
+</table>
+
+<h3>Events</h3>
+
+<table class="listing">
+    <thead>
+    <tr>
+        <th nowrap="nowrap">Event</th>
+        <th style="width:450px">When does it fire?</th>
+    </tr>
+    </thead>
+
+    <tr>
+        <td class="code"><em>onBwDone()</em></td>
+        <td class="description">
+            Fires when the bandwidth has been detected. The callback is fed with the following arguments:
+
+            <ul>
+                <li><samp>url</samp> the complete URL that was resolved for playback</li>
+                <li><samp>mappedBitrate</samp> the bitrate selected from the <samp>bitrates</samp> array</li>
+                <li><samp>detectedBitrate</samp> the detected bitrate used to resolve the <samp>mappedBitrate</samp>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="code"><em>onStreamSwitchBegin(newItem, currentItem)</em></td>
+        <td class="description">
+            Fires when a bitrate switch is initiated. A second event is fired when the switch is completed, see below.
+            This event is called only when the <samp>dynamic</samp> configuration property is enabled. The callback is
+            fed with two bitrateItem objects that describe the new bitrate we are switching to and the current one.
+            These objects have following properties:
+
+            <ul>
+                <li><samp>streamName</samp> - the name of the stream</li>
+                <li><samp>bitrate</samp></li>
+                <li><samp>width</samp></li>
+            </ul>
+
+        </td>
+    </tr>
+    <tr>
+        <td class="code"><em>onStreamSwitch(newItem)</em></td>
+        <td class="description">
+            Fires when the bitrate switch has been completed. Once fired the new stream starts playing and is shown in
+            the player. This event is called only when the <samp>dynamic</samp> configuration property is enabled. The
+            callback is fed with an object argument that has following properties:
+
+            <ul>
+                <li><samp>streamName</samp> - the name of the stream</li>
+                <li><samp>bitrate</samp></li>
+                <li><samp>width</samp></li>
+            </ul>
+
+
+        </td>
+    </tr>
+</table>
+
+<p>
+    Here are the events related to establishing a connection and clustering. Note that if you are not clustering the
+    hosts used for bandwidth checking, the <samp>host index</samp> will always have a value of zero.
+</p>
+
+
+<table class="listing">
+    <thead>
+    <tr>
+        <th nowrap="nowrap">Event</th>
+        <th style="width:450px">When does it fire?</th>
+    </tr>
+    </thead>
+    <tr>
+        <td class="code"><em>onConnect()</em></td>
+        <td class="description">
+            Fires when the plugin starts a new connection attempt. The callback is fed with two arguments:
+
+            <ul>
+                <li><samp>host</samp> the URL from the hosts list where the connection is attempted from</li>
+                <li><samp>hostIndex</samp> the index of the <samp>host</samp> in the hosts list</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="code"><em>onConnectFailed()</em></td>
+        <td class="description">
+            Fires when a connection attempt has failed. The callback is fed with two arguments:
+
+            <ul>
+                <li><samp>host</samp> the URL from the hosts list where the failure happened</li>
+                <li><samp>hostIndex</samp> the index of the <samp>host</samp> in the hosts list</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="code"><em>onFailed()</em></td>
+        <td class="description">
+            Fires when all hosts in the cluster have failed. See also the <a href="#config">connectCount option</a>,
+            that specifies how many times the hosts are evaluated before failing.
+        </td>
+    </tr>
+</table>
+
+<h2>Advanced features</h2>
+
+
+<a name="clustering"></a>
+
+<h3>Clustering of bandwidth checks</h3>
+
+<p>
+    You can configure an array of hosts to be used for the bandwidth check. The plugin chooses a live host from this
+    array until it finds one that does not fail. This provides a way to add failover. Note that this is not designed to
+    be used with dynamic stream switching as the hosts in the cluster are used only in the initial RTMP bandwidth check
+    call. Here is an example of how to configure clustering for the bandwidth check:
+</p>
+
+<div class="box code">
+<pre><code class="javascript">bwcheck: {
+    url: 'flowplayer.rtmp-3.1.3.swf',
+    serverType: 'red5',
+
+    // the actual streaming happens from this host. In reality you would
+    // probably configure a cluster of hosts here too.
+    netConnectionUrl: 'rtmp://electroteque.org/bwcheck',
+
+    // the hosts used for the initial bandwidth check
+    hosts: [
+    {host:'rtmp://electroteque1.org/bwcheck'},
+    {host:'rtmp://electroteque2.org/bwcheck'},
+    {host:'rtmp://electroteque.org/bwcheck'}
+    ]
+    }</code></pre>
+</div>
+
+
+<p>
+    The configuration above is for clustering the bandwidth checking connections only. If you want to cluster your
+    streaming connections, then you need to use our <a href="cluster.html">clustering plugin</a>.
+</p>
+
+<div class="box petrol">
+    The clustering configuration for bandwidth checking and for the actual streaming are separate. This is because in
+    many cases the RMTP applications used for bandwidth checking are different from the applications that are used for
+    streaming, and therefore their host URLs are also different.
+</div>
+
+
+</div>
+
+
+<div class="clear"></div>
+
+
+</div>
+
+
+</body>
+
+</html>

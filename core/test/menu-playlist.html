@@ -1,0 +1,117 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:500px;height:320px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.menu.ui.Menu' },
+//        log: { level: 'debug', filter: 'org.flowplayer.menu.Menu,org.flowplayer.bitrateselect.BitrateSelectProvider' },
+        onStart: function() {
+            console.log("onStart");
+            $f().getPlugin("menu").fadeOut();
+            $f().getPlugin("dock").fadeOut();
+            $f().reset();
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+//            $f().getPlugin("menu").fadeIn();
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+            autoPlay: false,
+            baseUrl: 'http://blip.tv/file/get',
+
+            onFinish: function() {
+                console.log("onFinish");
+                $f().getPlugin("menu").fadeIn();
+                $f().getPlugin("dock").fadeIn();
+                $f().getScreen().animate({ left: 10, top: 10, width: 250, height: 150 })
+            }
+        },
+        playlist: [
+            'KimAronson-TwentySeconds59483.flv',
+            'KimAronson-TwentySeconds58192.flv',
+            'KimAronson-TwentySeconds63617.flv',
+            'KimAronson-TwentySeconds64268.flv',
+            'KimAronson-TwentySeconds67463.flv',
+            'KimAronson-TwentySeconds65459.flv'
+        ],
+        plugins: {
+            menu: {
+                url: 'flowplayer.menu.swf',
+                items: [
+                    { label: '<b>first clip</b><br/><i>3:30</i>', imageUrl: 'http://static.flowplayer.org/img/demos/thumb1.jpg', index: 0 },
+                    { label: 'second clip', imageUrl: 'http://static.flowplayer.org/img/demos/thumb2.jpg', index: 1 },
+                    { label: '<b>third clip</b><br/><i>3:66</i>', imageUrl: 'http://static.flowplayer.org/img/demos/thumb3.jpg', index: 2 },
+                    { label: 'fourth clip', imageUrl: 'http://static.flowplayer.org/img/demos/thumb4.jpg', index: 3 },
+                    { label: '<b>fifth clip</b><br/><i>13:30</i>', imageUrl: 'http://static.flowplayer.org/img/demos/thumb5.jpg', index: 4 },
+                    { label: 'sixth clip', imageUrl: 'http://static.flowplayer.org/img/demos/thumb1.jpg', index: 5 }
+                ],
+
+                // default style for items
+                menuItem: {
+//                    color: "rgba(10,10,10,1)",
+//                    overColor: "rgba(200,0,0,1)"
+
+//                    fontColor: "rgba(255,0,100, 0.1)"
+                    height: 70
+                },
+
+                buttons: {
+//                    backgroundColor: '#ff0000'
+                },
+
+                right: 10,
+                scrollable: true,
+                height: 284,
+                width: 220,
+
+                onSelect: function(item) {
+                    console.log("onSelect(): ", item.index);
+
+                    if (item.index >= 0) {
+                        $f().play(item.index);
+                    }
+                }
+            },
+            share: {
+                url: 'flowplayer.sharing.swf'
+            },
+            dock: {
+                display: 'none',
+                left: 10,
+                top: 170,
+                height: 59,
+                autoHide: false
+            }
+        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

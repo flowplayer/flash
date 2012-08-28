@@ -1,0 +1,12 @@
+<smil xmlns:xml="http://www.w3.org/XML/1998/namespace">
+            <head>
+                    <paramGroup xml:id="cluster">
+                           <param name="server1" value="http://invalid.flowplayer.com"/>
+                            <param name="server2" value=" 'http://pseudo01.hddn.com/vod/demo.flowplayervod'"/>
+                     </paramGroup>
+            </head>
+    <body>
+        <video
+                src="honda_accord.flv"/>
+    </body>
+</smil>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testrun name="" >
+<testsuite  name="Default Test Suite" project="YouTubePluginTest">
+<testsuite name="org.osmf.youtube:TestYoutubePluginInfo" type="testcaseclass"/>
+<testsuite name="org.osmf.youtube.media:TestYoutubeElement" type="testcaseclass"/>
+<testsuite name="org.osmf.youtube.net:TestYoutubeLoader" type="testcaseclass"/>
+<testsuite name="org.osmf.youtube.traits:TestYoutubeAudioTrait" type="testcaseclass"/>
+<testsuite name="org.osmf.youtube.traits:TestYoutubeDynamicStreamTrait" type="testcaseclass"/>
+<testsuite name="org.osmf.youtube.traits:TestYoutubePlayTrait" type="testcaseclass"/>
+<testsuite name="org.osmf.youtube.traits:TestYoutubeSeekTrait" type="testcaseclass"/>
+<testsuite name="org.osmf.youtube.traits:TestYoutubeTimeTrait" type="testcaseclass"/>
+</testsuite>
+</testrun>

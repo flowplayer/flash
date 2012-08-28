@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"  
+			   xmlns:samples="org.osmf.samples.*" 
+			   xmlns:containers="org.osmf.containers.*"
+			   layout="vertical"
+			   horizontalAlign="left"
+			   preinitialize="application1_preinitializeHandler(event)" xmlns:comps="comps.*">
+	<mx:Script>
+		<![CDATA[
+			import flash.text.engine.FontWeight;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UITextField;
+			import mx.core.mx_internal;
+			import mx.events.CollectionEvent;
+			import mx.events.CollectionEventKind;
+			import mx.events.FlexEvent;
+			import mx.events.SliderEvent;
+			import mx.managers.PopUpManager;
+			import mx.managers.PopUpManagerChildList;
+			
+			import org.osmf.containers.MediaContainer;
+			import org.osmf.events.DynamicStreamEvent;
+			import org.osmf.events.LoadEvent;
+			import org.osmf.events.LoaderEvent;
+			import org.osmf.events.MediaErrorEvent;
+			import org.osmf.events.MediaPlayerCapabilityChangeEvent;
+			import org.osmf.events.MediaPlayerStateChangeEvent;
+			import org.osmf.events.PlayEvent;
+			import org.osmf.events.TimeEvent;
+			import org.osmf.logging.CollectionLoggerFactory;
+			import org.osmf.logging.Log;
+			import org.osmf.logging.Logger;
+			import org.osmf.logging.LoggerCollectionManager;
+			import org.osmf.media.DebugMediaFactory;
+			import org.osmf.media.DefaultMediaFactory;
+			import org.osmf.media.MediaElement;
+			import org.osmf.media.MediaFactory;
+			import org.osmf.media.MediaPlayer;
+			import org.osmf.net.StreamType;
+			import org.osmf.net.StreamingURLResource;
+			import org.osmf.traits.LoadState;
+			import org.osmf.traits.LoadTrait;
+			import org.osmf.traits.MediaTraitType;
+			
+			protected var loadingTF : UITextField;
+			
+			[Bindable]
+			protected var streamTypeDP : ArrayCollection = new ArrayCollection( [ StreamType.LIVE_OR_RECORDED,
+																				  StreamType.RECORDED,
+																				  StreamType.LIVE,
+																				  StreamType.DVR ] );
+			
+			[Bindable]
+			protected var isSeeking : Boolean = false;
+			
+			[Bindable]
+			protected var canPlay : Boolean = false;
+			
+			[Bindable]
+			protected var isAuto : Boolean = false;
+			
+			private static const EXAMPLE_RESOURCE:String = "http://192.150.12.61:8134/live/events/certdvr/events/_definst_/dtvdvrevent.f4m";
+			
+			protected var mediaPlayer : MediaPlayer;
+			protected var mediaFactory : MediaFactory;
+			protected var mediaElement : MediaElement;
+			protected var mediaContainer : MediaContainer;
+			protected var resource : StreamingURLResource;
+			
+			protected function onDurationChange( event : TimeEvent ) : void
+			{
+				seekBar.maximum = event.time;
+				duration.text = "" + Math.round(event.time);
+			}
+			protected var mediaPlayerLogger:Logger;
+			
+			protected function application1_preinitializeHandler( event : FlexEvent ) : void
+			{
+				Log.loggerFactory = new CollectionLoggerFactory();
+				mediaPlayerLogger = Log.getLogger("org.osmf.media.MediaPlayer");
+				
+				mediaPlayer = new MediaPlayer();
+				mediaFactory = new DebugMediaFactory();
+				mediaContainer = new MediaContainer();
+				mediaContainer.backgroundAlpha = 1.0;
+				mediaContainer.backgroundColor = 0x000000;
+				
+				setDefaultMediaPlayerProperties();
+				addMediaPlayerEvents();
+			}
+			
+			protected function setDefaultMediaPlayerProperties() : void
+			{
+				mediaPlayer.autoDynamicStreamSwitch = false;
+				mediaPlayer.autoPlay = false;
+			}
+
+			protected function addMediaPlayerEvents() : void
+			{
+				mediaPlayer.addEventListener( MediaErrorEvent.MEDIA_ERROR, mediaErrorHandler, false, 0, true );
+				
+				mediaPlayer.addEventListener( MediaPlayerCapabilityChangeEvent.CAN_PLAY_CHANGE, onCanPlayChange, false, 0, true );
+				mediaPlayer.addEventListener( MediaPlayerCapabilityChangeEvent.CAN_LOAD_CHANGE, onCanLoadChange, false, 0, true );
+				mediaPlayer.addEventListener( TimeEvent.DURATION_CHANGE, onDurationChange, false, 0, true );	
+				mediaPlayer.addEventListener( TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange, false, 0, true );
+				mediaPlayer.addEventListener( DynamicStreamEvent.SWITCHING_CHANGE, onSwitchingChange, false, 0, true );
+				mediaPlayer.addEventListener( MediaPlayerCapabilityChangeEvent.IS_DYNAMIC_STREAM_CHANGE, onIsDynamicStreamChange, false, 0, true );
+				mediaPlayer.addEventListener( MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE, onStateChange, false, 0, true );
+				mediaPlayer.addEventListener( PlayEvent.PLAY_STATE_CHANGE, onPlayStateChange, false, 0, true );
+			}
+			
+			protected function mediaErrorHandler( event : MediaErrorEvent ) : void
+			{
+				trace( "mediaErrorHandler( " + event + " )" );
+				trace( "\terror - " + event.error );
+				mediaPlayerLogger.error( "MediaError:\tErrorID - {0}, ErrorMessage - {1}, ErrorDetail - {2}", event.error.errorID, event.error.message, event.error.detail );
+			}
+			
+			protected function onPlayStateChange( event : PlayEvent ) : void
+			{
+				trace( "onPlayStateChange( " + event + " )" );
+				trace( "\tplayState - " + event.playState );
+				trace( "\tcanPause - " + event.canPause );
+			}
+			
+			protected function onStateChange( event : MediaPlayerStateChangeEvent ) : void
+			{
+				trace( "onStateChange( " + event + " )" );
+				trace( "\tstate - " + event.state );
+			}
+			
+			protected function onCapabilityChange( event : MediaPlayerCapabilityChangeEvent ) : void
+			{
+				trace( "onCapabilityChange( " + event + " )" );
+				trace( "\tenabled - " + event.enabled );
+			}
+			
+			protected function onCanPlayChange( event : MediaPlayerCapabilityChangeEvent ) : void
+			{
+				trace( "onCapabilityChange( " + event + " )" );
+				trace( "\tenabled - " + event.enabled );
+				canPlay = event.enabled;
+				brIncBtn.enabled = brDecBtn.enabled = canManuallySwitchBitrate( isAuto );
+				volumeBar.value = mediaPlayer.volume * 100;
+			}
+			
+			protected function onCanLoadChange( event : MediaPlayerCapabilityChangeEvent ) : void
+			{
+				trace( "onCapabilityChange( " + event + " )" );
+				trace( "\tenabled - " + event.enabled );
+				
+				if ( !event.enabled )
+					return;
+				
+				var loadTrait : LoadTrait = mediaElement.getTrait( MediaTraitType.LOAD ) as LoadTrait;
+				loadTrait.addEventListener( LoaderEvent.LOAD_STATE_CHANGE, elementLoadedHandler, false, 0 , true );
+				loadTrait.load();
+			}
+			
+			protected function elementLoadedHandler( event : LoadEvent ) : void
+			{
+				trace( "elementLoadedHandler( " + event + " )" );
+				trace( "\t" + this );
+				trace( "\tloadState - " + event.loadState );
+				switch ( event.loadState )
+				{
+					case ( LoadState.LOADING ) :
+					{
+						//loadingTF.text = event.loadState;
+						addLoadIndication( event.loadState + "..." );
+						break;
+					}
+					case ( LoadState.READY ) :
+					{
+						PopUpManager.removePopUp( loadingTF );
+						break;
+					}
+					case ( LoadState.LOAD_ERROR ) :
+					{
+						addLoadIndication( event.loadState + "..." );
+						mediaPlayerLogger.error( "Failed to load Media." );
+						break;
+					}
+				}
+			}
+			
+			protected function loadBtn_clickHandler(event:MouseEvent):void
+			{
+				resource = new StreamingURLResource( urlSelect.text, streamTypCB.selectedItem.toString() );
+				
+				if ( mediaElement && uiMediaPlayer.container.containsMediaElement( mediaElement ) )
+				{
+					mediaContainer.removeMediaElement( mediaElement );
+				}
+				
+				mediaElement = mediaFactory.createMediaElement( resource );
+				
+				if ( !mediaElement )
+				{
+					mediaPlayerLogger.error( "Unknown media.  Did not load.");
+					return;
+				}
+				
+				if ( mediaElement )
+				{
+					uiMediaPlayer.container.addMediaElement( mediaElement );
+					mediaPlayer.media = mediaElement;
+					//addLoadIndication();
+				}
+			}
+
+			protected function unloadBtn_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp( loadingTF );
+				mediaPlayer.media = null;
+				mediaElement = null;
+			}
+
+			protected function playBtn_clickHandler(event:MouseEvent):void
+			{
+				mediaPlayer.play();
+			}
+
+			protected function pauseBtn_clickHandler(event:MouseEvent):void
+			{
+				mediaPlayer.pause();
+			}
+
+			protected function uiMediaPlayer_preinitializeHandler(event:FlexEvent):void
+			{
+				uiMediaPlayer.container = mediaContainer;
+			}
+			
+			protected function addLoadIndication( loadState : String = "Attempting to load...") : void
+			{
+				if ( !loadingTF )
+				{
+					loadingTF = new UITextField();
+					loadingTF.ignorePadding = false;
+					loadingTF.background = true;
+					loadingTF.setStyle( "fontSize", 14 );
+					loadingTF.setStyle( "fontWeight", FontWeight.BOLD );
+				}
+				
+				PopUpManager.removePopUp( loadingTF );
+				loadingTF.text = loadState;
+				PopUpManager.addPopUp( loadingTF, uiMediaPlayer );
+				PopUpManager.centerPopUp( loadingTF );
+			}
+
+			protected function seekBar_thumbReleaseHandler(event:SliderEvent):void
+			{
+				trace( "seekBar_thumbReleaseHandler( " + event + " )" );
+				isSeeking = false;
+			}
+
+			protected function seekBar_thumbDragHandler(event:SliderEvent):void
+			{
+				trace( "seekBar_thumbDragHandler( " + event + " )" );
+				isSeeking = true;
+				onSeek( event );
+			}
+
+			protected function onCurrentTimeChange( event : TimeEvent ) : void
+			{
+				position.text = "" + Math.round(event.time);
+				
+				if ( isSeeking )
+					return;
+				
+				seekBar.value = event.time;
+			}
+			
+			protected function onSeek(event:SliderEvent):void
+			{
+				if ( mediaPlayer && mediaPlayer.canSeek )
+				{
+					mediaPlayer.seek( event.value );
+				}
+			}
+			
+			protected function onSwitchUp():void
+			{
+				trace( "onSwitchUp()" );
+				if (mediaPlayer.isDynamicStream && !mediaPlayer.autoDynamicStreamSwitch && !mediaPlayer.dynamicStreamSwitching)
+				{
+					if (mediaPlayer.currentDynamicStreamIndex < mediaPlayer.maxAllowedDynamicStreamIndex)
+					{
+						mediaPlayer.switchDynamicStreamIndex(mediaPlayer.currentDynamicStreamIndex + 1);
+					}
+				}
+			}
+			
+			protected function onSwitchDown():void
+			{
+				trace( "onSwitchDown()" );
+				if (mediaPlayer.isDynamicStream && !mediaPlayer.autoDynamicStreamSwitch && !mediaPlayer.dynamicStreamSwitching)
+				{
+					if (mediaPlayer.currentDynamicStreamIndex > 0)
+					{
+						trace( "\tactually switching down." );
+						mediaPlayer.switchDynamicStreamIndex(mediaPlayer.currentDynamicStreamIndex - 1);
+					}
+				}				
+			}
+			
+			protected function onSwitchingChange(event:DynamicStreamEvent):void
+			{
+				if (event.switching)
+					return;
+				
+				updateLoadingLabels();
+			}
+			
+			protected function onIsDynamicStreamChange( event : MediaPlayerCapabilityChangeEvent ) : void
+			{
+				if (event.enabled)
+				{
+					updateLoadingLabels();
+				}
+			}
+			
+			protected function updateLoadingLabels() : void
+			{
+				brLbl.text = 'Bitrate: ' + mediaPlayer.getBitrateForDynamicStreamIndex(mediaPlayer.currentDynamicStreamIndex) + 'kbps';
+				curIndexLbl.text = 'Stream Index: ' + mediaPlayer.currentDynamicStreamIndex + ', (' + mediaPlayer.currentDynamicStreamIndex + ' - ' + mediaPlayer.maxAllowedDynamicStreamIndex + ')';
+			}
+			
+			protected function brIncBtn_clickHandler(event:MouseEvent):void
+			{
+				onSwitchUp();
+			}
+
+			protected function brDecBtn_clickHandler(event:MouseEvent):void
+			{
+				onSwitchDown();
+			}
+
+			protected function fsBtn_clickHandler(event:MouseEvent):void
+			{
+				if ( stage.displayState == StageDisplayState.NORMAL )
+				{
+					var globalPt : Point = uiMediaPlayer.localToGlobal( new Point( uiMediaPlayer.x, uiMediaPlayer.y ) );
+					var stageRect : Rectangle = new Rectangle( globalPt.x, globalPt.y, uiMediaPlayer.width, uiMediaPlayer.height );
+					trace( "stageRect - " + stageRect );
+					stage.addEventListener( FullScreenEvent.FULL_SCREEN, handleFullScreenChange, false, 0 , true );
+					stage.fullScreenSourceRect = stageRect;
+					stage.displayState = StageDisplayState.FULL_SCREEN;
+					stage.scaleMode = StageScaleMode.NO_BORDER;
+					trace( "fsHeight - " + this.stage.fullScreenHeight );
+					trace( "fsWidth - " + this.stage.fullScreenWidth );
+					trace( "scaleMode - " + this.stage.scaleMode );
+				}
+				else
+				{
+					this.stage.displayState = StageDisplayState.NORMAL;
+				}
+			}
+			
+			protected function handleFullScreenChange( event : FullScreenEvent ) : void
+			{
+				if ( event.fullScreen )
+					return;
+					
+				// un-do the scaleMode setting from handleFullScreenClick()
+				this.stage.scaleMode = StageScaleMode.NO_SCALE;
+				
+				// drop the listener
+				this.stage.removeEventListener( FullScreenEvent.FULL_SCREEN, handleFullScreenChange );
+			}
+
+			protected function brAutoBtn_changeHandler(event:Event):void
+			{
+				isAuto = brAutoBtn.selected;
+				mediaPlayer.autoDynamicStreamSwitch = isAuto;
+			}
+			
+			protected function canManuallySwitchBitrate( autoSet : Boolean = false ) : Boolean
+			{
+				return !autoSet && canPlay;
+			}
+			
+			protected function muteBtn_changeHandler(event:Event):void
+			{
+				mediaPlayer.muted = muteBtn.selected;
+			}
+
+			protected function volumeBar_changeHandler(event:SliderEvent):void
+			{
+				mediaPlayer.volume = event.value / 100;
+			}
+			
+			protected function stopBtn_clickHandler(event:MouseEvent):void
+			{
+				mediaPlayer.stop();
+			}
+		]]>
+	</mx:Script>
+	<mx:Form id="instructionForm">
+		<mx:FormHeading label="Instructions:"/>
+		<mx:FormItem id="step1" label="1)">
+			<mx:Label id="step1Lbl" text="Enter a URL for media resource (Stream or Metadata)."/>
+		</mx:FormItem>
+		<mx:FormItem id="step2" label="2)">
+			<mx:Label id="step2Lbl" text="Press the load button."/>
+		</mx:FormItem>
+		<mx:FormItem id="step3" label="3)">
+			<mx:Label id="step3Lbl" text="Wait for resource to load (the play button will become active)."/>
+		</mx:FormItem>
+		<mx:FormItem id="step4" label="4)">
+			<mx:Label id="step4Lbl" text="Press play to start playing media."/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:FormItem id="versionFI" label="Player Version (Minimum Required - 10,1,x,x):" fontSize="16" fontWeight="bold">
+		<mx:Label id="versionLbl" text="{Capabilities.version}" fontSize="16" fontWeight="bold"/>
+	</mx:FormItem>
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Label id="urlSelectLbl" text="Enter a URL:" fontWeight="bold"/>
+		<mx:TextInput id="urlSelect" width="60%" text="{EXAMPLE_RESOURCE}"/>
+		<mx:ComboBox id="streamTypCB" dataProvider="{streamTypeDP}"/>
+		<mx:Button id="loadBtn" label="load" click="loadBtn_clickHandler(event)"/>
+		<mx:Button id="unloadBtn" label="unload" click="unloadBtn_clickHandler(event)"/>
+	</mx:HBox>
+	<mx:HBox width="100%" horizontalAlign="left">
+		<mx:VBox id="playerBox">
+			<samples:MediaContainerUIComponent id="uiMediaPlayer" width="640" height="360" alpha="1.0" preinitialize="uiMediaPlayer_preinitializeHandler(event)"/>
+			<mx:HBox id="timeTraitControls" width="50%" verticalAlign="middle" horizontalScrollPolicy="off">
+				<mx:Label text="Position:"/>
+				<mx:Label id="position" text="0"/>
+				<mx:HSlider width="100%" id="seekBar" enabled="{canPlay}" thumbDrag="seekBar_thumbDragHandler(event)" thumbRelease="seekBar_thumbReleaseHandler(event)"/>		
+				<!--<mx:HSlider width="100%" id="seekBar" enabled="{canPlay}"/>-->
+				<mx:Label id="duration"/>
+			</mx:HBox>
+			<mx:HBox id="volumeTraitControls" width="50%" verticalAlign="middle" horizontalScrollPolicy="off">
+				<mx:Label text="Volume:"/>
+				<mx:Label id="volumeLvl" text="{volumeBar.value + '%'}"/>
+				<mx:HSlider width="100%" id="volumeBar" enabled="{canPlay}" snapInterval="1" minimum="0" maximum="100" change="volumeBar_changeHandler(event)"/>
+				<mx:CheckBox id="muteBtn" label="Mute" enabled="{canPlay}" change="muteBtn_changeHandler(event)"/>
+			</mx:HBox>
+			<mx:HBox id="playControls" width="50%" verticalAlign="middle" horizontalScrollPolicy="off">
+				<mx:Button id="playBtn" label="Play" click="playBtn_clickHandler(event)" enabled="{canPlay}"/>
+				<mx:Button id="pauseBtn" label="Pause" click="pauseBtn_clickHandler(event)" enabled="{canPlay}"/>
+				<mx:Button id="stopBtn" label="Stop" click="stopBtn_clickHandler(event)" enabled="{canPlay}"/>
+				<mx:Button id="fsBtn" label="FullScreen" click="fsBtn_clickHandler(event)" enabled="{canPlay}"/>
+				<mx:Button id="brAutoBtn" label="Auto Bitrate" change="brAutoBtn_changeHandler(event)" toggle="true" enabled="{canPlay}"/>
+				<mx:Button id="brIncBtn" label="+ Bitrate" click="brIncBtn_clickHandler(event)" enabled="{canManuallySwitchBitrate(isAuto)}"/>
+				<mx:Button id="brDecBtn" label="- Bitrate" click="brDecBtn_clickHandler(event)" enabled="{canManuallySwitchBitrate(isAuto)}"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label id="brLbl"/>
+				<mx:Label id="curIndexLbl"/>
+			</mx:HBox>
+		</mx:VBox>
+		<comps:LogBuffer width="100%" height="100%"/>
+	</mx:HBox>
+</mx:Application>

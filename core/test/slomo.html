@@ -1,0 +1,165 @@
+<html>
+<head>
+    <meta http-equiv="content-type"
+          content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+    <!-- page title -->
+    <title>Minimal Flowplayer setup</title>
+
+</head>
+<body>
+
+<div id="page">
+    <a
+            href="Extremists"
+            style="display:block;width:600px;height:400px"
+            id="player">
+    </a>
+    <script>
+        flowplayer("player", "../build/flowplayer.swf",
+        {
+
+            log: { level: 'debug', filter: 'org.flowplayer.rtmp.*' },
+            onStart: function() {
+                console.log("onStart");
+            },
+
+            onBegin: function() {
+                console.log("onBegin");
+            },
+
+            onFinish: function() {
+                console.log("onFinish");
+            },
+
+            onBeforeFinish: function() {
+                console.log("onBeforeFinish");
+            },
+
+            onPause: function() {
+                console.log("onPause");
+            },
+
+            onResume: function() {
+                console.log("onResume");
+            },
+
+            plugins:  {
+
+                        slowmotion: {
+                            url: 'flowplayer.slowmotion.swf',
+                            serverType: 'wowza'
+                        },
+
+                rtmp: {
+                    url: 'flowplayer.rtmp.swf',
+//                    netConnectionUrl: 'rtmp://dk2isqp3f.rtmphost.com/flowplayer'
+                            netConnectionUrl: 'rtmp://rtmp01.hddn.com/play'
+//                    netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+//                    netConnectionUrl: 'rtmp://s263p3lt1nuakd.cloudfront.net/cfx/st'
+
+                },
+
+                // add a content plugin to show speed information (this is optional)
+                speedIndicator: {
+                    url: 'flowplayer.content.swf',
+                    bottom: 50,
+                    right: 15,
+                    width: 135,
+                    height: 30,
+                    border: 'none',
+                    style: {
+                        body: {
+                            fontSize: 12,
+                            fontFamily: 'Arial',
+                            textAlign: 'center',
+                            color: '#ffffff'
+                        }
+                    },
+
+                    backgroundColor: 'rgba(20, 20, 20, 0.5)',
+
+                    // we don't want the plugin to be displayed by default,
+                    // only when a speed change occur.
+                    display: 'none'
+                },
+
+                controls: {
+                    tooltips: { buttons: true },
+                    autoHide: false,
+                    playlist: true
+                }
+//                controls: null
+
+            },
+
+            clip: {
+                // use the RTMP plugin
+                provider: 'rtmp',
+                bufferLength: 0,
+                backBufferLength: 30,
+                baseUrl: 'vod/demo.flowplayervod'
+            },
+            playlist: [
+                'Extremists', 'honda_accord', 'metacafe'
+            ]
+        });
+
+
+var actions = {
+    backward: function(speed) {
+        $f().getPlugin('slowmotion').backward(speed);
+    },
+    forward: function(speed) {
+        $f().getPlugin('slowmotion').forward(speed);
+    },
+    normal: function() {
+        $f().getPlugin('slowmotion').normal();
+    }
+}
+    </script>
+</div>
+<div id="actions" style="text-align:center;opacity:0.5;width:640px;margin-top: 10px;">
+	<button type="button" class="custom low small" onClick="actions.backward(8)">
+		Back 8 x
+	</button>
+	<button type="button" class="custom low small" onClick="actions.backward(4)">
+		Back 4 x
+	</button>
+	<button type="button" class="custom low small" onClick="actions.backward(2)">
+		Back 2 x
+	</button>
+	<button type="button" class="custom low small" onClick="actions.normal()">
+		Normal
+	</button>
+	<button type="button" class="custom low small" onClick="actions.forward(2)">
+		Fwd 2 x
+	</button>
+	<button type="button" class="custom low small" onClick="actions.forward(4)">
+		Fwd 4 x
+	</button>
+	<button type="button" class="custom low small" onClick="actions.forward(8)">
+		Fwd 8 x
+	</button>
+
+	<button type="button" class="custom low large" onClick="actions.backward(0.25)">
+		Backward 1/4
+	</button>
+	<button type="button" class="custom low large" onClick="actions.backward(0.5)">
+		Backward half
+	</button>
+	</button>	<button type="button" class="custom low large" onClick="actions.forward(0.5)">
+		Forward half
+	</button>
+	</button>	<button type="button" class="custom low large" onClick="actions.forward(0.25)">
+		Forward 1/4
+	</button>
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="OSMF.StrobeMediaPlaybackTest" default="run" >
+
+	<property environment="env" />
+	<!-- load external values -->
+	<property name="properties.file" value="./build.properties"/>
+	<property file="${properties.file}" />
+	<import file ="${buildtools.dir}/utils.xml" />
+	
+	<target name="run" depends="build">
+		<OSMF.unittest.run project="StrobeMediaPlaybackTest" projectDir="${basedir}" flexUnitPlayer="air" />
+	</target>
+
+	<!-- cleans the output directory -->
+	<target name="clean-bin">
+		<sequential>
+			<delete includeemptydirs="true" quiet="true">
+				<fileset dir="${basedir}">
+					<include name="${output.bin}/**/*" />
+				</fileset>
+			</delete>
+		</sequential>
+	</target>
+
+	<!-- compile project -->
+	<target name="build" depends="clean-bin" >	
+		<OSMF.unittest.compile project="StrobeMediaPlaybackTest" projectDir="${basedir}" />
+	</target>
+
+</project>

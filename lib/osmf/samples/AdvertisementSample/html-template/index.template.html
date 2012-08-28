@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>${title}</title>
+        <meta name="google" value="notranslate">         
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	    <style type="text/css" media="screen"> 
+			html, body	{ height:100%; }
+			body { margin:0; padding:0; overflow:auto; 
+			       background-color: ${bgcolor}; }   
+			object:focus { outline:none; }
+        </style>
+
+        <script type="text/javascript" src="swfobject.js"></script>
+        <script type="text/javascript">
+       		var parameters =
+    			{	
+    				src: "rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/osmf/content/test/sample1_700kbps.f4v",	   		 			
+				    
+				    // Load the Ad Plug-in
+				    plugin_ads: "AdvertisementPlugin.swf",
+				    
+				    // Configure the Ad Plug-in
+				    ads_preroll: "http://gcdn.2mdn.net/MotifFiles/html/1379578/PID_938961_1237818260000_women.flv",
+                    ads_postroll: "http://gcdn.2mdn.net/MotifFiles/html/1379578/PID_938961_1237818260000_women.flv",
+                    ads_midroll: "http://gcdn.2mdn.net/MotifFiles/html/1379578/PID_938961_1237818260000_women.flv",
+                    ads_midrollTime: 20,
+                    ads_overlay: "http://gcdn.2mdn.net/MotifFiles/html/1379578/PID_938961_1237818260000_women.flv",
+                    ads_overlayTime: 25
+				};
+    		
+    
+    		swfobject.embedSWF
+				( "${swf}.swf"
+				, "StrobeMediaPlayback"
+				, 640, 480
+				, "10.1.0"
+				, "expressInstall.swf" 
+				, parameters
+				, { allowFullScreen: "true", wmode: "direct" }
+				, { name: "StrobeMediaPlayback" }
+				);
+        </script>
+    </head>
+    <body>    
+            <div id="StrobeMediaPlayback">
+                        <p>
+                            Alternative content
+                        </p>
+            </div>     
+   </body>
+</html>

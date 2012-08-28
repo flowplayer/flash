@@ -1,0 +1,409 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+		<title>Flowplayer - Flash Video Player for the Web</title>
+		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
+		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
+	
+
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="Distribution" content="Global" />
+	<meta name="Author" content="Tero Piirainen" />
+	<meta name="Robots" content="index,follow" /> 
+ 
+		
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css" />
+	
+	<script type="text/javascript" src="http://static.flowplayer.org/js/flowplayer-3.2.2.min.js"></script>	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+	<script type="text/javascript"  src="global-0.50.js"></script>	
+	
+	
+	
+
+	<!--[if lt IE 7]>
+		<style type="text/css">
+			@import "http://static.flowplayer.org/css/ie6.css?v=0.2";
+		</style>
+	<![endif]-->
+	
+	<!--[if lt IE 8]>
+		<style>
+			html { overflow-x:hidden; }
+			#content ol, #content ul  {margin-left: 50px; }
+		</style>
+	<![endif]-->	
+
+</head>
+
+<body id="plugins_bwcheck">
+
+
+
+<div id="wrap">	
+			
+
+		 
+		
+
+
+		
+		
+
+		
+		
+		
+		
+		<div id="content"> 
+		
+		
+
+
+
+<h1>
+	<strong>Streaming plugin:</strong> pseudostreaming
+	<em>Configure any webserver to support video streaming</em>
+</h1>
+
+
+
+<h2>Introduction</h2>
+
+<p>
+	Pseudostreaming is a protocol that can be installed on regular HTTP servers such as Apache, Tomcat, IIS or lighthttpd. It uses a server-side script for Flash-to-server communication. The player sends a HTTP request to the server with a start time parameter in the request URL's query string and the server script responds with the video stream so that its start position corresponds to the requested parameter. This start time parameter is usually named simply <samp>start</samp>. This same technique is used by the ultra-popular YouTube service which uses lighthttpd servers.
+</p>
+
+<p>
+	The biggest advantage of using pseudostreaming or any other streaming solution is the ability to seek in the timeline to positions that have not been downloaded yet to the player. This is most desirable for full-length movies because the visitor can seek to the last scene of a 2-hour movie if she wants to. Here are the benefits:
+</p>
+
+<ul>
+	<li>Random seeking to any part of the timeline at any time.</li>
+	<li>Starting playback in the middle of the clip's timeline.</li>
+	<li>Provides integration possibilities to custom streaming servers and server-side scripts.</li>
+	<li>Both FLV and H.264 files are supported.</li>
+</ul>
+
+<p>
+	Here is a list of most popular server-side technologies that support pseudostreaming:
+</p>
+
+
+<ul>
+    <li>
+        <a class="external" href="http://blog.lighttpd.net/articles/2006/03/09/flv-streaming-with-lighttpd">
+		  	lighttpd Web server and it's FLV streaming script</a>
+    </li>
+    <li>
+        <a class="external" href="http://h264.code-shop.com/trac/wiki">
+		  	H.264 Streaming Module for Apache, Lighttpd and Nginx</a>
+    </li>
+	<li>
+		<a class="external" href="http://richbellamy.com/wiki/Flash_Streaming_to_FlowPlayer_using_only_PHP">
+			richbellamy.com pseudostreaming PHP script</a>
+	</li>
+	<li>
+		<a class="external" href="http://tperspective.blogspot.com/2009/02/apache-flv-streaming-done-right.html">
+			Apache FLV streaming using a native Apache module</a>
+	</li>
+</ul>
+
+<p>
+	See also <a href="/forum/5/14702">pseudostreaming with IIS and ASP.NET</a>
+</p>
+
+<p class="higher">
+	<button class="custom low medium" onclick="location.href = '#download'">Download</button>
+	<small>(Version <strong>3.2.2</strong>)</small>
+</p>
+
+
+<h2>Example</h2>
+
+<p>
+	This example uses our pseudostreaming plugin to get video data from a lighthttpd web server and its flv_streaming module. Try seeking to any part of the timeline.
+</p>
+
+<!-- setup player container named "lighty" -->
+<a class="player" id="lighty">
+	<img src="http://static.flowplayer.org/img/player/btn/showme.png"  />
+</a><div class="box code">
+<pre><code class="html">&lt;!-- setup player container named "lighty" --&gt;
+&lt;a class="player" id="lighty"&gt;
+	&lt;img src="http://static.flowplayer.org/img/player/btn/showme.png"  /&gt;
+&lt;/a&gt;</code></pre>
+</div>
+
+
+<p>
+	This is our JavaScript that places Flowplayer into the container. This demo is configured for <a href="http://www.hddn.com">HDDN</a> which offers full support for pseudostreaming.
+</p>
+
+<script language='javascript'>
+$f("lighty", "@PLAYER_SWF@", {
+
+	// configure clip to use "lighthttpd" plugin for providing video data
+	clip: {
+		url: 'http://vod01.netdna.com/vod/demo.flowplayer/Extremists.flv',
+		provider: 'lighttpd'
+	},
+
+	// streaming plugins are configured normally under the plugins node
+	plugins: {
+		lighttpd: {
+			url: '@MAIN_PLAYER_SWF@'
+		}
+	},
+	log: {
+		level: 'debug',
+		filter: 'org.flowplayer.pseudostreaming.*, org.flowplayer.controller.*'
+	}
+});
+</script><div class="box code">
+<pre><code class="javascript">$f("lighty", "http://releases.flowplayer.org/swf/flowplayer-3.2.2.swf", {
+
+	// configure clip to use "lighthttpd" plugin for providing video data
+	clip: {
+		url: 'http://vod01.netdna.com/vod/demo.flowplayer/Extremists.flv',
+		provider: 'lighttpd'
+	},
+
+	// streaming plugins are configured normally under the plugins node
+	plugins: {
+		lighttpd: {
+			url: '@MAIN_PLAYER_SWF@'
+		}
+	}
+});</code></pre>
+</div>
+
+
+<p>
+	If you have a lighttpd server, this works out-of-the box without any extra configuration settings for the provider. The clip just has the <samp>provider</samp> property that refers to the provider's name used in the plugins list. You can name the plugin anything you want; I've used the name 'lighttpd' above because in this example I happened to be streaming from lighttpd.
+</p>
+
+<a name="prepare"></a>
+<h2>Preparing your movie files for pseudostreaming</h2>
+
+<p>
+	Having FLV or H.264 available does not nessessary mean that your video files are ready for pseudostreaming. There are a few requrements for your video files. The most important thing is to have enough keyframes.
+</p>
+
+<h3>Keyframes</h3>
+
+<p>
+	Keyframes are complete video frames (or images) that are inserted at consistent intervals in a video clip. The frames between the keyframes contain information on movement and scene changes that occurs between keyframes. In pseudostreaming, the user can only seek to a location where there is a complete keyframe. If you don't have enough keyframes your video is not good for seeking. Almost every encoding software can inject keyframes into video files.
+</p>
+
+<p>
+	In <a href="/tutorials/ffmpeg.html">ffmpeg</a> the number of keyframes is controlled by the <samp>g</samp>- flag. A smaller value leads to more keyframes and a larger file size. With small video files (less than 10Mb) a value such as 30 should be fine.
+</p>
+
+<h3>FLV files and metadata</h3>
+
+<p>
+	If you are streaming FLV files instead of H.264 files you <em>must</em> have so-called FLV metadata on your file. This metadata contains the keyframe information in XML format. If this metadata is missing your video file will act like a normal HTTP progressive download.
+</p>
+
+
+<p>
+	You can inject the metadata with a small program called <a class="external" href="http://rubyforge.org/projects/flvtool2/">flvtool2</a>. This simple command line command will do the job:
+</p>
+
+<div class="box code">
+<pre><code class="javascript">flvtool2 -U &lt;video_file&gt;.flv</code></pre>
+</div>
+
+
+<p>
+	Without this magic touch you cannot make random seeks to your FLV file. What this actually does is it makes keyframe metadata available for Flowplayer. When the user seeks in the timeline, the player retrieves the closest keyframe position from the metadata and passes it to the server. The server then serves the file starting from that position.
+</p>
+
+<h3>H.264 files and metadata</h3>
+
+<p>
+	In H.264-based video formats (mp4, m4v) the metadata is called a "moov atom". The moov atom is a part of the file that holds the index information for the whole file.
+</p>
+
+<p>
+	Many encoding software programs such as FFMPEG will insert this moov atom information at the end of the video file. This is bad. The moov atom needs to be located at the beginning of the file, or else the entire file will have to be downloaded before it begins playing.
+</p>
+
+<p>
+	 Fortunately, Renaun Erickson at Adobe has kindly created a small <a href="http://renaun.com/blog/2007/08/22/234/">AIR application</a> that will take a standard H.264 file and relocate the moov atom to the front of the file, and then progressive downloading works properly. Running your video file through this application makes your MP4 files ready for pseudostreaming. Of course you need to have those keyframes in place (see above).
+</p>
+
+<p>
+	Another good project for PHP applications is <a href="https://code.google.com/p/moovrelocator/" class="external">MOOV Relocator</a> which is a well documented small library written in PHP to relocate (or move) the MOOV-Atom of MP4-Files from the end to the beginning of a file.
+</p>
+
+<h2>Configuring the query string</h2>
+
+
+<p>
+	The default parameter the pseudostreaming provider uses for the start time is simply <samp>start</samp>. The value of this parameter holds the seek target keyframe number which is compatible with the server's streaming module. You can configure the plugin to use a different parameter name for the keyframe number. You can also add more information to the query if needed. Here we use a <samp>target</samp> variable to hold the keyframe number and add one custom property called <samp>secretToken</samp>, assuming that we have a custom server-script that implements token-based protection of video files:
+</p>
+
+<div class="box code">
+<pre><code class="javascript">plugins: {
+	lighttpd: {
+		url: '@MAIN_PLAYER_SWF@',
+
+		// use ${start} as a placeholder for the target keyframe
+		queryString: escape('?target=${start}&amp;secretToken=1235oh8qewr5uweynkc')
+	}
+}</code></pre>
+</div>
+
+
+<p>
+	The queryString value is escaped so that the special characters in it get passed correctly to the player.
+</p>
+
+<h2>Example with Byte Range Seek Support</h2>
+
+<p>
+	This example uses the pseudostreaming plugin do make byte range requests on the web server without any requirements for custom psuedostreaming server modules. Server requires to accept range requests. 
+</p>
+
+
+<a class="player" id="range">
+	<img src="http://static.flowplayer.org/img/player/btn/showme.png"  />
+</a><div class="box code">
+<pre><code class="html">&lt;!-- setup player container named "lighty" --&gt;
+&lt;a class="player" id="lighty"&gt;
+	&lt;img src="http://static.flowplayer.org/img/player/btn/showme.png"  /&gt;
+&lt;/a&gt;</code></pre>
+</div>
+
+
+<p>
+	This is our JavaScript that places Flowplayer into the container. This demo is configured for <a href="http://www.hddn.com">HDDN</a> which offers full support for pseudostreaming.
+</p>
+
+<script language='javascript'>
+$f("range", "@PLAYER_SWF@", {
+
+	// configure clip to use "lighthttpd" plugin for providing video data
+	clip: {
+		url: 'http://pseudo01.hddn.com/vod/demo.flowplayervod/Extremists.flv',
+		provider: 'lighttpd'
+	},
+	
+
+	// streaming plugins are configured normally under the plugins node
+	plugins: {
+		lighttpd: {
+			url: '@MAIN_PLAYER_SWF@',
+			rangeRequests: true,
+			policyURL: "flowplayer.electroteque.org:1008"
+		}
+	},
+	log: {
+		level: 'debug',
+		filter: 'org.flowplayer.pseudostreaming.*, org.flowplayer.controller.*'
+	}
+});
+</script><div class="box code">
+<pre><code class="javascript">$f("range", "@PLAYER_SWF@", {
+    log: { level: 'debug', filter: 'org.flowplayer.pseudostreaming.*' },
+
+	// configure clip to use "lighthttpd" plugin for providing video data
+	clip: {
+		url: 'http://vod01.netdna.com/vod/demo.flowplayer/Extremists.flv',
+		provider: 'lighttpd'
+	},
+
+	// streaming plugins are configured normally under the plugins node
+	plugins: {
+		lighttpd: {
+			url: '@MAIN_PLAYER_SWF@',
+			enableRangeRequests: true
+		}
+	}
+});</code></pre>
+</div>
+
+<h2>Pseudo Streaming with HD Button Example</h2>
+
+<p>
+    Pseudo streaming with HD button feature example.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="pseudoplayer">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("pseudoplayer", "@PLAYER_SWF@", {
+        clip: {
+
+            urlResolvers: 'bitrateselect',
+            provider: 'pseudo',
+            autoPlay: false,
+            scaling: 'fit',
+            baseUrl: 'http://pseudo01.hddn.com/vod/demo.flowplayervod/',
+
+            bitrates: [
+                {url: "bbb-400.mp4", width: 480, height: 270, bitrate: 400, label: "270k"},
+                {url: "bbb-800.mp4", width: 640, height: 360, bitrate: 800, label: "360k"}
+            ]
+        },
+
+
+        plugins: {
+            pseudo: {
+                url: '../flowplayer.pseudostreaming.swf'
+            },
+            // bandwidth check plugin
+            bitrateselect: {
+                url: '../flowplayer.bitrateselect.swf',
+
+                hdButton: { place: "both" }
+
+
+            }
+
+
+        },
+        log: {
+            level: 'debug',
+            filter: 'org.flowplayer.pseudostreaming.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+        }
+     });
+    </script>
+
+</div>
+
+
+		
+		</div>  
+		<div class="clear"></div> 
+	</div>
+</body>
+</html>

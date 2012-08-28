@@ -1,0 +1,39 @@
+
+<script src="/js/flashembed.js"></script>
+<script src="/js/flowplayer-src.js"></script>
+<script src="/js/flowplayer.embed.js"></script>
+
+<style>
+	div {
+		width:300px;
+		height:200px;
+		border:1px solid blue;
+		margin:50px;
+	}
+</style>
+
+<div id="test"> splash </div>
+
+<div id="embed"></div>
+
+<script>
+$f("test", "/swf/flowplayer-3.0.0-rc1.swf", {
+	
+	clip: {
+		baseUrl: 'http://blip.tv/file/get'
+	},
+	
+	playlist: [
+		'KimAronson-TwentySeconds73213.flv',
+		'N8inpasadena-Flowers457.flv' 
+	], 
+	
+	canvas: {
+		backgroundColor: '#112233'	
+	}
+	
+}).embed({index:0});
+
+</script>
+
+<button onClick='document.getElementById("embed").innerHTML = $f().getEmbedCode();'>Get code</button>

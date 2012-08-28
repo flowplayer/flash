@@ -1,0 +1,76 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="honda_accord"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+//        log: { level: 'debug', filter: 'org.flowplayer.controller.PlayListController' },
+        log: { level: 'debug', filter: 'org.flowplayer.rtmp.RTMPConnectionProvider' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+                onBeforeSeek: function(clip, target) {
+                    console.log("onBeforeSeek, target pos " + target);
+                },
+
+                onSeek: function(clip, target) {
+                    console.log("onSeek, target pos " + target);
+                },
+
+        // configure the required plugins
+plugins:  {
+
+    // the RTMP plugin
+    rtmp: {
+        url: 'flowplayer.rtmp.swf',
+
+        // netConnectionUrl has our CloudFront domain name + 'cfx/st'
+        netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+    },
+    controls: {
+        playlist: true
+    }
+},
+
+                playlist: [
+                    { url: "honda_accord" }, { url: "Extremists" }
+                ],
+
+clip: {
+    // use the RTMP plugin
+    provider: 'rtmp'
+}
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

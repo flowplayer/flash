@@ -1,0 +1,71 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="mp3:fake_empire"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.rtmp.*' },
+        onBegin: function() {
+            console.log("onBegin");
+        },
+        onBeforeBegin: function() {
+            console.log("onBeforeBegin");
+        },
+        onStart: function() {
+            console.log("onStart");
+        },
+        onMetaData: function() {
+            console.log("onMetaData");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        plugins: {
+            rtmp: {
+                url: 'flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://cyzy7r959.rtmphost.com/flowplayer',
+
+                // make the rtmp plugin query the stream length from the server
+                durationFunc: 'getStreamLength'
+            },
+            controls: {
+                fullscreen: false,
+                height: 30,
+                autoHide: false
+            }
+        },
+        clip: {
+            // it's possible to stream audio by using the RTMP plugin
+            provider: 'rtmp',
+            autoPlay: false
+        }
+    });
+</script>
+	</div>
+	
+	
+</body></html>

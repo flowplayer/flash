@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 preinitialize="logBuffer_preinitializeHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.TextInput;
+			import mx.events.CollectionEvent;
+			import mx.events.CollectionEventKind;
+			import mx.events.FlexEvent;
+			
+			import org.osmf.logging.LoggerCollectionManager;
+						
+			[Bindable]
+			protected var filterDP : ArrayCollection = new ArrayCollection( [ "HTTPNetStream", "F4M", "NetStatus" ] );
+			
+			[Bindable]
+			protected var filterSelItem : String;
+			
+			[Bindable]
+			protected var logHTMLText : String = "";
+			
+			[Bindable]
+			protected var autoScrollLogBuffer : Boolean = true;
+			
+			protected var loggerCollection : ArrayCollection;
+			
+			protected function logBuffer_preinitializeHandler(event:FlexEvent):void
+			{
+				loggerCollection = LoggerCollectionManager.loggerCollection;
+				loggerCollection.addEventListener( CollectionEvent.COLLECTION_CHANGE, loggerCollectionChangeHandler, false, 0, true );
+			}
+			
+			protected function loggerCollectionChangeHandler( event : CollectionEvent ) : void
+			{
+				switch ( event.kind )
+				{
+					case ( CollectionEventKind.ADD ) :
+					{
+						filterAndAddLogLine(LoggerCollectionManager.lastLoggerCollectionItem.toString());
+						break;
+					}
+				}
+			}
+			
+			protected function regenerateLogLines() : void
+			{
+				logHTMLText = "";
+				if ( !loggerCollection || loggerCollection.length <= 0 )
+					return;
+				
+				for ( var i : int = 0; i < loggerCollection.length; i++ )
+					filterAndAddLogLine( loggerCollection.getItemAt( i ).toString() );
+			}
+			
+			protected function getLogLines() : String
+			{
+				if ( !loggerCollection || loggerCollection.length <= 0 )
+					return "";
+				
+				var logLines : String = "";
+				
+				for ( var i : int = 0; i < loggerCollection.length; i++ )
+					logLines += loggerCollection.getItemAt( i ).toString() + "\n";
+				
+				return logLines;
+			}
+			
+			protected function filterAndAddLogLine( logStr : String ) : void
+			{
+				var isError : Boolean = ( ( logStr.toUpperCase() ).indexOf( "ERROR" ) >= 0 );
+				var bold : Boolean = false;
+				var color : String = "#000000";
+				
+				var filterApplies : Boolean;
+				
+				// Show all errors, filtered or not.
+				if ( isError )
+				{
+					color = "#FF0000";
+					bold = true;
+				}
+				else if ( !dontApplyRB.selected )
+				{
+					filterApplies = doesFilterApply( logStr );
+					
+					if ( showOnlyRB.selected && !filterApplies )
+					{
+						logStr = "";
+					}
+					else if ( filterOutRB.selected && filterApplies )
+					{
+						logStr = "";
+					}
+					else if ( highlightRB.selected && filterApplies )
+					{
+						bold = true;
+					}
+				}
+				
+				if ( !logStr )
+					return;
+				
+				addHTMLTextLine( logStr, color, bold );
+				
+				if ( autoScrollLogBuffer )
+					callLater( scrollLogBuffer ); 
+				
+			}
+			
+			protected function doesFilterApply( logStr : String ) : Boolean
+			{
+				// This was used when filtering all elements in the filterDP (dataProvider of
+				// the filter combo box).
+				/* if ( !filterDP || filterDP.length <= 0 )
+				return false; */
+				
+				if ( !filterCB || !filterCB.selectedItem )
+					return false;
+				
+				var logStrToUpper : String = logStr.toUpperCase();
+				var filterToUpper : String = filterCB.selectedItem.toString().toUpperCase();
+				
+				return ( logStrToUpper.indexOf( filterToUpper ) >= 0 ); 
+				
+				// This was functionality to allow all elements in the filterDP (dataProvider of
+				// the filter combo box) to apply as filter strings.
+				/* for ( var i : int = 0; i < filterDP.length; i++ )
+				{
+				filterToUpper = filterDP.getItemAt( i ).toString().toUpperCase();
+				if ( logStrToUpper.indexOf( filterToUpper ) >= 0 )
+				return true;
+				}
+				
+				return false; */
+			}
+			
+			protected function scrollLogBuffer() : void
+			{
+				logBuffer.verticalScrollPosition = logBuffer.maxVerticalScrollPosition;
+			}
+			
+			protected function addHTMLTextLine( textLine : String, color : String = "#000000", bold : Boolean = false ) : void
+			{
+				var boldStrOpen : String = bold ? "<b>" : "";
+				var boldStrClose : String = bold ? "</b>" : "";
+				var htmlTextLine : String = "<p>" + boldStrOpen + "<font color='" + color + "'>" + textLine + "</font>" + boldStrClose + "</p>";
+				logHTMLText += htmlTextLine;
+			}
+			
+			protected function dontApplyRB_changeHandler(event:Event):void
+			{
+				callLater( regenerateLogLines );
+			}
+			
+			protected function showOnlyRB_changeHandler(event:Event):void
+			{
+				callLater( regenerateLogLines );
+			}
+			
+			protected function filterOutRB_changeHandler(event:Event):void
+			{
+				callLater( regenerateLogLines );
+			}
+			
+			protected function highlightRB_changeHandler(event:Event):void
+			{
+				callLater( regenerateLogLines );
+			}
+			
+			protected function filterTI_valueCommitHandler( event : FlexEvent ) : void
+			{
+				var text : String = ( event.target as TextInput ).text;
+				if ( filterDP.getItemIndex( text ) >= 0 )
+					return;
+				
+				var updatedDP : Boolean = false;
+				
+				if ( text )
+				{
+					updatedDP = true;
+					filterSelItem = text;
+					filterDP.addItem( text );
+				}
+				else if ( filterDP.getItemIndex( filterSelItem ) >= 0 )
+				{
+					updatedDP = true;
+					filterDP.removeItemAt( filterDP.getItemIndex( filterSelItem ) );
+				}
+				
+				if ( updatedDP )
+					regenerateLogLines();
+			}
+			
+			protected function filterCB_creationCompleteHandler(event:FlexEvent):void
+			{
+				var ti : TextInput = filterCB.mx_internal::getTextInput();
+				ti.addEventListener( FlexEvent.VALUE_COMMIT, filterTI_valueCommitHandler, false, 0, true );
+			}
+			
+			protected function filterCB_valueCommitHandler(event:FlexEvent):void
+			{
+				if ( filterCB.selectedItem && ( filterCB.selectedItem != filterSelItem ) )
+					filterSelItem = filterCB.selectedItem as String;
+				
+				regenerateLogLines();
+			}
+			
+			protected  var m_FileRef : FileReference;
+			
+			public function saveFile() : void
+			{
+				m_FileRef = new FileReference();
+				var defaultFileName : String = "zeri_custom_player.log";
+				m_FileRef.save( getLogLines(), defaultFileName );
+			}
+		]]>
+	</mx:Script>
+	<mx:TextArea id="logBuffer" width="100%" height="100%" htmlText="{logHTMLText}" editable="false"/>
+	<mx:HBox verticalAlign="middle">
+		<mx:CheckBox id="autoScroll" label="autoScroll" selected="{autoScrollLogBuffer}" change="{ autoScrollLogBuffer = autoScroll.selected }"/>
+		<mx:Button id="saveLogBtn" label="Save" click="saveFile()"/>
+		<mx:Label id="filterLbl" text="Filter On:"/>
+		<mx:ComboBox id="filterCB" dataProvider="{filterDP}" editable="true" creationComplete="filterCB_creationCompleteHandler(event)" valueCommit="filterCB_valueCommitHandler(event)"/>
+		<mx:RadioButton id="dontApplyRB" label="No Filter" change="dontApplyRB_changeHandler(event)"/>
+		<mx:RadioButton id="showOnlyRB" label="Only show" selected="true" change="showOnlyRB_changeHandler(event)"/>
+		<mx:RadioButton id="filterOutRB" label="Don't show" change="filterOutRB_changeHandler(event)"/>
+		<mx:RadioButton id="highlightRB" label="Highlight" change="highlightRB_changeHandler(event)"/>
+	</mx:HBox>
+</mx:VBox>

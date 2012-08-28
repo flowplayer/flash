@@ -1,0 +1,1 @@
+This library serves as a reference on implementing a user interface for an OSMF based player. It is useb by the OSMFPlayer sample application.

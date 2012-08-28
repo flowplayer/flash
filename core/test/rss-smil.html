@@ -1,0 +1,56 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://e1h13.simplecdn.net/flowplayer/flowplayer.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        playlist: 'http://bdwwu.net/test/playlist.rss',
+
+        clip: {
+            urlResolvers: 'smil',
+            provider: 'rtmp'
+        },
+
+        plugins: {
+            smil: {
+                url: 'flowplayer.smil.swf'
+            },
+
+            viral: {
+                // load the viral videos plugin
+                url: 'flowplayer.viralvideos.swf',
+
+                // define a video title used in sharing
+                share: {
+                    description: 'Holy TEC'
+                }
+            },
+
+            rtmp: { url: 'flowplayer.rtmp.swf' },
+
+            controls: {
+                url: 'flowplayer.controls.swf',
+                // enable playlist buttons
+                playlist: true
+            }
+        }
+    });
+</script>
+	</div>
+	
+	
+</body></html>

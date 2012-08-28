@@ -1,0 +1,20 @@
+<project name="Flowplayer Hello World plugin" default="build">
+    <property  name="devkit-dir" value=".." />
+
+	<property file="../plugin-build.properties" />
+	<import file="../plugin-build.xml"/>
+	<property name="flowplayer_lib" value="../flowplayer.swc" />
+	
+	<property name="version" value="1.0" />
+	<property name="basename" value="flowplayer.helloworld" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+	<property name="plugin-main-class" value="org/flowplayer/EventListeningPlugin.as" />
+
+    <target name="_deploy">
+        <copy file="${build-dir}/${plugin-binary}" todir="../../core/${build-dir}" overwrite="true" />
+        <copy file="${build-dir}/${plugin-binary-versioned}" todir="../../core/${build-dir}" overwrite="true" />
+        <copy file="${build-dir}/${plugin-binary-versioned}" todir="../../core/${dist-dir}" overwrite="true" />
+    </target>
+
+</project>

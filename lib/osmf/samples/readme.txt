@@ -1,0 +1,1 @@
+The projects in the plugins/samples folder represent sample plugins.  The OSMF sample plugins are intended to demonstrate how to build plugins that can incorporated into a media player.  In some cases, the plugins are experimental in nature.  Unlike with the APIs in the framework/OSMF project, there is no guarantee of backwards compatibility with regard to sample plugin APIs.

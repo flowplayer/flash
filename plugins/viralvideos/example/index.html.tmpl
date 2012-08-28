@@ -1,0 +1,644 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+		<title>Flowplayer - Flash Video Player for the Web</title>
+		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
+		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
+	
+
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="Distribution" content="Global" />
+	<meta name="Author" content="Tero Piirainen" />
+	<meta name="Robots" content="index,follow" /> 
+ 
+
+		
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+	<script type="text/javascript"  src="http://cdn.jquerytools.org/1.1.2/jquery.tools.min.js"></script>
+	<script type="text/javascript" src="http://static.flowplayer.org/js/flowplayer-3.2.2.min.js"></script>	
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/overlay-apple.css"/>
+	<script type="text/javascript"  src="http://amazon.flowplayer.org/js/tools/tools.overlay.apple-1.0.1.min.js"></script>	
+	<script type="text/javascript"  src="flowplayer.viralvideos.js"></script> 
+
+<style type="text/css">
+		div.overlay {
+		width:1024px; 
+		height:432px;
+
+		}
+		
+		
+	</style>
+	<!--[if lt IE 7]>
+		<style type="text/css">
+			@import "http://static.flowplayer.org/css/ie6.css?v=0.2";
+		</style>
+	<![endif]-->
+	
+	<!--[if lt IE 8]>
+		<style type="text/css">
+			html { overflow-x:hidden; }
+			#content ol, #content ul  {margin-left: 50px; }
+		</style>
+	<![endif]-->	
+
+</head>
+
+<body id="plugins_viralvideos">
+<div id="wrap">	
+
+		<div id="content"> 
+		
+		
+
+
+<h1 style="background-image:url(/img/title/flash.png)">
+	<strong>Flash plugin:</strong> Viral Videos
+	<em>Viral embedding and sharing</em>
+</h1>
+
+
+<h2>Demo</h2>
+
+
+<h2>Introduction</h2>
+
+<p>
+	Here is the viral videos plugin in it's default configuration.
+</p>
+
+
+
+<div class="box black" style="height:455px;">
+	<a style="width:640px;height:384px;padding-left:45px;padding-top:0px;"
+	 class="player black" id="player" href="http://video.flowplayer.org/Extremists.flv">
+	</a>
+</div>
+
+
+<!--  install Flowplayer inside the anchor tag shown above -->
+<script>
+$(function() {         
+    $("#overlay").overlay({
+
+			// common configuration for each overlay
+			oneInstance: false, 
+			closeOnClick: false, 
+			 
+
+			// use apple effect
+			effect: 'apple'
+			
+		});
+});
+
+$f("player", "@PLAYER_SWF@", {
+	log: {
+		level: 'debug',
+		filter: 'org.flowplayer.viralvideos.*'
+	},
+	plugins: {
+		viral: {
+			// load the viral videos plugin
+			url: '@MAIN_PLAYER_SWF@',
+			
+			dock: {
+			 left: 10
+			},
+			
+			// define a video title used in sharing
+			share: {
+				description: 'Extreme surfers riding big waves' 
+			},
+			email: {
+				// the server side script that handles 
+				// the emailing requests from this plugin
+				script: 'http://flowplayer.electrocode.net/viralvideos/email',
+				
+				// the server side script that returns 
+				// a token value used for spam protection
+				tokenUrl: 'http://flowplayer.electrocode.net/viralvideos/index/token'				
+			},
+			onClose: function() {
+			   console.log("onClose");
+			},
+			onBeforeShowEmbed: function() {
+			    
+			      //openOverlay();
+			      // return false to prevent the viral flash plugin to open the normal popup
+			    //  return false;
+			},
+			onBeforeShowShare: function() {
+			   
+			      //openOverlay();
+			      // return false to prevent the viral flash plugin to open the normal popup
+			      return false;
+			},
+			onBeforeShare: function(url, dimensions) {
+			   
+			     
+			      // return false to prevent the viral flash plugin to open the normal popup
+			      return false;
+			},
+			onBeforeShowEmail: function() {
+			      alert("yes");
+			      //openOverlay();
+			      // return false to prevent the viral flash plugin to open the normal popup
+			      return false;
+			}
+		}
+	}
+}).viralvideos();
+</script>
+
+<div class="overlay" id="overlay"> 
+    <!-- the external content is loaded inside this tag --> 
+    <div class="wrap"></div> 
+     
+</div>
+
+<h3>JavaScript coding</h3>
+
+<p>
+	The only configuration option we have added here is a description text that will be used when the user shares the page link to social sites.
+</p>
+
+<div class="box code">
+<pre><code class="javascript">$f("player", "@PLAYER_SWF@", {
+	log: {
+		level: 'debug',
+		filter: 'org.flowplayer.viralvideos.*'
+	},
+	plugins: {
+		viral: {
+			// load the viral videos plugin
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// define a video title used in sharing
+			share: {
+				description: 'Extreme surfers riding big waves' 
+			},
+			
+			email: {
+				// the server side script that handles 
+				// the emailing requests from this plugin
+				script: 'http://flowplayer.electrocode.net/viralvideos/email',
+				
+				// the server side script that returns 
+				// a token value used for spam protection
+				tokenUrl: 'http://flowplayer.electrocode.net/viralvideos/index/token'				
+			}
+		}
+	}
+});</code></pre>
+</div>
+
+
+<br />
+
+<div class="box petrol">
+	Take a look at a <a href="viralvideos.htm">standalone version</a> of this demo. View its source code to get things going on your page.
+</div>
+
+
+
+<h2>Features and benefits</h2>
+<br>
+
+<ul>
+	<li>Embed code for embedding the video.</li>
+	<li>Video link for emailing to friends.</li>
+	<li>Video link sharing to Facebook, Myspace, Twitter, Bebo, Orkut, Digg, Stumbleupon and Livespaces</li>
+	<li>Email feature is spam-protected.</li>
+</ul>
+
+<h2>Configuration</h2>
+
+<p>
+	Here is an example how the plugin configuration looks. All player tabs (email, embed, share) have their own nodes
+	in the plugin configuration object.
+</p>
+
+<div class="box code">
+<pre><code class="javascript">$f("player", "@PLAYER_SWF@", {
+	plugins: {
+		viral: {
+			// load the viral videos plugin
+			url: '@MAIN_PLAYER_SWF@',
+			
+			
+			email: {
+				// user server-side email sending script
+				script: '/email/send'
+			},
+			share: {
+				// define a video title used in sharing
+				description: 'Extreme surfers riding big waves',
+				
+				// disable livespaces (it's from Microsoft)
+				livespaces: false
+			},
+			// disable embedding completely, the same syntax can 
+			// be used to disable also email and share
+			embed: false
+		}
+	}
+});</code></pre>
+</div>
+
+
+<h2>Email</h2>
+
+<h3>User's email client</h3>
+
+<p>
+	By default the plugin uses the user's email client in sending the email. With this option no special server-side
+	email sending scripts or servers need to be installed. As this is the default behavior no special configuration is
+	needed to use it.
+</p>
+
+<h3>Server-side email script</h3>
+
+<p>
+	The plugin can send email by communicating with a server-side emailer script. Inside the source zip package you can
+	find a sample PHP script for sending email. There is also a Zend framework example (in PHP) for protecting the server-side
+	script from spammers. Here are the configuration options for server-side emailing. These all go inside an <samp>email</samp>
+	node in the plugin configuration like in the example below.
+</p>
+
+<div class="box code">
+<pre><code class="javascript">$f("player", "@PLAYER_SWF@", {
+	plugins: {
+		viral: {
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// configure server side emailing
+			email: {
+				// the server side script that handles 
+				// the emailing requests from this plugin
+				script: 'http://flowplayer.electrocode.net/viralvideos/email',
+				
+				// the server side script that returns 
+				// a token value used for spam protection
+				tokenUrl: 'http://flowplayer.electrocode.net/viralvideos/index/token'				
+			}
+		}
+	}
+});</code></pre>
+</div>
+
+
+<p>Here are the configuration options used with the email script.</p>
+
+<table class="listing">
+	<tr>
+		<th>property</th>
+		<th nowrap>default value</th>
+		<th>description</th>
+	</tr>
+	<tr>
+		<td class="code">script</td>
+		<td class="code"></td>
+		<td>
+			The server side script that handles the emailing requests from this plugin. See below for the POST variables
+			that the plugin sends when requesting this URL.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">tokenUrl</td>
+		<td class="code"></samp></td>
+		<td>
+			The server side script that returns a token value used for spam protection. The token script should return
+			the token value in a JSON object that is formatted like this <samp>{"token": "3435952382509853908250925"} 
+		</td>
+	</tr>
+	<tr>
+		<td class="code">token</td>
+		<td class="code"></td>
+		<td>
+			A token value used for spam protection. Can be used as an alternative to <samp>tokenUrl</samp>.
+		</td>
+	</tr>
+</table>
+
+<p>The email script receives following POST variables:</p>
+
+<ul>
+	<li><samp>name</samp> - The sender's name (required)</li>
+	<li><samp>email</samp> - The sender's email (required)</li>
+	<li><samp>subject</samp> - The email subject (required)</li>
+	<li><samp>message</samp> - The email message (required)</li>
+	<li><samp>to</samp> - A comma delimitered list of emails to send to (required)</li>
+	<li><samp>token</samp> - The token to authenticate before allowing to email (optional)</li>
+</ul>
+
+<div class="box">
+	<strong>NOTE:</strong> It is advisable to filter the post variables for email headers, as well as run spam checks. The emailing system supplied in the source provides an example for filtering and validating input and running spam checks against the akismet and typepad spam services.
+</div>
+
+<h3>Required fields</h3>
+
+<p>
+	The configuration option <samp>required</samp> is used to specify required fields:
+</p>
+
+<table class="listing">
+	<tr>
+		<th>property</th>
+		<th nowrap>default value</th>
+		<th>description</th>
+	</tr>
+	<tr>
+		<td class="code">required</td>
+		<td class="code">["to"]</td>
+		<td>
+			Specifies required fields in the plugin's email tab. By default only the to-address is required. To make
+			all fields required, use following value: <samp>["name","email","to","message","subject"]</samp>.
+		</td>
+	</tr>
+</table>
+
+<h3>Texts used with email (internationalization)</h3>
+
+<p>
+	You can change the texts that are used in the user interface as well as all the texts that are used in the emails that the plugin sends.
+	Texts used by the email function go inside <samp>email/texts</samp>, for example:
+</p>
+
+<div class="box code">
+<pre><code class="javascript">$f("player", "@PLAYER_SWF@", {
+	plugins: {
+		viral: {
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// configure server side emailing
+			email: {
+				texts: {
+					// change the main title shown in the plugin's email tab
+					title: 'Share this video with email'
+				}
+			}
+		}
+	}
+});</code></pre>
+</div>
+
+
+<table class="listing">
+	<tr>
+		<th>property</th>
+		<th nowrap>default value</th>
+		<th>description</th>
+	</tr>
+	<tr>
+		<td class="code">title</td>
+		<td class="code">"Email this video"</td>
+		<td>
+			The main title in the email tab.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">to</td>
+		<td class="code">"Type in an email address"</td>
+		<td>
+			Label text shown in front of the email to-address.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">toSmall</td>
+		<td class="code">"(multiple addresses with commas)"</td>
+		<td>
+			The small text shown next to the to-label.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">message</td>
+		<td class="code">"Personal message"</td>
+		<td>
+			The label text shown in top of the large message field.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">optional</td>
+		<td class="code">"(optional)"</td>
+		<td>
+			The small text used to mark optional fields.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">subject</td>
+		<td class="code">"Video you might be interested in"</td>
+		<td>
+			The email message's subject text.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">template</td>
+		<td class="code">"{0} \n\n Video Link: <a href=\"{1}\">{2}</a>"</td>
+		<td>
+			Email body text template. The tokens in this template are replaced by values like so: <samp>{0}</samp>: message as filled by the user, <samp>{1}</samp>: the URL of the video page, <samp>{2}</samp>: the URL of the video page (2nd instance)
+		</td>
+	</tr>
+	<tr>
+		<td class="code">from</td>
+		<td class="code">"Your name"</td>
+		<td>
+			Label text used for the sender's name field.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">fromAddress</td>
+		<td class="code">"Your email address"</td>
+		<td>
+			Label text used for the sender's email address field.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">Send</td>
+		<td class="code">"Send email"</td>
+		<td>
+			Label for the email sending button.
+		</td>
+	</tr>
+</table>
+
+<h2>Embed</h2>
+
+<p>
+	You can change the texts that are used in the user interface.
+	Texts used by the embed tab go inside <samp>embed</samp> node in the plugin configuration, for example:
+</p>
+
+<div class="box code">
+<pre><code class="javascript">$f("player", "@PLAYER_SWF@", {
+	plugins: {
+		viral: {
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// configure the embed functions
+			embed: {
+				// change the main title shown in the UI
+				title: 'Copy and paste following code to your page'
+			}
+		}
+	}
+});</code></pre>
+</div>
+
+
+<table class="listing">
+	<tr>
+		<th>property</th>
+		<th nowrap>default value</th>
+		<th>description</th>
+	</tr>
+	<tr>
+		<td class="code">title</td>
+		<td class="code">"Copy and paste this code to your web page"</td>
+		<td>
+			The main title shown in the embed tab.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">options</td>
+		<td class="code">"Customize size and colors"</td>
+		<td>
+			Label text shown on top of the player colors and size customization options.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">backgroundColor</td>
+		<td class="code">"Background color"</td>
+		<td>
+			Label text used for the background color selection.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">buttonColor</td>
+		<td class="code">"Button color"</td>
+		<td>
+			Label text used for the buttons' color selection.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">size</td>
+		<td class="code">"Size (pixels)"</td>
+		<td>
+			Label text used for the player width and height fields.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">copy</td>
+		<td class="code">Copy</td>
+		<td>
+			Label for the copy button.
+		</td>
+	</tr>
+</table>
+
+<h2>Share</h2>
+
+<p>
+	These are the configuration options for the share function. These go into the <samp>share</samp> node in the configuration:
+</p>
+
+<div class="box code">
+<pre><code class="javascript">$f("player", "@PLAYER_SWF@", {
+	plugins: {
+		viral: {
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// configure sharing
+			share: {
+				// description used when sharing to the social sites
+				description: 'Boys and girls in the playground'
+			}
+		}
+	}
+});</code></pre>
+</div>
+
+
+<table class="listing">
+	<tr>
+		<th>property</th>
+		<th nowrap>default value</th>
+		<th>description</th>
+	</tr>
+	<tr>
+		<td class="code">title</td>
+		<td class="code">"Click on an icon to share this video"</td>
+		<td>
+			The main title shown in the share tab.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">description</td>
+		<td class="code">"A cool video"</td>
+		<td>
+			The video description used when the video is posted to the social sites.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">body</td>
+		<td class="code"></td>
+		<td>
+			The body text used when sharing to digg.com (optional)
+		</td>
+	</tr>
+	<tr>
+		<td class="code">category</td>
+		<td class="code"></td>
+		<td>
+			The category used when sharing to digg.com (optional)
+		</td>
+	</tr>
+	<tr>
+		<td class="code">popupOnClick</td>
+		<td class="code">true</td>
+		<td>
+			If <samp>true</samp> the associated website is opened in a pop-up browser window. If <samp>false</samp> it's opened in the same window.
+		</td>
+	</tr>
+	<tr>
+		<td class="code">facebook,<br/>twitter,<br/>myspace,<br/>livespaces,<br/>digg,<br/>orkut,<br/>stubmbleupon,<br/>bebo</td>
+		<td class="code">true</td>
+		<td>
+			Can be used to hide specific icons from the share tab. To disable sharing to livespaces.com, for example, use <samp>livespaces: false</samp>
+		</td>
+	</tr>
+</table>
+
+
+<h2>Styling</h2>
+
+<p>
+	Here is a demo that shows the plugin with customized colors. Both the plugin canvas colors and text colors have been changed.
+</p>
+
+<h3>Text styling</h3>
+
+<h3>Colors</h3>		
+		
+
+		
+		</div>  
+		
+<script>
+	$("#right a[href=/viralvideos]").addClass("active");
+</script>	
+</body>
+
+</html>

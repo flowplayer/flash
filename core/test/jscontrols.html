@@ -1,0 +1,184 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../../jsplugins/controls/trunk/flowplayer.controls.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+<style type="text/css">
+
+/* root element should be positioned relatively so that
+	child elements can be positioned absolutely */
+div.hulu {
+	position:relative;
+	height:40px;
+
+	/* black background with a gradient */
+	background:#000 url(/img/player/skin/hulu.png) repeat-x 0 -4px;
+	width:500px;
+}
+
+/* play/pause button */
+div.hulu a.play, div.hulu a.pause {
+	position:absolute;
+	width: 46px;
+	height: 40px;
+	display:block;
+	text-indent:-9999em;
+	background:url(/img/player/skin/hulu.png) no-repeat 10px -61px;
+	cursor:pointer;
+	border-right:1px solid #000;
+}
+
+div.hulu a.play:hover {
+	background-position:10px -105px;
+}
+
+/* pause state */
+div.hulu a.pause {
+	background-position:11px -148px;
+}
+
+div.hulu a.pause:hover {
+	background-position:11px -192px;
+}
+
+/* the timeline (or "scrubber")  */
+div.hulu div.track {
+	left:47px;
+	position:absolute;
+	cursor:pointer;
+	width:285px;
+	border-left:1px solid #999;
+	height:40px;
+}
+
+/* the draggable playhead */
+div.hulu div.playhead {
+	position:absolute;
+	cursor:pointer;
+	background-color:#4ff;
+	opacity:0.3;
+	filter: alpha(opacity=30);
+	width:3px;
+	height:40px;
+	border-right:1px solid #444;
+}
+
+/* buffer- and progress bars. upon runtime the width of these elements grows */
+div.hulu div.progress, div.hulu div.buffer {
+	position:absolute;
+	background-color:#4ff;
+	filter: alpha(opacity=10);
+	opacity:0.1;
+	width:0px;
+	height:40px;
+}
+
+div.hulu div.buffer {
+	background-color:#fff;
+	opacity:0.1;
+	filter: alpha(opacity=10);
+}
+
+/* time display */
+div.hulu div.time {
+	position:absolute;
+	width:129px;
+	left:330px;
+	padding:12px 0;
+	text-align:center;
+	border:1px solid #999;
+	border-width:0 1px;
+
+	font-family:futura,"Lucida Grande","bitstream vera sans","trebuchet ms",verdana,arial;
+	font-size:12px;
+	color:#fff;
+}
+
+/* total duration in time display */
+div.hulu div.time strong {
+	font-weight:normal;
+	color:#666;
+}
+
+/* mute / unmute buttons */
+div.hulu a.mute, div.hulu a.unmute {
+	position:absolute;
+	left:460px;
+	width:40px;
+	height:40px;
+	text-align:center;
+	padding:8px 0;
+	cursor:pointer;
+	text-indent:-9999em;
+	background:url(/img/player/skin/hulu.png) no-repeat 5px -323px;
+}
+
+div.hulu a.mute:hover {
+	background-position:5px -367px;
+}
+
+/* unmute state */
+div.hulu a.unmute {
+	background-position:5px -235px;
+}
+
+div.hulu a.unmute:hover {
+	background-position:5px -279px;
+}
+
+</style>
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://www.blacktrash.org/media/ccc_trailer2.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+
+<div id="controls" class="hulu"></div>
+
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+
+        onStart: function(clip) {
+            console.log("onStart, duration: " + clip.duration);
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        onSeek: function() {
+            console.log("onSeek");
+        },
+
+        clip: {
+            autoPlay: false,
+            autoBuffering: true
+        },
+
+        plugins:
+        {
+        }
+
+    }).controls("controls");
+</script>
+	</div>
+	
+	
+</body></html>

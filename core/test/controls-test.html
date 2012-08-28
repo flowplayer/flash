@@ -1,0 +1,93 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="http://flowplayer-releases.s3.amazonaws.com/js/flowplayer-3.3-dev.min.js"></script>
+    <!--<script src="../src/javascript/flashembed.js"></script>-->
+    <!--<script src="../build/flowplayer-3.3-dev.min.js"></script>-->
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:1280px;height:720px"
+                     id="player">
+                </a>
+<script>
+    flowplayer('player', '../build/flowplayer.commercial-3.2.7.swf',
+    {
+key: '#$18dbe3cd51db3beb166',
+'clip':{
+    'provider':'rtmp',
+    'url':'flv:vod/videos.excelmanproducti/excelman_office.flv',
+    onBeforeFinish: function() {
+        return false;
+    },
+    scaling: 'orig'
+},
+'logo':{'opacity':0.1,'right':'5%','url':'http://www.excelman.com/image/Excelogo.jpg','fullscreenOnly':true,'top':'89pct'},
+'screen':{'height':'100pct','top':0},
+'plugins':{
+    'controls':{
+        url: 'flowplayer.controls-3.2.5.swf.1',
+        'buttonOffColor':'rgba(90,90,90,1)',
+        'borderRadius':'0px','timeColor':'#8fd8e0',
+        'stop':true,'bufferGradient':'none',
+        'sliderColor':'#C9C9C9',
+        'zIndex':1,
+        'backgroundColor':'rgba(0, 71, 79, 0.5)',
+        'scrubberHeightRatio':0.8,
+        'tooltipTextColor':'#D00000',
+        'volumeSliderGradient':'none',
+        'spacing':{'all':0},
+        'sliderGradient':'none',
+        'timeBorderRadius':0,
+        'timeBgHeightRatio':0.6,
+        'volumeSliderHeightRatio':0.4,
+        'time':false,
+        'progressGradient':'none',
+        'height':17,
+        'volumeColor':'rgba(20, 87, 163, 1)',
+        'name':'controls',
+        'tooltips':{'marginBottom':5,'buttons':false},
+        'volumeBarHeightRatio':0.3,
+        'opacity':1,
+        'left':'50pct',
+        'tooltipColor':'#C9C9C9',
+        'bufferColor':'#ffffff',
+        'volumeSliderColor':'#ffffff',
+        'border':'0px',
+        'buttonColor':'#ffffff',
+        'durationColor':'#122d30',
+        'autoHide':{'enabled':true,'hideDelay':500,'hideStyle':'move','mouseOutDelay':500,'hideDuration':400,'fullscreenOnly':true},
+        'backgroundGradient':[0.5,0.2,0],
+        'width':'100pct',
+        'display':'block',
+        'buttonOverColor':'#FF0000',
+        'progressColor':'#000000',
+        'timeBorder':'1px solid rgba(0, 0, 0, 0.3)',
+        'fullscreen':true,
+        'volumeBorderRadius':0,
+        'timeBgColor':'rgba(0, 0, 0, 0)',
+        'scrubberBorderRadius':0,
+        'scrubberBarHeightRatio':0.3,
+        'volume':true,
+        'bottom': 0,
+        'builtIn':false,
+        'margins':[0,0,0,0]
+    },
+    'rtmp':{
+        'url':'flowplayer.rtmp-3.2.3.swf.1',
+        'netConnectionUrl': 'rtmp://r.videos.excelmanproducti.netdna-cdn.com/play'
+    }
+},
+'play':{'url':'http://www.excelman.com/image/AA1.jpg'}
+    });
+</script>
+	</div>
+
+</body></html>

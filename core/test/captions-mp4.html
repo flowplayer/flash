@@ -1,0 +1,83 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.captions.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+            url: 'http://pseudo01.hddn.com/vod/demo.flowplayervod/big_buck_bunny_with_captions.mp4',
+//            url: '../build/bbb_captions.mp4',
+//            url: 'http://flashy2.flowplayer.org:81/video/big_buck_bunny_with_captions.mp4',
+            // we want to display English by default.
+            // the English subtitle track index is 2. 0 is video, 1 is audio, 2 is English, 3 is German.
+            // you can filter on whatever field of the track you want, usually, you filter on trackid
+            captionsTrackFilter: "trackid=2"
+        },
+        plugins:  {
+
+            captions: {
+                url: "flowplayer.captions.swf",
+
+                // the content plugin we use to show the captions
+                captionTarget: 'content'
+            },
+
+            // configure a content plugin to look good for our purpose
+            content: {
+                url: "flowplayer.content.swf",
+                top: 10,
+                width: '80%',
+                height:40,
+                backgroundColor: 'transparent',
+                backgroundGradient: 'none',
+                border: 0,
+
+                // an outline is useful so that the subtitles are more visible
+                textDecoration: 'outline',
+                style: {
+                    'body': {
+                        fontSize: '14',
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+</script>
+	</div>
+	
+	
+</body></html>

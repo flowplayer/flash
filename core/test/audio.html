@@ -1,0 +1,76 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://releases.flowplayer.org/data/national.jpg"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../build/flowplayer-3.2.11.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.controls.scrubber.ScrubberSlider, org.flowplayer.audio.*' },
+
+        onBegin: function() {
+            console.log("onBegin");
+        },
+
+        onStart: function(clip) {
+            console.log("onStart, " + clip.duration);
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        onBeforeSeek: function() {
+            console.log("onBeforeSeek");
+        },
+
+        onSeek: function() {
+            console.log("onSeek");
+        },
+
+        clip: {
+            url: "http://releases.flowplayer.org/data/fake_empire.mp3",
+
+            // this style of configuring the cover image was added in audio
+            // plugin version 3.2.3
+            coverImage: {
+                url: "http://releases.flowplayer.org/data/national.jpg",
+                scaling: 'orig'
+            }
+        }
+
+//        plugins: {
+//            audio: {
+//                url: 'http://releases.flowplayer.org/swf/flowplayer.audio-3.2.9.swf',
+//                onDuration: function(info) {
+//                    console.log("onDuration " + info);
+//                }
+//            }
+//        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

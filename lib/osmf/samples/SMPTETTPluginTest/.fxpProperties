@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fxpProperties abbreviated="false" authoringTool="Flex Builder" compiles="true" parentProject="bc8e4020-da64-45b3-a18c-663b12eacc86" projectUUID="bc8e4020-da64-45b3-a18c-663b12eacc86" pureCatalystProject="false" sdkVersion="4.5.1" uuid="bcaa0c37-ed7d-4d04-87d1-949724d10df2" version="15">
+  <projects>
+    <project filename="OSMF.fxpl" position="2" projectUUID="00360a41-7e4f-4ecb-86fb-4b38545919ba" uuid="bcaa0c37-ed7d-4d04-87d1-949724d10df2"/>
+  </projects>
+  <src>
+    <linked isMain="false" location="/SMPTETTPlugin/src" path="/SMPTETTPlugin/src" position="0" uuid="bcaa0c37-ed7d-4d04-87d1-949724d10df2"/>
+  </src>
+  <swc>
+    <linked location="sdkPlaceHolder" path="sdkPlaceHolder" position="0" uuid="bcaa0c37-ed7d-4d04-87d1-949724d10df2"/>
+    <linked location="/libs/textLayout.swc" path="\libs\textLayout.swc" position="1" uuid="bcaa0c37-ed7d-4d04-87d1-949724d10df2"/>
+  </swc>
+  <misc/>
+  <theme/>
+  <mxmlFormattingPrefs groupAttributesByState="false" maxLineWidth="0" mxmlAlignAttributes="false" mxmlKeepAttributeValuesOrganized="false"/>
+</fxpProperties>

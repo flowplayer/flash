@@ -1,0 +1,118 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <!-- A minimal Flowplayer setup to get you started -->
+  
+
+	<!-- 
+		include flowplayer JavaScript file that does  
+		Flash embedding and provides the Flowplayer API.
+	-->
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+	<!-- some minimal styling, can be removed -->
+	<!--<link rel="stylesheet" type="text/css" href="style.css">-->
+	
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="http://e1h13.simplecdn.net/flowplayer/flowplayer.flv"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+
+		<!-- this will install flowplayer inside previous A- tag. -->
+<script>
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+
+
+        // The playlist is loaded from the RSS file
+        clip: {
+            url: "bitrates.smil.xml",
+            autoPlay: false,
+            provider: 'rtmp',
+
+            // use smil and bwcheck when resolving the clip URL
+            urlResolvers: [ 'smil', 'bwcheck' ]
+        },
+
+        plugins: {
+
+            // the SMIL plugin reads in and parses the SMIL, and provides
+            // the bitrates info to the bw detection plugin
+            smil: {
+                url: 'flowplayer.smil.swf'
+            },
+
+            // bandwidth check plugin
+            bwcheck: {
+                url: 'flowplayer.bwcheck.swf',
+
+                // HDDN uses Wowza servers
+                serverType: 'wowza',
+
+                // we use dynamic switching, the appropriate bitrate is switched on the fly
+                dynamic: true,
+
+                hdIcon: true,
+
+//                  netConnectionUrl: 'rtmp://vod01.netdna.com/play',
+
+                // show the selected file in the content box. This is not used in real installations.
+                onStreamSwitchBegin: function (newItem, currentItem) {
+                   $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+                },
+                onStreamSwitch: function (newItem) {
+                   $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                }
+            },
+
+            // RTMP streaming plugin
+            rtmp: {
+                url: 'flowplayer.rtmp.swf',
+                netConnectionUrl: 'rtmp://vod01.netdna.com/play'
+            },
+
+            // a content box so that we can see the selected bitrate. This is not normally
+            // used in real installations.
+            content: {
+                url: 'flowplayer.content.swf',
+                top: 0, left: 0, width: 400, height: 150,
+                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                textDecoration: 'outline',
+                style: {
+                    body: {
+                        fontSize: 14,
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+</script>
+        <button type="button" onclick="$f()._api().fp_toggleFullscreen();">toggle fullscreen</button>
+        <!--
+              after this line is purely informational stuff.
+              does not affect on Flowplayer functionality
+          <button type="button" onclick="info($f()._api().fp_getVersion());">get version</button>
+          <button type="button" onclick="info($f().getStatus().time);">show time3</button>
+          <button type="button" onclick="info($f().getState());">get state</button>
+          <button type="button" onclick="info($f().pause());">pause</button>
+          <button type="button" onclick="info($f().resume());">resume</button>
+          <button type="button" onclick="info($f().toggle());">toggle</button>
+          -->
+
+	</div>
+	
+	
+</body></html>

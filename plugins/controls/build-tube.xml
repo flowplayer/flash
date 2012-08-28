@@ -1,0 +1,26 @@
+<project name="'tube' controlbar for Flowplayer" default="deploy">
+    <property file="build.generated.properties"/>
+
+	<property file="${user.home}/plugin.properties" />
+	<property file="build.properties" />
+
+    <!-- filename for the plugin swf -->
+    <property name="shortname" value="controls-tube" />
+    <property name="basename" value="flowplayer.${shortname}" />
+    <property name="releasedir" value="flowplayer.controls" />
+
+    <!-- location of the skin swd, anc swc -->
+    <property name="library-path" value="src/flash/tube" />
+
+    <property name="extra-sources" value="../../lib/common/src/actionscript" />
+
+    <property file="${devkit-dir}/plugin-build.properties" />
+    <import file="${devkit-dir}/plugin-build.xml"/>
+    <property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
+
+    <property name="plugin-binary" value="${basename}.swf" />
+    <property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+    <property name="plugin-main-class" value="org/flowplayer/controls/Controls.as" />
+    <property name="compiler-define" value="CONFIG::skin,'true' -define=CONFIG::hasSlowMotion,'false'" />
+
+</project>

@@ -1,0 +1,75 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
+    <script src="../flowplayer-3.2.6.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    var pub_tag = encodeURIComponent ("http://pt-controlinvestesm.videoplaza.tv/proxy/distributor?tt=preroll&tags=vast&flags=&sid=480f8ca7-e385-43a3-9b73-9939a313481a&rnd=8170019078998&accepts=vast_2.0") ;
+
+    flowplayer("player", "../build/flowplayer.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        clip: {
+//            url: 'http://stc.datamediacenter.com/vdo/liga/aoLUT4WTRBQR2X8rSXl8V.mp4',
+            autoPlay: false,
+            onStart: function() {
+                this.mute() ;
+            }
+        },
+        plugins: {
+            ova: {
+                "url": "ova-trial.swf",
+                "debug": {
+                    "debugger": "firebug",
+                    "levels": "fatal, config, vast_template"
+                },
+                "autoPlay": true,
+                "ads": {
+                    "servers": [
+                        {
+                            "type": "direct",
+                            "tag": pub_tag
+                        }
+                    ],
+                    "schedule": [
+                        {
+                            "position": "pre-roll"
+                        }
+                    ]
+                }
+            }
+        }
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

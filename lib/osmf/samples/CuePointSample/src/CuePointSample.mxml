@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*****************************************************
+*  
+*  Copyright 2009 Akamai Technologies, Inc.  All Rights Reserved.
+*  
+*****************************************************
+*  The contents of this file are subject to the Mozilla Public License
+*  Version 1.1 (the "License"); you may not use this file except in
+*  compliance with the License. You may obtain a copy of the License at
+*  http://www.mozilla.org/MPL/
+*   
+*  Software distributed under the License is distributed on an "AS IS"
+*  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+*  License for the specific language governing rights and limitations
+*  under the License.
+*   
+*  
+*  The Initial Developer of the Original Code is Akamai Technologies, Inc.
+*  Portions created by Akamai Technologies, Inc. are Copyright (C) 2009 Akamai 
+*  Technologies, Inc. All Rights Reserved. 
+*  
+*****************************************************/
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" backgroundColor="#000000" 
+	xmlns:samples="org.osmf.samples.*" applicationComplete="init()">
+	<mx:Style source="CuePointSample.css" />
+	<mx:Script>
+		<![CDATA[
+			import org.osmf.media.MediaElement;
+			import org.osmf.media.MediaPlayer;
+			import org.osmf.containers.MediaContainer;
+			import mx.collections.ArrayCollection;
+			import org.osmf.metadata.CuePoint;
+			import org.osmf.metadata.CuePointType;
+			import org.osmf.events.TimelineMetadataEvent;
+			import org.osmf.metadata.TimelineMetadata;
+			import org.osmf.metadata.TimelineMarker;
+			import org.osmf.traits.TimeTrait;
+			import org.osmf.traits.LoadTrait;
+			import org.osmf.traits.MediaTraitType;
+			import org.osmf.traits.LoadState;
+			import org.osmf.elements.VideoElement;
+			import org.osmf.net.NetLoader;
+			import org.osmf.net.NetStreamCodes;
+			import org.osmf.media.URLResource;
+			import org.osmf.events.*;
+						
+			private static const REMOTE_STREAM_WITH_NAV:String = 
+			// This sample contains embedded cuepoints (added at encoding time)
+			"rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/osmf/content/test/cuepoints/spacealonehd_sounas_640_with_nav.f4v";
+			// This sample contains no embedded cuepoints
+			//"rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/osmf/content/test/sample1_700kbps.f4v";
+						
+			private static const DEFAULT_PROGRESS_DELAY:uint = 100;
+			private static const MAX_VIDEO_WIDTH:int = 480;
+			private static const MAX_VIDEO_HEIGHT:int = 270;
+			
+			private var sliderDragging:Boolean;
+			private var waitForSeek:Boolean;
+			private var ignoreDynamicCuePoints:Boolean;
+			private var dynamicTimelineMetadata:TimelineMetadata;
+			private var embeddedTimelineMetadata:TimelineMetadata;
+			
+			[Bindable]
+			private var _cuePointsCollection:ArrayCollection;
+			
+			private var mediaPlayer:MediaPlayer;
+			
+			public static function timeCode(sec:Number):String 
+			{
+				var h:Number = Math.floor(sec/3600);
+				h = isNaN(h) ? 0 : h;
+				
+				var m:Number = Math.floor((sec%3600)/60);
+				m = isNaN(m) ? 0 : m;
+				
+				var s:Number = Math.floor((sec%3600)%60);
+				s = isNaN(s) ? 0 : s;
+				
+				return (h == 0 ? "":(h<10 ? "0"+h.toString()+":" : h.toString()+":"))+(m<10 ? "0"+m.toString() : m.toString())+":"+(s<10 ? "0"+s.toString() : s.toString());
+			}
+				
+			private function init():void
+			{
+				mediaContainerUIComponent.container = new MediaContainer();
+				
+				mediaPlayer = new MediaPlayer();
+				mediaPlayer.addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange);		
+				mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onDurationChange);	
+				mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
+				mediaPlayer.addEventListener(SeekEvent.SEEKING_CHANGE, onSeekingChange);
+				
+				mediaPlayer.currentTimeUpdateInterval = DEFAULT_PROGRESS_DELAY;
+								
+				sliderDragging = false;
+				waitForSeek = false;
+				ignoreDynamicCuePoints = false;
+
+				var mediaElement:MediaElement = new VideoElement(new URLResource(REMOTE_STREAM_WITH_NAV));
+				
+				// Listen for traits to be added, so we can adjust the UI. For example, enable the seek bar
+				// when the SeekTrait is added
+				mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+				
+				// Listen for cue points being added.
+				//
+				
+				embeddedTimelineMetadata = mediaElement.getMetadata(CuePoint.EMBEDDED_CUEPOINTS_NAMESPACE) as TimelineMetadata;
+				if (embeddedTimelineMetadata == null)
+				{
+					mediaElement.addEventListener(MediaElementEvent.METADATA_ADD, onMetadataAdd);
+				}
+				else
+				{
+					processMetadata(mediaElement, true);
+				}
+				
+				dynamicTimelineMetadata = mediaElement.getMetadata(CuePoint.DYNAMIC_CUEPOINTS_NAMESPACE) as TimelineMetadata;
+				if (dynamicTimelineMetadata == null)
+				{
+					mediaElement.addEventListener(MediaElementEvent.METADATA_ADD, onMetadataAdd);
+				}
+				else
+				{
+					processMetadata(mediaElement, false);
+				}
+																
+				setMediaElement(mediaElement);
+				enablePlayerControls(true);
+			}
+			
+			private function onMetadataAdd(event:MediaElementEvent):void
+			{
+				if (event.namespaceURL == CuePoint.EMBEDDED_CUEPOINTS_NAMESPACE)
+				{
+					processMetadata(event.target as MediaElement, true);
+				}
+				else if (event.namespaceURL == CuePoint.DYNAMIC_CUEPOINTS_NAMESPACE)
+				{
+					processMetadata(event.target as MediaElement, false);
+				}
+			}
+			
+			private function processMetadata(mediaElement:MediaElement, isEmbeddedMetadata:Boolean):void
+			{
+				var timelineMetadata:TimelineMetadata = null;
+				if (isEmbeddedMetadata)
+				{
+					embeddedTimelineMetadata = mediaElement.getMetadata(CuePoint.EMBEDDED_CUEPOINTS_NAMESPACE) as TimelineMetadata;
+					timelineMetadata = embeddedTimelineMetadata;
+				}
+				else
+				{
+					if (dynamicTimelineMetadata == null)
+					{
+						dynamicTimelineMetadata = mediaElement.getMetadata(CuePoint.DYNAMIC_CUEPOINTS_NAMESPACE) as TimelineMetadata;
+					}
+					timelineMetadata = dynamicTimelineMetadata;
+				}
+				
+				timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_TIME_REACHED, onCuePoint);
+				timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_ADD, onCuePointAdd);
+
+				// Show all the cue points found in the media.
+				_cuePointsCollection = new ArrayCollection();
+				for (var i:int = 0; i < timelineMetadata.numMarkers; i++)
+				{
+					_cuePointsCollection.addItem(timelineMetadata.getMarkerAt(i));
+				}
+			}
+			
+			private function setMediaElement(value:MediaElement):void
+			{
+				if (mediaPlayer.media != null)
+				{
+					mediaContainerUIComponent.container.removeMediaElement(mediaPlayer.media);
+				}
+				
+				if (value != null)
+				{
+					mediaContainerUIComponent.container.addMediaElement(value);
+				}
+					
+				mediaPlayer.media = value;
+			}
+
+			private function onCuePoint(event:TimelineMetadataEvent):void
+			{
+				var cuePoint:CuePoint = event.marker as CuePoint;
+				
+				var diff:Number = cuePoint.time - mediaPlayer.currentTime;
+				trace("cuePoint.time="+cuePoint.time+", currentTime time="+this.mediaPlayer.currentTime+", diff="+diff);
+								
+				// If we are getting embedded cue points, let's ignore the dynamic cue points coming from
+				// the framework, these are being dispatched from the list of cue points found in the 
+				// metadata for the file.
+				if (event.target == embeddedTimelineMetadata)
+				{
+					ignoreDynamicCuePoints = true;
+				}
+				else if (ignoreDynamicCuePoints && event.target == dynamicTimelineMetadata)
+				{
+					return;
+				}
+
+				showCuePointEvent(cuePoint);
+			}
+			
+			private function showCuePointEvent(cuePoint:CuePoint):void
+			{
+				// Don't show navigation cue points in the cue point event display
+				if (cuePoint.type == CuePointType.NAVIGATION)
+				{
+					return;
+				}
+				
+				var msg:String = "time: "+timeCode(cuePoint.time)+", name: \""+cuePoint.name+"\", type: \""+cuePoint.type+"\"";
+				taCuePointEvents.text += msg + "\n";
+				
+				callLater(autoScroll);
+			}
+			
+			private function onClickClearEvents(event:Event):void
+			{
+				taCuePointEvents.text = "";
+			}
+			
+			private function onClickInsertMarker(event:Event):void
+			{
+				taCuePointEvents.text += "--------------------------------------------------------------------------\n";	
+			}	
+					
+			private function autoScroll():void 
+			{
+				taCuePointEvents.verticalScrollPosition = taCuePointEvents.maxVerticalScrollPosition;
+			}
+											
+			private function onMediaSizeChange(event:DisplayObjectEvent):void 
+			{
+				var width:int = event.newWidth;
+				var height:int = event.newHeight;
+				
+				// Scale to native or smaller
+				if (width > MAX_VIDEO_WIDTH || height > MAX_VIDEO_HEIGHT)
+				{
+					if ((width/height) >= (MAX_VIDEO_WIDTH/MAX_VIDEO_HEIGHT))
+					{
+						mediaContainerUIComponent.width = MAX_VIDEO_WIDTH;
+						mediaContainerUIComponent.height = MAX_VIDEO_WIDTH * (height/width);
+					}
+					else
+					{
+						mediaContainerUIComponent.width = MAX_VIDEO_HEIGHT * (width/height);
+						mediaContainerUIComponent.height = MAX_VIDEO_HEIGHT;
+					}
+				}
+				else if (width > 0 && height > 0)
+				{
+					mediaContainerUIComponent.width = event.newWidth;
+					mediaContainerUIComponent.height = event.newHeight;			
+				}
+			}
+			
+			private function onDurationChange(event:TimeEvent):void
+			{
+				seekBar.maximum = event.time;
+				lblDuration.text = timeCode(event.time);
+			}
+						
+			private function onCurrentTimeChange(event:TimeEvent):void
+			{
+				if (mediaPlayer.temporal && !sliderDragging && !waitForSeek)
+				{
+					seekBar.value = event.time;
+					lblPlayhead.text = timeCode(event.time);
+				}
+			}
+			
+			private function onSeekingChange(event:SeekEvent):void
+			{
+				if (event.seeking == false)
+				{
+					waitForSeek = false;
+				}
+			}
+
+   			private function toggleDragging(state:Boolean):void
+   			{
+   				sliderDragging = state;
+   				if (!state)
+   				{
+   					waitForSeek = true;
+   					if (mediaPlayer.canSeek)
+   					{
+   						mediaPlayer.seek(seekBar.value); 
+   					}
+   				}
+   			}
+   			
+   			private function onTraitAdd(event:MediaElementEvent):void
+   			{
+   				switch (event.traitType)
+   				{
+   					case MediaTraitType.SEEK:
+   						seekBar.enabled = seekBar.visible = true;
+   						break;
+   				}	
+   			}
+   								
+			private function onClickPlayBtn():void
+			{
+				if (mediaPlayer.playing && mediaPlayer.canPause)
+				{
+					playBtn.label = "Play";
+					mediaPlayer.pause();
+				}
+				else if (mediaPlayer.paused && mediaPlayer.canPlay)
+				{
+					playBtn.label = "Pause";
+					mediaPlayer.play();
+				}
+			}
+			
+			private function onClickAddCuePoint(event:Event):void
+			{
+				var cuePoint:CuePoint = new CuePoint(CuePointType.ACTIONSCRIPT, Number(tiCuePointTime.text), tiCuePointName.text, null);
+				if (dynamicTimelineMetadata == null)
+				{
+					dynamicTimelineMetadata = new TimelineMetadata(mediaPlayer.media);
+					mediaPlayer.media.addMetadata(CuePoint.DYNAMIC_CUEPOINTS_NAMESPACE, dynamicTimelineMetadata);
+
+				}
+				dynamicTimelineMetadata.addMarker(cuePoint);
+				
+				updateInternalCollection(cuePoint);
+				
+				tiCuePointTime.text = tiCuePointName.text = "";
+			}
+			
+			private function onCuePointAdd(event:TimelineMetadataEvent):void
+			{
+				updateInternalCollection(event.marker as CuePoint);
+			}
+			
+			private function updateInternalCollection(newCuePoint:CuePoint):void
+			{
+				// See if there is an existing value, if so replace it
+				for (var i:int = 0; i < _cuePointsCollection.length; i++)
+				{
+					if ((_cuePointsCollection[i] as TimelineMarker).time == newCuePoint.time)
+					{
+						_cuePointsCollection.removeItemAt(i);
+						break;
+					}
+				}
+				
+				_cuePointsCollection.addItem(newCuePoint);
+			}
+
+			private function onClickCuePoint(event:Event):void
+			{
+				var cuePoint:CuePoint = this.gridCuePoints.selectedItem as CuePoint;
+				
+				if (cuePoint.type == CuePointType.NAVIGATION && this.mediaPlayer.canSeek)
+				{
+					this.mediaPlayer.seek(cuePoint.time);
+				}
+			}
+			
+			private function enablePlayerControls(enable:Boolean=true):void
+			{
+				playBtn.enabled = seekBar.enabled = enable;
+			}
+						
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="mainContainer" paddingLeft="20" paddingTop="10">
+		<mx:HBox width="100%">
+			<mx:Label styleName="title" text="OSMF Cue Point Sample" />
+		</mx:HBox>
+		<mx:Spacer height="5" />
+		<mx:HBox>
+			<mx:VBox>
+			    <samples:MediaContainerUIComponent id="mediaContainerUIComponent" width="480" height="270"  />
+	    		<mx:HSlider id="seekBar" width="480" thumbPress="toggleDragging(true)" thumbRelease="toggleDragging(false)" enabled="false" />
+	    		<mx:HBox horizontalAlign="right" width="100%">
+	    			<mx:Label text="Position: " />
+					<mx:Label id="lblPlayhead" width="100" styleName="timeCode" />
+					<mx:Label text="Duration: " />
+	    			<mx:Label id="lblDuration" width="100" styleName="timeCode" />			
+					<mx:Button id="playBtn" label="Pause" click="onClickPlayBtn()" enabled="false" />
+	    		</mx:HBox>			
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:VBox backgroundColor="#333333" verticalGap="0">
+				<mx:Label text="Cue Points in the Media:" />
+				<mx:DataGrid id="gridCuePoints" dataProvider="{_cuePointsCollection}" height="265" width="250" itemClick="onClickCuePoint(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Time" dataField="time" textAlign="right" width="50" sortable="true" >
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{CuePointSample.timeCode(data.time)}" color="#000000"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="Name" dataField="name" sortable="false" />
+						<mx:DataGridColumn headerText="Type" dataField="type" sortable="false">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{data.type}" color="#000000"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>			
+		</mx:HBox>
+		<mx:Spacer height="10"/>
+		<mx:HBox>
+			<mx:VBox>
+				<mx:Label text="Cue Point Events:" />
+				<mx:TextArea id="taCuePointEvents" wordWrap="false" editable="false" width="480" height="124"/>
+				<mx:HBox>
+					<mx:Button label="Clear" click="onClickClearEvents(event)"/>
+					<mx:Button label="Insert Marker" click="onClickInsertMarker(event)"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:Spacer width="10" />
+			<mx:VBox>
+				<mx:Label text="Add a cue point:" />
+				<mx:VBox borderStyle="solid" paddingLeft="2" paddingTop="2" height="124" width="250">
+			        <mx:Form width="100%" height="100%">
+			            <mx:FormItem label="Time:">
+			            	<mx:HBox>
+							<mx:TextInput id="tiCuePointTime" width="40" />
+							<mx:Label text="(seconds)"/>		            		
+			            	</mx:HBox>
+			            </mx:FormItem>
+			            <mx:FormItem label="Name:">
+							<mx:TextInput id="tiCuePointName" width="150" />
+			            </mx:FormItem>
+						<mx:Button label="Add" click="onClickAddCuePoint(event)"/>		            
+			        </mx:Form>
+				</mx:VBox>		
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Application>

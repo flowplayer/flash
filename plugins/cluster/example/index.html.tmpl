@@ -1,0 +1,763 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+		<title>Flowplayer - Flash Video Player for the Web</title>
+		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
+		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
+	
+
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="Distribution" content="Global" />
+	<meta name="Author" content="Tero Piirainen" />
+	<meta name="Robots" content="index,follow" /> 
+ 
+		
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css" />
+	
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+	<script type="text/javascript"  src="http://cdn.jquerytools.org/1.1.2/jquery.tools.min.js"></script>
+	<script type="text/javascript"  src="http://static.flowplayer.org/js/flowplayer-3.1.4.min.js"></script>	
+	<script type="text/javascript"  src="http://amazon.flowplayer.org/js/tools/tools.overlay.apple-1.0.1.min.js"></script>		
+
+	
+	
+	
+	<style type="text/css">
+		div.overlay {
+		width:1024px; 
+		height:432px;
+
+		}
+		
+		
+	</style>
+	
+
+	<!--[if lt IE 7]>
+		<style type="text/css">
+			@import "http://static.flowplayer.org/css/ie6.css?v=0.2";
+		</style>
+	<![endif]-->
+	
+	<!--[if lt IE 8]>
+		<style>
+			html { overflow-x:hidden; }
+			#content ol, #content ul  {margin-left: 50px; }
+		</style>
+	<![endif]-->	
+
+</head>
+
+<body id="plugins_cluster">
+
+	<div id="wrap">	
+
+<script type="text/javascript">
+
+// common methods and configs
+
+function switchStreamInfo(mappedBitrate, streamName, oldStreamName) {
+	var content = $f().getPlugin('content');
+	
+	var info = "Chosen bitrate is: " + mappedBitrate.bitrate + "<br /> Video file served: " + streamName + "<br /> Old Video file served: " + oldStreamName;
+	content.setHtml(info);
+}
+
+function bwDoneInfo(mappedBitrate, detectedBitrate) {
+	var content = $f().getPlugin('content');
+	var info = "Your speed is: " + detectedBitrate + "<br /> Your chosen bitrate: " + mappedBitrate.bitrate + "<br /> Video file served: " + mappedBitrate.url;
+	content.setHtml(info);
+}
+
+
+
+var pseudoPlaylist =  [
+			            {
+			              url: "bbb_320x180.flv"
+			            }
+        			];
+        			
+var wowzaPlaylist = [
+			            {
+			              url: "vod/demo.flowplayer/bbb_320x180"
+						}
+			        ];
+			        
+var loggingConfig = { level: 'debug', filter: 'org.flowplayer.bwcheck.*, org.flowplayer.cluster.*,org.flowplayer.rtmp.*, org.flowplayer.controller.*' };
+
+
+</script>
+
+		<div id="content"> 
+
+<h1 style="background-image:url(http://www.flowplayer.org/img/title/streaminge.png)">
+	Streaming plugin: <strong>cluster</strong>
+	<em>Gain performance and reliability by streaming from multiple servers</em>
+</h1>
+
+<h2>Introduction</h2>
+
+<p>
+	The Cluster plugin is used to configure multiple streaming sources. By having multiple sources we gain reliability because the viewer is less likely to be affected if some of the sources are not available. We also gain performance because we can balance the load by distributing the viewers between several servers.
+</p>
+
+
+<h2>Features</h2>
+
+<ul>
+  <li>
+		Fallback to another host when the primary host is not available.
+  </li>
+  <li>
+		Load balancing by distributing requests evenly between configured hosts.
+  </li>
+  <li>
+		Supports HTTP, RTMP and pseudostreaming.
+  </li>
+  <li>
+		Host failures are remembered and new connection attempts are only attempted after a preconfigured timeout.
+  </li>
+</ul>
+
+<h2>Example</h2>
+
+<p>
+  Here we have configured three HTTP streaming sources into a cluster. The URLs of the first two hosts are
+  wrong on purpose to demonstrate failing hosts. The streaming will begin from the third host and you can see
+  what is happening in the box below the player.
+</p>
+
+<div style="width:425px;margin:30px auto">
+
+
+
+
+
+<!-- player container-->
+
+<a
+	href="flowplayer-700.flv"
+	style="display:block;width:425px;height:300px;"
+	id="player">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+<div class="box" id="info">
+	<h2>Events related to the cluster appear here:</h2>
+</div>
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+// a global variable that references our info box
+var info = document.getElementById("info");
+
+flowplayer("player", "@PLAYER_SWF@", {
+	log: { level: 'debug', filter: 'org.flowplayer.cluster.*' },
+    plugins:  {
+		pseudo: {
+			url: '../flowplayer.pseudostreaming.swf'
+		},
+		// cluster plugin configuration
+		cluster: {
+
+			url: '@MAIN_PLAYER_SWF@',
+
+			// our hosts on the cluster
+			hosts: [
+				  // first two hosts will fail
+				 'http://invalid.flowplayer.org/video',
+				 'http://nonexistent.flowplayer.org/video',
+
+				 // this one will answer (if the server is up)
+				 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/'
+			],
+
+			// callback method for connection attempt
+			onConnect: function(host, index) {
+				info.innerHTML += "attempting to connect: " + host + "<br />";
+			},
+
+			// callback method for connection failure
+			onConnectFailed: function(host, index) {
+				info.innerHTML += "connection failed to: " + host + "<br />";
+			}
+		}
+
+    },
+	playlist: pseudoPlaylist,
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        urlResolvers: 'cluster',
+		provider: 'pseudo',
+        onStart: function(clip) {
+			  info.innerHTML += "clip started: " + clip.url;
+        }
+    }
+});
+</script>
+
+</div>
+
+<p>
+	The configuration is shown below. It listens to the <samp>onConnect</samp> and <samp>onConnectFailed</samp> events
+	to show info of the connection attempts.
+</p>
+
+<div class="box code">
+<pre><code class="javascript">// a global variable that references our info box
+var info = document.getElementById("info");
+
+flowplayer("player", "@PLAYER_SWF@", {
+	log: { level: 'debug', filter: 'org.flowplayer.cluster.*' },
+    plugins:  {
+		pseudo: {
+			url: '../flowplayer.pseudostreaming.swf'
+		},
+		// cluster plugin configuration
+		cluster: {
+
+			url: '@MAIN_PLAYER_SWF@',
+
+			// our hosts on the cluster
+			hosts: [
+				  // first two hosts will fail
+				 'http://invalid.flowplayer.org/video',
+				 'http://nonexistent.flowplayer.org/video',
+
+				 // this one will answer (if the server is up)
+				 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/'
+			],
+
+			// callback method for connection attempt
+			onConnect: function(host, index) {
+				info.innerHTML += "attempting to connect: " + host + "<br />";
+			},
+
+			// callback method for connection failure
+			onConnectFailed: function(host, index) {
+				info.innerHTML += "connection failed to: " + host + "<br />";
+			}
+		}
+
+    },
+	playlist: pseudoPlaylist,
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+        urlResolvers: 'cluster',
+		provider: 'pseudo',
+        onStart: function(clip) {
+			  info.innerHTML += "clip started: " + clip.url;
+        }
+    }
+});
+</code></pre>
+</div>
+
+
+<a name="config"></a>
+<h2>Configuration</h2>
+
+<p>
+    Here is a list of the configuration options:
+</p>
+
+<table class="listing">
+	<thead>
+		<tr>
+			<th nowrap>property / datatype</th>
+			<th>default</th>
+			<th>description</th>
+		</tr>
+	</thead>
+
+	 <tr>
+		  <td class="code">hosts <div class="type">array</div></td>
+		  <td class="code default"></td>
+		  <td class="description">
+				The hosts that are part of the cluster. These should be base URLs for each host to be used together with the clip's URL.
+				The complete URL will be formed by concatenating the host URL and the clip's URL.
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">connectTimeout<div class="type">int</div></td>
+		  <td class="code default">2000</td>
+		  <td class="description">
+				Connection timeout for a single connection attempt, given in milliseconds. After this timeout has been
+				reached, the connection attempt is considered a failure and the next host in the cluster is evaluated.
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">connectCount<div class="type">int</div></td>
+		  <td class="code default">3</td>
+		  <td class="description">
+				Number of times to loop through all the hosts in the cluster before giving up.
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">failureExpiry<div class="type">int</div></td>
+		  <td class="code default">2000</td>
+		  <td class="description">
+				The expiry time (in milliseconds) to wait before a failed server is attempted again. The failure timestamp is stored in the
+				client browser and a new connection attempt is only attempted after this time has expired.
+		  </td>
+	 </tr>
+	 <tr>
+		  <td class="code">loadBalance<div class="type">boolean</div></td>
+		  <td class="code default">false</td>
+		  <td class="description">
+				When this is set to <samp>true</samp> the plugin accesses the configured hosts randomly providing the ability to balance the streaming load more evenly between each host to improve overall performance. If any of the hosts does not work, then another host is chosen.
+		  </td>
+	 </tr>
+</table>
+
+
+<a name="loadbalancing"></a>
+<h2>Load balancing</h2>
+
+<p>
+	The plugin can be set to randomly pick hosts from the cluster. This allows for simple load balancing completely controlled on the client side. This is achieved with the <samp>loadBalance</samp> property. Click on the splash image to see an example. It will randomly pick a host from the two alternatives.
+</p>
+
+<div style="width:425px;margin:30px auto">
+   
+
+<!-- player container-->
+<a
+	href="flowplayer-700.flv"
+	style="display:block;width:425px;height:300px;"
+	id="balancer">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+<!-- info box -->
+<div class="box" id="balanceInfo">
+	<h2>Clustering events appear here</h2>
+</div>
+ 
+
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+// a global variable that references our info box
+var infoBox = document.getElementById("balanceInfo");
+
+flowplayer("balancer", "@PLAYER_SWF@", {
+	
+	// configuration for the clustering plugin
+	plugins:  {
+		pseudo: {
+			url: '../flowplayer.pseudostreaming.swf'
+		},
+		cluster: {
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// two working hosts
+			hosts: [
+				 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/',
+				 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/'
+			],
+			
+			// that are load balanced (accessed randomly)
+			loadBalance: true,
+			
+			
+			// callback method that updates our info box
+			onConnect: function(host, index) {
+				 infoBox.innerHTML += "attempting to connect to: " + host + "<br />";
+			}
+		}
+    },	 
+	playlist: pseudoPlaylist,
+    clip: {
+		 
+		 // our clip uses clustering plugin
+        urlResolvers: 'cluster',
+		provider: 'pseudo',
+
+        onStart: function(clip) {
+           infoBox.innerHTML += "started clip: " + clip.url;
+        }
+    }
+	 
+});
+</script>
+
+</div>
+
+
+
+<div class="box code">
+<pre><code class="javascript">// a global variable that references our info box
+var infoBox = document.getElementById("balanceInfo");
+
+flowplayer("balancer", "@PLAYER_SWF@", {
+	// configuration for the clustering plugin
+	plugins:  {
+		pseudo: {
+			url: '../flowplayer.pseudostreaming.swf'
+		},
+		cluster: {
+			url: '@MAIN_PLAYER_SWF@',
+			
+			// two working hosts
+			hosts: [
+				 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/',
+				 'http://vod01.netdna.com/vod/demo.flowplayer/pseudo/'
+			],
+			
+			// that are load balanced (accessed randomly)
+			loadBalance: true,
+			
+			
+			// callback method that updates our info box
+			onConnect: function(host, index) {
+				 infoBox.innerHTML += "attempting to connect to: " + host + "<br />";
+			}
+		}
+    },	 
+	playlist: pseudoPlaylist,
+    clip: {
+		 
+		 // our clip uses clustering plugin
+        urlResolvers: 'cluster',
+		provider: 'pseudo',
+
+        onStart: function(clip) {
+           infoBox.innerHTML += "started clip: " + clip.url;
+        }
+    }
+	 
+});
+</code></pre>
+</div>
+
+
+<p>
+	It's also possible to work with a <a href="/demos/plugins/streaming/cluster-loadbalance-advanced.html">combination of client-side and server-side load balancing</a>. The server-side load balancing is usually done using a load balancer running in front of the RTMP or HTTP streaming servers.
+</p>
+
+
+<h2>Clustering RTMP servers</h2>
+<p>A cluster of RTMP servers is configured like this:</p>
+
+<div style="width:425px;margin:30px auto">
+
+<!-- player container-->
+
+<a
+	href="flowplayer-700.flv"
+	style="display:block;width:425px;height:300px;"
+	id="rtmpPlayer">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+<div class="box" id="info">
+	<h2>Events related to the cluster appear here:</h2>
+</div>
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+// a global variable that references our info box
+var info = document.getElementById("info");
+
+flowplayer("rtmpPlayer", "@PLAYER_SWF@", {
+	log: { level: 'debug', filter: 'org.flowplayer.cluster.*' },
+    plugins:  {
+		rtmp: {
+             url: '../flowplayer.rtmp.swf'
+        },
+		// cluster plugin configuration
+		cluster: {
+
+			url: '@MAIN_PLAYER_SWF@',
+
+			// our hosts on the cluster
+			hosts: [
+				  // first two hosts will fail
+				 'rtmp://vod02.netdna.com/play',
+				 'rtmp://vod01.netdna.com/play'
+			],
+
+			// callback method for connection attempt
+			onConnect: function(host, index) {
+				info.innerHTML += "attempting to connect: " + host + "<br />";
+			},
+
+			// callback method for connection failure
+			onConnectFailed: function(host, index) {
+				info.innerHTML += "connection failed to: " + host + "<br />";
+			}
+		}
+
+    },
+	playlist: wowzaPlaylist,
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+		provider: 'rtmp',
+		connectionProvider: 'cluster',
+        onStart: function(clip) {
+			  info.innerHTML += "clip started: " + clip.url;
+        }
+    }
+});
+</script>
+
+</div>
+
+<div class="box code">
+<pre><code class="javascript">
+flowplayer("rtmpPlayer", "@PLAYER_SWF@", {
+	log: { level: 'debug', filter: 'org.flowplayer.cluster.*' },
+    plugins:  {
+		rtmp: {
+             url: '../flowplayer.rtmp.swf'
+        },
+		// cluster plugin configuration
+		cluster: {
+
+			url: '@MAIN_PLAYER_SWF@',
+
+			// our hosts on the cluster
+			hosts: [
+				  // first two hosts will fail
+				 'rtmp://vod02.netdna.com/play',
+				 'rtmp://vod01.netdna.com/play'
+			],
+
+			// callback method for connection attempt
+			onConnect: function(host, index) {
+				info.innerHTML += "attempting to connect: " + host + "<br />";
+			},
+
+			// callback method for connection failure
+			onConnectFailed: function(host, index) {
+				info.innerHTML += "connection failed to: " + host + "<br />";
+			}
+		}
+
+    },
+	playlist: wowzaPlaylist,
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+		provider: 'rtmp',
+		connectionProvider: 'cluster',
+        onStart: function(clip) {
+			  info.innerHTML += "clip started: " + clip.url;
+        }
+    }
+});
+
+</code></pre>
+</div>
+
+
+<h2>Clustering RTMP servers with RTMPT fallback</h2>
+
+<div style="width:425px;margin:30px auto">
+
+<!-- player container-->
+
+<a
+	href="flowplayer-700.flv"
+	style="display:block;width:425px;height:300px;"
+	id="rtmptPlayer">
+
+	<!-- splash image inside the container -->
+	<img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" />
+
+</a>
+
+<div class="box" id="info">
+	<h2>Events related to the cluster appear here:</h2>
+</div>
+
+<!-- Flowplayer installation and configuration -->
+<script language="JavaScript">
+
+// a global variable that references our info box
+var info = document.getElementById("info");
+
+flowplayer("rtmptPlayer", "@PLAYER_SWF@", {
+	log: { level: 'debug', filter: 'org.flowplayer.cluster.*' },
+    plugins:  {
+		rtmp: {
+             url: '../flowplayer.rtmp.swf'
+        },
+		// cluster plugin configuration
+		cluster: {
+
+			url: '@MAIN_PLAYER_SWF@',
+
+			// our hosts on the cluster
+			hosts: [
+				  // first two hosts will fail
+				 'rtmp://vod02.netdna.com/play',
+				 'rtmpt://rtmp01.netdna.com/play'
+			],
+
+			// callback method for connection attempt
+			onConnect: function(host, index) {
+				info.innerHTML += "attempting to connect: " + host + "<br />";
+			},
+
+			// callback method for connection failure
+			onConnectFailed: function(host, index) {
+				info.innerHTML += "connection failed to: " + host + "<br />";
+			}
+		}
+
+    },
+	playlist: wowzaPlaylist,
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+		provider: 'rtmp',
+		connectionProvider: 'cluster',
+        onStart: function(clip) {
+			  info.innerHTML += "clip started: " + clip.url;
+        }
+    }
+});
+</script>
+
+</div>
+
+<div class="box code">
+<pre><code class="javascript">
+flowplayer("rtmptPlayer", "@PLAYER_SWF@", {
+	log: { level: 'debug', filter: 'org.flowplayer.cluster.*' },
+    plugins:  {
+		rtmp: {
+             url: '../flowplayer.rtmp.swf'
+        },
+		// cluster plugin configuration
+		cluster: {
+
+			url: '@MAIN_PLAYER_SWF@',
+
+			// our hosts on the cluster
+			hosts: [
+				  // first two hosts will fail
+				 'rtmp://vod02.netdna.com/play',
+				 'rtmpt://rtmp01.netdna.com/play'
+			],
+
+			// callback method for connection attempt
+			onConnect: function(host, index) {
+				info.innerHTML += "attempting to connect: " + host + "<br />";
+			},
+
+			// callback method for connection failure
+			onConnectFailed: function(host, index) {
+				info.innerHTML += "connection failed to: " + host + "<br />";
+			}
+		}
+
+    },
+	playlist: wowzaPlaylist,
+	 // use our cluster plugin as a "URL resolver"
+    clip: {
+		provider: 'rtmp',
+		connectionProvider: 'cluster',
+        onStart: function(clip) {
+			  info.innerHTML += "clip started: " + clip.url;
+        }
+    }
+});
+</code></pre>
+</div>
+
+
+
+<a name="api"></a>
+<h2>JavaScript API</h2>
+
+<h3>Methods</h3>
+
+<table class="listing">
+	<thead>
+		<tr>
+			<th class="col1">method</th>
+			<th class="col2">returns</th>
+			<th class="col3">description</th>
+		</tr>
+	</thead>
+
+	<tr>
+		<td class="code">
+			<strong>setLoadBalancing</strong>(value)
+		</td>
+		<td class="code type"><a href="/documentation/api/plugin.html">Plugin</a></td>
+		<td class="description">
+			Enables/disables load balancing. When enabled, the plugin randomly picks hosts from the cluster.
+			For example: <samp>setLoadBalancing(true)</samp>
+		</td>
+	</tr>
+</table>
+
+<h3>Events</h3>
+
+<table class="listing">
+	<thead>
+		<tr>
+			<th nowrap>Event</th>
+			<th style="width:450px">When does it fire?</th>
+		</tr>
+	</thead>
+    <tr>
+        <td class="code"><em>onConnect()</em></td>
+        <td class="description">
+				Fires when the plugin starts a new connection attempt. The callback is fed with two arguments:
+
+				<ul>
+					<li><samp>host</samp> the URL from the hosts list where the connection is attempted from.</li>
+					<li><samp>hostIndex</samp> the index of the <samp>host</samp> in the hosts list.</li>
+				</ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="code"><em>onConnectFailed()</em></td>
+        <td class="description">
+				Fires when a connection attempt has failed. The callback is fed with two arguments:
+
+				<ul>
+					<li><samp>host</samp> the URL from the hosts list where the failure happened.</li>
+					<li><samp>hostIndex</samp> the index of the <samp>host</samp> in the hosts list.</li>
+				</ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="code"><em>onFailed()</em></td>
+        <td class="description">
+				Fires when all hosts in the cluster have failed. See also the <a href="#config">connectCount option</a>, that specifies how many times the hosts are evaluated before failing.
+        </td>
+    </tr>
+</table>
+		</div>  
+	</div>		
+</body>
+</html>

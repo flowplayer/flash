@@ -1,0 +1,182 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+		<title>Flowplayer - Flash Video Player for the Web</title>
+		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
+		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
+	
+
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="Distribution" content="Global" />
+	<meta name="Author" content="Tero Piirainen" />
+	<meta name="Robots" content="index,follow" /> 
+ 
+		
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css" />
+	
+	
+	<script type="text/javascript" src="http://static.flowplayer.org/js/flowplayer-3.2.4.min.js"></script>	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript"  src="http://cdn.jquerytools.org/1.2.4/full/jquery.tools.min.js"></script>
+	<script type="text/javascript"  src="global-0.50.js"></script>	
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/overlay-apple.css"/>
+	<script type="text/javascript"  src="http://flowplayer.org/tools/download/1.2.4/overlay/overlay.apple.min.js"></script>	
+	 
+	
+	
+	
+	<style type="text/css">
+		div.overlay {
+		width:1024px; 
+		height:432px;
+
+		}
+		
+		
+	</style>
+	
+
+	<!--[if lt IE 7]>
+		<style type="text/css">
+			@import "http://static.flowplayer.org/css/ie6.css?v=0.2";
+		</style>
+	<![endif]-->
+	
+	<!--[if lt IE 8]>
+		<style>
+			html { overflow-x:hidden; }
+			#content ol, #content ul  {margin-left: 50px; }
+		</style>
+	<![endif]-->	
+
+</head>
+
+<body id="plugins_f4m">
+	<div id="wrap">		 
+	<script type="text/javascript" >
+
+$(function() {		
+		
+	// positions for each overlay
+
+		
+	// setup triggers
+	$("button[rel]").each(function(i) {
+			
+		$(this).overlay({
+
+			// common configuration for each overlay
+			oneInstance: false, 
+			closeOnClick: false, 
+			 
+
+			// use apple effect
+			effect: 'apple'
+			
+		});			
+	});
+	
+});
+</script>
+
+
+		
+		<div id="content"> 
+		
+		
+
+
+
+
+
+
+<h1 style="background-image:url(http://www.flowplayer.org/img/title/streaminge.png)">
+	<strong>Streaming Plugin: </strong> F4M
+	<em>Resolves media URL contained in F4M files</em>
+</h1>
+
+
+
+<h2>Introduction</h2>
+
+
+<h2>Examples</h2>
+
+<a name="anchor"></a>
+<h2><em>Basic</em> basic example</h2>
+
+
+<p>
+    Blurb here soon.
+</p>
+
+
+<div style="width:425px;height:300px;margin:30px auto">
+   
+
+
+<!-- player container-->
+
+
+<a
+    href="skyandice"
+    style="display:block;width:425x;height:300px;"
+    id="player">
+
+    <!-- splash image inside the container -->
+    <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320" height="205" />
+
+</a>
+
+<!-- Flowplayer installation and configuration -->
+<script type="text/javascript" >
+flowplayer("player", "@PLAYER_SWF@", {
+    // configure the required plugins
+    plugins:  {
+    
+        f4m: {
+            url: '@MAIN_PLAYER_SWF@'
+        }
+
+    },
+
+
+    clip: {
+        url: "sample1_700kbps.f4m",
+        urlResolvers: ['f4m'],
+        baseUrl: "http://httpstreaming.electrocode.net/videos/vod/f4f/"
+        
+    },
+    log: {
+        level: 'debug',
+        filter: 'org.flowplayer.f4m.*'    
+    }
+
+});
+
+</script>
+
+
+
+</div>
+
+
+</div>
+
+</div>
+			
+</body>
+
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
+	
+	Prefer web standards over Flash. Video is the only exception.	
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+		<title>Flowplayer - Flash Video Player for the Web</title>
+		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
+		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
+	
+
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="Distribution" content="Global" />
+	<meta name="Author" content="Tero Piirainen" />
+	<meta name="Robots" content="index,follow" /> 
+ 
+		
+	<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/css/global-0.25.css" />
+	
+	
+	<script type="text/javascript" src="http://static.flowplayer.org/js/flowplayer-3.2.4.min.js"></script>	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript"  src="http://cdn.jquerytools.org/1.2.4/full/jquery.tools.min.js"></script>
+
+	
+	
+
+
+
+</head>
+
+<body id="plugins_qosmonitor">
+	<div id="wrap">		 
+	<script type="text/javascript" >
+
+$(function() {		
+		
+	// positions for each overlay
+
+		
+	// setup triggers
+	$("button[rel]").each(function(i) {
+			
+		$(this).overlay({
+
+			// common configuration for each overlay
+			oneInstance: false, 
+			closeOnClick: false, 
+			 
+
+			// use apple effect
+			effect: 'apple'
+			
+		});			
+	});
+	
+});
+</script>
+
+
+		
+		<div id="content"> 
+		
+		
+
+
+
+
+
+
+<h1 style="background-image:url(http://www.flowplayer.org/img/title/streaminge.png)">
+	<strong>Plugin</strong> description
+	<em>Longer description</em>
+</h1>
+
+
+
+<h2>Introduction</h2>
+
+
+<h2>Dynamic Stream Switching Example</h2>
+
+<p>
+    The player shown below uses dynamic stream switching with Amazon CloudFront. Here is a tutorial about <a
+        href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=4112 categoryID=268"
+        class="external">configuring Amazon CloudFront streaming using Flowplayer</a>.
+</p>
+
+<div style="width:848px;height:505px;margin:30px auto">
+
+
+    <!-- player container-->
+
+
+    <a
+            href="bbb_320x180"
+            style="display:block;width:480px;height:270px"
+            id="player">
+        <!-- splash image inside the container -->
+        <img src="http://www.flowplayer.org/img/home/flow_eye.jpg" alt="Search engine friendly content" width="320"
+             height="205"/>
+    </a>
+
+    <!-- Flowplayer installation and configuration -->
+    <script language="JavaScript">
+
+        flowplayer("player", "@PLAYER_SWF@", {
+            clip: {
+				urlResolvers: 'bwcheck',
+				bitrates: [
+                {
+                url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
+                // this is the default bitrate, the playback kicks off with this and after that
+                // Quality Of Service monitoring adjusts to the most appropriate bitrate
+                isDefault: true
+                },
+                { url: "mp4:bbb-800", width: 480, bitrate: 800 },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200 },
+                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600 }
+            ],
+				provider: "rtmp",
+				scaling: 'fit'
+			},
+            plugins: {
+                qosmonitor: {
+                    url: '@MAIN_PLAYER_SWF@',
+                    stats: {
+                        all: true
+                    },
+                    info: false
+                },
+                // bandwidth check plugin
+                bwcheck: {
+                    url: '../flowplayer.bwcheck.swf',
+                    // we use dynamic switching, the appropriate bitrate is switched on the fly, we don't set server detection, the default clip will be used.
+                    dynamic: true,
+
+                    // show the selected file in the content box. This is not used in real installations.
+                    onStreamSwitchBegin: function (newItem, currentItem) {
+                        //$f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                        //        " from " + currentItem.streamName);
+                    },
+                    onStreamSwitch: function (newItem) {
+                        //$f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+                    },
+                    qos: { bwUp: true, bwDown: true, buffer: true, screen: false, bitrateSafety: 1.0, minDroppedFrames: 5 }
+                },
+
+                // RTMP streaming plugin
+                rtmp: {
+                    url: '../flowplayer.rtmp.swf',
+                    proxyType: "best",
+                    netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
+                }
+            },
+            log: {
+                level: 'debug',
+                filter: 'rg.flowplayer.qosmonitor.*, org.flowplayer.rtmp.*, org.flowplayer.bwcheck.*,org.flowplayer.controller.*'
+            }
+        });
+    </script>
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+			
+</body>
+
+</html>

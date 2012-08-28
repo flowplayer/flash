@@ -1,0 +1,505 @@
+<chrome>
+
+	<!-- plug-ins -->
+	<!--
+	<plugins>
+		<plugin url="file:///Users/edwin/osadobe/osmf_public/trunk/apps/samples/plugins/VideoQoSPlugin/bin-debug/VideoQoSPlugin.swf"/>
+	</plugins>
+	-->
+
+	<!-- image assets -->
+	
+	<assets baseURL="assets/images/">
+		
+		<!-- backdrop -->
+		<asset id="backdrop" type="bitmapFile" url="backDrop.png" scale9="15,15,290,18"/>
+		
+		<!-- pin button up -->
+		<asset id="pinUpUp" type="bitmapFile" url="pinUp_up.png"/>
+		<asset id="pinUpDown" type="bitmapFile" url="pinUp_down.png"/>
+		<asset id="pinUpDisabled" type="bitmapFile" url="pinUp_disabled.png"/>
+		
+		<!-- pin button down -->
+		<asset id="pinDownUp" type="bitmapFile" url="pinDown_up.png"/>
+		<asset id="pinDownDown" type="bitmapFile" url="pinDown_down.png"/>
+		<asset id="pinDownDisabled" type="bitmapFile" url="pinDown_disabled.png"/>
+		
+		<!-- quality button -->
+		<asset id="qualityUp" type="bitmapFile" url="quality_up.png"/>
+		<asset id="qualityDown" type="bitmapFile" url="quality_down.png"/>
+		<asset id="qualityDisabled" type="bitmapFile" url="quality_disabled.png"/>
+		
+		<!-- quality increase button -->
+		<asset id="qualityIncreaseUp" type="bitmapFile" url="qualityIncrease_up.png"/>
+		<asset id="qualityIncreaseDown" type="bitmapFile" url="qualityIncrease_down.png"/>
+		<asset id="qualityIncreaseDisabled" type="bitmapFile" url="qualityIncrease_disabled.png"/>
+		
+		<!-- quality decrease button -->
+		<asset id="qualityDecreaseUp" type="bitmapFile" url="qualityDecrease_up.png"/>
+		<asset id="qualityDecreaseDown" type="bitmapFile" url="qualityDecrease_down.png"/>
+		<asset id="qualityDecreaseDisabled" type="bitmapFile" url="qualityDecrease_disabled.png"/>
+		
+		<!-- eject button -->
+		<asset id="ejectUp" type="bitmapFile" url="eject_up.png"/>
+		<asset id="ejectDown" type="bitmapFile" url="eject_down.png"/>
+		<asset id="ejectDisabled" type="bitmapFile" url="eject_disabled.png"/>
+		
+		<!-- play button -->
+		<asset id="playUp" type="bitmapFile" url="play_up.png"/>
+		<asset id="playDown" type="bitmapFile" url="play_down.png"/>
+		<asset id="playDisabled" type="bitmapFile" url="play_disabled.png"/>
+		
+		<!-- pause button -->
+		<asset id="pauseUp" type="bitmapFile" url="pause_up.png"/>
+		<asset id="pauseDown" type="bitmapFile" url="pause_down.png"/>
+		<asset id="pauseDisabled" type="bitmapFile" url="pause_disabled.png"/>
+		
+		<!-- stop button -->
+		<asset id="stopUp" type="bitmapFile" url="stop_up.png"/>
+		<asset id="stopDown" type="bitmapFile" url="stop_down.png"/>
+		<asset id="stopDisabled" type="bitmapFile" url="stop_disabled.png"/>
+		
+		<!-- record button -->
+		<asset id="recordUp" type="bitmapFile" url="record_up.png"/>
+		<asset id="recordDown" type="bitmapFile" url="record_down.png"/>
+		<asset id="recordDisabled" type="bitmapFile" url="record_disabled.png"/>
+		
+		<!-- live button -->
+		<asset id="liveUp" type="bitmapFile" url="live_up.png"/>
+		<asset id="liveDown" type="bitmapFile" url="live_down.png"/>
+		<asset id="liveDisabled" type="bitmapFile" url="live_disabled.png"/>
+		
+		<!-- sound more -->
+		<asset id="soundMoreUp" type="bitmapFile" url="soundMore_up.png"/>
+		<asset id="soundMoreDown" type="bitmapFile" url="soundMore_down.png"/>
+		<asset id="soundMoreDisabled" type="bitmapFile" url="soundMore_disabled.png"/>
+		
+		<!-- sound less -->
+		<asset id="soundLessUp" type="bitmapFile" url="soundLess_up.png"/>
+		<asset id="soundLessDown" type="bitmapFile" url="soundLess_down.png"/>
+		<asset id="soundLessDisabled" type="bitmapFile" url="soundLess_disabled.png"/>
+		
+		<!-- full screen enter -->
+		<asset id="fullScreenEnterUp" type="bitmapFile" url="fullScreenEnter_up.png"/>
+		<asset id="fullScreenEnterDown" type="bitmapFile" url="fullScreenEnter_down.png"/>
+		<asset id="fullScreenEnterDisabled" type="bitmapFile" url="fullScreenEnter_disabled.png"/>
+		
+		<!-- full screen leave -->
+		<asset id="fullScreenLeaveUp" type="bitmapFile" url="fullScreenLeave_up.png"/>
+		<asset id="fullScreenLeaveDown" type="bitmapFile" url="fullScreenLeave_down.png"/>
+		<asset id="fullScreenLeaveDisabled" type="bitmapFile" url="fullScreenLeave_disabled.png"/>
+		
+		<!-- scrub bar -->
+		<asset id="scrubBarTrack" type="bitmapFile" url="scrubBarTrack.png" scale9="2,2,210,0"/>
+		<asset id="scrubberUp" type="bitmapFile" url="scrubber_up.png"/>
+		<asset id="scrubberDown" type="bitmapFile" url="scrubber_down.png"/>
+		<asset id="scrubberDisabled" type="bitmapFile" url="scrubber_disabled.png"/>
+		
+		<!-- submit button -->
+		<asset id="submitUp" type="bitmapFile" url="submit_up.png"/>
+		<asset id="submitDown" type="bitmapFile" url="submit_down.png"/>
+		<asset id="submitDisabled" type="bitmapFile" url="submit_disabled.png"/>
+		
+		<!-- cancel button -->
+		<asset id="cancelUp" type="bitmapFile" url="cancel_up.png"/>
+		<asset id="cancelDown" type="bitmapFile" url="cancel_down.png"/>
+		<asset id="cancelDisabled" type="bitmapFile" url="cancel_disabled.png"/>
+		
+		<!-- ok button -->
+		<asset id="okUp" type="bitmapFile" url="ok_up.png"/>
+		<asset id="okDown" type="bitmapFile" url="ok_down.png"/>
+		<asset id="okDisabled" type="bitmapFile" url="ok_disabled.png"/>
+		
+		<!-- warning glyph -->
+		<asset id="warning" type="bitmapFile" url="warning.png"/>
+		
+	</assets>
+	
+	<!-- font assets -->
+	
+	<assets baseURL="assets/fonts/">
+		
+		<!-- default font -->
+		<asset id="defaultFont" type="fontSymbol" url="Standard0755.swf" symbol="Standard0755" fontSize="8"/>
+		
+	</assets>
+	
+	<!-- widgets -->
+	
+	<widgets>
+		
+		<!-- context menu overlay --> 
+		
+		<widget
+			id="contextMenuOverlay"
+			type="contextMenuOverlay"
+			percentWidth="100"
+			percentHeight="100"
+			menuItemLabel="OSMF Player v.${version}"
+			menuItemLink="http://www.osmf.org"
+			addVersionDetails="true"
+			/>
+		
+		<!-- control bar -->
+				
+		<widget
+			id="controlBar"
+			type="autoHideWidget"
+			face="backdrop"
+			fadeSteps="15"
+			width="320"
+			height="50"
+			horizontalAlign="center"
+			bottom="20"
+			>
+			
+			<!-- url input -->
+			
+			<widget
+				left="8"
+				right="8"
+				top="2"
+				id="urlInput"
+				type="urlInput"
+				title="MEDIA URL:"
+				/>
+			
+			<!-- left hand side section -->
+			
+			<widget
+				id="controlBarLeft"
+				layoutMode="horizontal"
+				horizontalAlign="left"
+				left="8"
+				top="10"
+				>
+				<widget
+					id="pinUpButton"
+					type="pinUpButton"
+					upFace="pinUpUp"
+					downFace="pinUpDown"
+					disabledFace="pinUpDisabled"
+					/>
+				<widget
+					id="pinDownButton"
+					type="pinDownButton"
+					upFace="pinDownUp"
+					downFace="pinDownDown"
+					disabledFace="pinDownDisabled"
+					/>
+				<widget
+					id="qualityModeToggle"
+					type="qualityModeToggle"
+					upFace="qualityUp"
+					downFace="qualityDown"
+					disabledFace="qualityDisabled"
+					/> 
+				<widget
+					id="qualityLabel"
+					type="qualityLabel"
+					width="48"
+					height="12"
+					paddingTop="2"
+					textAlpha="0.4"
+					textColor="0xFFFFFF"
+					/>
+				<widget
+					id="qualityDecreaseButton"
+					type="qualityDecreaseButton"
+					upFace="qualityDecreaseUp"
+					downFace="qualityDecreaseDown"
+					disabledFace="qualityDecreaseDisabled"
+					/>
+				<widget
+					id="qualityIncreaseButton"
+					type="qualityIncreaseButton"
+					upFace="qualityIncreaseUp"
+					downFace="qualityIncreaseDown"
+					disabledFace="qualityIncreaseDisabled"
+					/>
+			</widget>
+			
+			<!-- center section -->
+			
+			<widget
+				id="controlBarCenter"
+				layoutMode="horizontal"
+				horizontalAlign="center"
+				top="10"
+				>
+				<widget
+					id="ejectButton"
+					type="ejectButton"
+					upFace="ejectUp"
+					downFace="ejectDown"
+					disabledFace="ejectDisabled"
+					/>
+				<widget
+					id="playButton"
+					type="playButton"
+					upFace="playUp"
+					downFace="playDown"
+					disabledFace="playDisabled"
+					/>
+				<widget
+					id="pauseButton"
+					type="pauseButton"
+					upFace="pauseUp"
+					downFace="pauseDown"
+					disabledFace="pauseDisabled"
+					/>
+				<widget
+					id="stopButton"
+					type="stopButton"
+					upFace="stopUp"
+					downFace="stopDown"
+					disabledFace="stopDisabled"
+					/>
+			</widget>
+			
+			<!-- right hand side section -->
+			
+			<widget
+				id="controlBarRight"
+				layoutMode="horizontal"
+				horizontalAlign="right"
+				top="10"
+				right="10"
+				>
+				<widget
+					id="liveButton"
+					type="liveButton"
+					upFace="liveUp"
+					downFace="liveDown"
+					disabledFace="liveDisabled"
+					/>
+				<widget
+					id="recordButton"
+					type="recordButton"
+					upFace="recordUp"
+					downFace="recordDown"
+					disabledFace="recordDisabled"
+					/>
+				<widget
+					id="soundLessButton"
+					type="soundLessButton"
+					upFace="soundLessUp"
+					downFace="soundLessDown"
+					disabledFace="soundLessDisabled"
+					/>
+				<widget
+					id="soundMoreButton"
+					type="soundMoreButton"
+					upFace="soundMoreUp"
+					downFace="soundMoreDown"
+					disabledFace="soundMoreDisabled"
+					/>
+				<widget
+					id="fullScreenLeaveButton"
+					type="fullScreenLeaveButton"
+					upFace="fullScreenLeaveUp"
+					downFace="fullScreenLeaveDown"
+					disabledFace="fullScreenLeaveDisabled"
+					/>
+				<widget
+					id="fullScreenEnterButton"
+					type="fullScreenEnterButton"
+					upFace="fullScreenEnterUp"
+					downFace="fullScreenEnterDown"
+					disabledFace="fullScreenEnterDisabled"
+					/>
+			</widget>
+			
+			<widget
+				id="scrubBar"
+				type="scrubBar"
+				timeFieldsWidth="48"
+				timeFieldsHeight="15"
+				timeFieldSpacing="1"
+				left="12"
+				right="10"
+				top="26"
+				scrubberUp="scrubberUp"
+				scrubberDown="scrubberDown"
+				scrubberDisabled="scrubberDisabled"
+				track="scrubBarTrack"
+				/>
+		</widget>
+		
+		<widget
+			id="alert"
+			type="alert"
+			face="backdrop"
+			width="320"
+			height="120"
+			verticalAlign="middle"
+			horizontalAlign="center"
+			fadeSteps="8"
+			>
+			
+			<widget
+				left="10"
+				top="10"
+				face="warning"
+				/>
+				
+			<widget
+				id="captionLabel"
+				type="label"
+				top="15"
+				left="40"
+				right="10"
+				height="16"
+				/>
+				
+			<widget
+				id="messageLabel"
+				type="label"
+				top="34"
+				left="40"
+				right="10"
+				bottom="28"
+				multiline="true"
+				textAlpha="0.4"
+				selectable="true"
+				/>
+				
+			<widget
+				id="closeButton"
+				type="button"
+				upFace="okUp"
+				downFace="okDown"
+				disabledFace="okDisabled"
+				right="10"
+				bottom="10"
+				/>
+			
+		</widget>
+		
+		<widget
+			id="authenticationDialog"
+			type="authenticationDialog"
+			width="220"
+			height="110"
+			face="backdrop"
+			verticalAlign="middle"
+			horizontalAlign="center"
+			>
+			
+			<widget
+				type="label"
+				text="PLEASE AUTHENTICATE:"
+				left="10"
+				top="10"
+				percentWidth="100"
+				textAlpha="0.4"
+				/>
+				
+			<widget
+				type="label"
+				text="user name"
+				left="20"
+				top="34"
+				percentWidth="100"
+				textAlpha="0.4"
+				/>
+				
+			<widget
+				id="username"
+				type="label"
+				left="70"
+				right="13"
+				top="34"
+				height="16"
+				input="true"
+				background="true"
+				backgroundColor="0x808080"
+				textAlpha="0.8"
+				/>
+				
+			<widget
+				type="label"
+				text="password"
+				left="23"
+				top="54"
+				percentWidth="100"
+				textAlpha="0.4"
+				/>
+				
+			<widget
+				id="password"
+				type="label"
+				left="70"
+				right="13"
+				top="54"
+				height="16"
+				input="true"
+				password="true"
+				background="true"
+				backgroundColor="0x808080"
+				textAlpha="0.8"
+				/>
+				
+			<widget
+				id="submitButton"
+				type="button"
+				upFace="submitUp"
+				downFace="submitDown"
+				disabledFace="submitDisabled"
+				bottom="10"
+				right="50"
+				/>
+			
+			<widget
+				id="cancelButton"
+				type="button"
+				upFace="cancelUp"
+				downFace="cancelDown"
+				disabledFace="cancelDisabled"
+				bottom="10"
+				right="10"
+				/>
+			
+		</widget>
+		
+		<!-- debugging controls
+		<widget
+			id="memoryMeter"
+			type="memoryMeter"
+			top="10"
+			left="10"
+			/>
+			
+		<widget
+			id="fpsMeter"
+			type="fpsMeter"
+			top="24"
+			left="10"
+			width="200"
+			/>
+			
+		<widget
+			id="videoQoSFPS"
+			type="metadataLabel"
+			metadataNamespace="org.osmf.qos.VideoQoSPluginMetadata"
+			metadataKey="currentFPS"
+			postfix=" video frames/sec." 
+			top="38"
+			left="10"
+			width="200"
+			/>
+			
+		<widget
+			id="videoQoSFPS"
+			type="metadataLabel"
+			metadataNamespace="org.osmf.qos.VideoQoSPluginMetadata"
+			metadataKey="droppedFrames"
+			postfix=" dropped frames" 
+			top="52"
+			left="10"
+			width="200"
+			/>
+		-->
+		
+	</widgets>
+</chrome>

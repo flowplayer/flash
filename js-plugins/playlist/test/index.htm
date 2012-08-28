@@ -1,0 +1,121 @@
+
+<script src="latest/jquery.js"></script>
+<script src="latest/flashembed.js"></script>
+<script src="latest/flowplayer-src.js"></script>
+<script src="latest/flowplayer.playlist.js"></script>
+
+
+<!--{{{ style -->
+
+<style>
+	body {
+		padding:50px;		
+	} 
+	
+	.player {
+		border:1px solid navy;
+		width:155px;
+		height:155px;		
+		display:block;
+		padding:5px;
+		float:left;
+		margin-right:20px;
+	} 
+	
+	img {
+		border:0;			
+	}
+	
+	div.playlist {
+		float:left;
+		width:200px;		
+	}
+	
+	div.playlist a {
+		display:block;
+		padding:5px 10px;
+		border:1px solid #ccc;
+		margin-bottom:5px;		
+		text-decoration:none;
+	}
+	
+	div.playlist a.playing {
+		background-color:#efefef;		
+	}
+	
+	div.playlist a.paused {
+		background-color:#cc0;
+	}
+	
+	div.playlist a.progress {
+		opacity:0.2;		
+	}
+</style>
+<!--}}}-->
+
+
+<script>
+$(function() {
+	flowplayer("player", "latest/flowplayer.swf", {
+		log: { level: 'error'}, 
+		
+		plugins: {
+			controlbar: null
+		},
+		
+		clip: {
+			baseUrl:'http://blip.tv/file/get',
+			scaling:'scale'		
+		},
+		
+		playlist:[
+			{url:'KimAronson-TwentySeconds73213.flv', title: 'Jotain vain'},
+			{url:'KimAronson-TwentySeconds59483.flv', title: 'Jotain toista vain zzz'},
+			{url:'KimAronson-TwentySeconds58192.flv', title: 'Erikoinen entry'}
+		]
+		
+	}).playlist("#playlist");		
+	
+	flowplayer("player2", "latest/flowplayer.swf", {
+		log: { level: 'error'},
+		
+		
+		clip: {
+			baseUrl:'http://blip.tv/file/get',
+			url: 'KimAronson-TwentySeconds58192.flv',
+			scaling:'scale'		
+		},
+		
+		plugins: {
+			controlbar: null
+		}
+		
+	}).playlist("#playlist2");
+	
+});	
+</script>
+
+
+<!-- template based playlist -->
+<a class="player" id="player">
+	<img src="splash.jpg" />
+</a>	
+
+<div id="playlist" class="playlist">
+	<a class="template" href="#">${title}</a>
+</div>
+
+<div style="clear:both;margin:50px 0">&nbsp;</div>
+
+<!-- "manual" playlist -->
+<a class="player" id="player2">
+	<img src="splash.jpg" />
+</a>	
+
+<div id="playlist2" class="playlist">
+	<a href="KimAronson-TwentySeconds58192.flv">eka entry</a>
+	<a href="KimAronson-TwentySeconds59483.flv">toka entry</a>
+	<a href="KimAronson-TwentySeconds73213.flv">kolmas entry</a>
+</div>
+
+<br clear="all" />

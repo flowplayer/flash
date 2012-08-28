@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>GoogleTracker Demo</title>
+
+
+<script src="http://static.flowplayer.org/js/flowplayer-3.1.4.min.js"></script>
+
+<script>
+	function setLabelName(eventLabel, labelName) {
+		$f().getPlugin("gatracker").setLabelName(eventLabel, labelName);	
+		$f().getPlugin("gatracker").trackEvent("Label " + eventLabel + " set to " + labelName);	
+	}
+</script>
+
+
+</head>
+
+<body>
+
+<a 
+    href="http://flashy.flowplayer.org/video/flowplayer-700.flv" 
+    style="display:block;width:425px;height:300px;" 
+    id="player"> 
+</a>
+
+<script language="JavaScript"> 
+flowplayer("player", "flowplayer-3.1.5.swf", {
+	plugins:{
+		gatracker: {
+			url: "flowplayer.GoogleTracker.swf",
+			google_id: "UA-xxxxxxxx-x" 
+		}
+	}
+}); 
+</script>
+
+<br /><br />
+To change the name of any event, choose an event and set its label then hit submit.  If you change the name of an event label to 'false' GoogleTracker will stop tracking that event.  This also illustrates the custom event tracker: when you change an event label here in the html, a custom event is tracked in GoogleTracker.
+<br /><br />
+<form name="changeLabel" action="#" method="get">
+	Event:<br />
+	<select name="eventName">
+		<option value="start">Start</option>
+		<option value="play">Play</option>
+		<option value="pause">Pause</option>
+		<option value="resume">Resume</option>
+		<option value="seek">Seek</option>
+		<option value="finish">Finish</option>
+		<option value="mute">Mute</option>
+		<option value="unmute">Unmute</option>
+		<option value="fullscreen">Full Screen</option>
+		<option value="fullscreenexit">Full Screen Exit</option>
+	</select>
+	<br /><br />
+	New Event Label:<br />
+	<input type="text" name="labelName" />
+	<br /><br />
+	<input type="button" value="Submit" onclick="setLabelName(document.changeLabel.eventName.value, document.changeLabel.labelName.value);" />
+</form>
+
+</body>
+</html>

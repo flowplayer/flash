@@ -1,0 +1,49 @@
+<project name="Flowplayer pseudostreaming" default="deploy">
+
+	<property file="${user.home}/plugin.properties" />
+	<property file="build.properties" />
+	<property file="${devkit-dir}/plugin-build.properties" />
+	<property name="extra-sources" value="../../core/lib/corelib/src" />
+
+    <property name="compiler-defines" value="-define+=CONFIG::enableByteRange,'false'"/>
+	<import file="${devkit-dir}/plugin-build.xml"/>
+	
+	<property name="shortname" value="pseudostreaming" />
+    <property name="basename" value="flowplayer.${shortname}" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+
+	<property name="plugin-main-class" value="org/flowplayer/pseudostreaming/PseudoStreaming.as" />
+
+    <target name="build-byterange">
+        <ant antfile="build-byterange.xml" target="build" inheritall="false" />
+    </target>
+
+	<target name="release" description="makes a release" depends="build">
+		<copyrelease targetdir="flowplayer.pseudostreaming">
+			<releasefiles>
+				<fileset dir="${build-dir}">
+				    <include name="${plugin-binary-versioned}"/>
+				</fileset>
+			</releasefiles>
+		</copyrelease>
+	</target>
+
+    <target name="zip" depends="prepare, build, build-byterange">
+        <echo message="zipping controls" />
+        <zip destfile="${dist-dir}/${basename}-${version}.zip">
+            <zipfileset prefix="${basename}" dir=".">
+                <include name="LICENSE.txt" />
+                <include name="README.txt" />
+            </zipfileset>
+            <zipfileset prefix="${basename}" dir="${build-dir}">
+                <include name="${plugin-binary-versioned}" />
+                <include name="flowplayer.pseudostreaming-byterange-${version}.swf" />
+            </zipfileset>
+        </zip>
+        <echo message="copying to ${dist-dir}/${basename}.zip" />
+        <copy file="${dist-dir}/${basename}-${version}.zip" tofile="${dist-dir}/${basename}.zip" overwrite="true" />
+    </target>
+
+</project>

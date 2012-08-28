@@ -1,0 +1,37 @@
+<project name="bitrateselect" default="deploy">
+    <property file="build.generated.properties"/>
+
+	<property file="${user.home}/plugin.properties" />
+	<property file="build.properties" />
+	
+    <property name="plugin-libs" value=""/>
+    <property name="extra-sources" value="../../lib/common/src/actionscript "/>
+	<property name="library-path" value="src/flash ../../lib/common/src/flash"/>
+	<property name="compiler-defines" value=""/>
+
+	<property file="${devkit-dir}/plugin-build.properties" />
+	<import file="${devkit-dir}/plugin-build.xml"/>
+	
+    <property name="shortname" value="bitrateselect" />
+    <property name="basename" value="flowplayer.${shortname}" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-swc" value="${basename}.swc" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+	
+	<property name="plugin-main-class" value="org/flowplayer/bitrateselect/BitrateSelectPlugin.as" />
+
+	<target name="release" description="makes a release" depends="build">
+		<copyrelease targetdir="flowplayer.bitrateselect">
+			<releasefiles>
+				<fileset dir="${build-dir}">
+				    <include name="${plugin-binary-versioned}"/>
+				</fileset>
+			</releasefiles>
+		</copyrelease>
+	</target>
+	
+	<target name="demo" >
+			<example player-swf="flowplayer.swf" main-swf="${plugin-binary-versioned}" />
+	</target>
+</project>

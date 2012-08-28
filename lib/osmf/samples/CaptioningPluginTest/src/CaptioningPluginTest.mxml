@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*****************************************************
+*  
+*  Copyright 2009 Akamai Technologies, Inc.  All Rights Reserved.
+*  
+*****************************************************
+*  The contents of this file are subject to the Mozilla Public License
+*  Version 1.1 (the "License"); you may not use this file except in
+*  compliance with the License. You may obtain a copy of the License at
+*  http://www.mozilla.org/MPL/
+*   
+*  Software distributed under the License is distributed on an "AS IS"
+*  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+*  License for the specific language governing rights and limitations
+*  under the License.
+*   
+*  
+*  The Initial Developer of the Original Code is Akamai Technologies, Inc.
+*  Portions created by Akamai Technologies, Inc. are Copyright (C) 2009 Akamai 
+*  Technologies, Inc. All Rights Reserved. 
+*  
+*****************************************************/
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" backgroundColor="#000000" 
+	xmlns:samples="org.osmf.samples.*" applicationComplete="init()">
+	<mx:Style source="CaptioningPluginTest.css" />
+	<mx:Script>
+		<![CDATA[
+			import org.osmf.containers.MediaContainer;
+			import org.osmf.media.MediaPlayer;
+			import org.osmf.metadata.Metadata;
+			import org.osmf.metadata.TimelineMetadata;
+			import org.osmf.events.TimelineMetadataEvent;
+			import org.osmf.media.MediaResourceBase;
+			import org.osmf.events.DisplayObjectEvent;
+			import org.osmf.media.PluginInfoResource;
+			import org.osmf.media.MediaPlayerState;
+			import org.osmf.events.MediaPlayerStateChangeEvent;
+			import org.osmf.traits.LoadTrait;
+			import mx.controls.Alert;
+
+			import org.osmf.elements.VideoElement;
+			import org.osmf.events.MediaElementEvent;
+			import org.osmf.events.DisplayObjectEvent;
+			import org.osmf.media.MediaFactoryItem;	
+			import org.osmf.events.MediaErrorEvent;
+			import org.osmf.media.MediaFactory;
+			import org.osmf.media.MediaElement;
+			import org.osmf.media.URLResource;
+			import org.osmf.events.MediaFactoryEvent;
+			import org.osmf.media.URLResource;
+			import org.osmf.net.NetLoader;
+			import org.osmf.traits.MediaTraitType;
+			import org.osmf.traits.LoadState;
+			import org.osmf.events.SeekEvent;
+			import org.osmf.events.MetadataEvent;
+			import org.osmf.events.TimeEvent;
+
+			import org.osmf.captioning.CaptioningPluginInfo;
+			import org.osmf.captioning.model.Caption;
+			import org.osmf.captioning.model.CaptionStyle;
+			import org.osmf.captioning.model.CaptionFormat;
+			
+			import org.osmf.captioningPluginTest.utils.FileRenderer;
+						
+			private static const DEFAULT_PROGRESS_DELAY:uint = 100;
+			private static const DEFAULT_CAPTION_BG_COLOR:uint = 0x000000;
+			private static const DEFAULT_CAPTION_FONT_SIZE:int = 11;
+			private static const MAX_VIDEO_WIDTH:int = 480;
+			private static const MAX_VIDEO_HEIGHT:int = 270;
+			private static const DEBUG:Boolean = true;
+			private static const STREAM_URL:String = "rtmp://cp67126.edgefcs.net/ondemand/mediapm/osmf/content/test/akamai_10_year_f8_512K";
+			private static const BASE_W3C_TEST_SUITE_URL:String = "http://mediapm.edgesuite.net/osmf/content/test/captioning/dfxp-testsuite/";
+			private static const BASE_OVP_TEST_SUITE_URL:String = "http://mediapm.edgesuite.net/osmf/content/test/captioning/ovp-testsuite/";
+
+			private var sliderDragging:Boolean;
+			private var waitForSeek:Boolean;
+			private var mediaFactory:MediaFactory;
+			private var captioningEnabled:Boolean;
+			private var timelineMetadata:TimelineMetadata; 	
+			private var currentCaption:Caption;	
+			private var namespaces:Dictionary = new Dictionary();
+			private var mediaPlayer:MediaPlayer;
+			
+			[Bindable]
+			private var timingTestFiles:Array = [	
+													/* Akamai sample */
+													"http://mediapm.edgesuite.net/osmf/content/test/captioning/akamai_sample_caption.xml",
+													
+													/* Adobe sample */
+													"http://mediapm.edgesuite.net/osmf/content/test/captioning/adobe_sample.xml",
+													
+													/* OVP test suite */													
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_1.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_2.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_3.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_4.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_5.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_6.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_7.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_8.xml",
+													BASE_OVP_TEST_SUITE_URL + "ovp_sample_9.xml",
+																
+													/* W3C test suite */
+													BASE_W3C_TEST_SUITE_URL + "Content/Br001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Content/Foreign001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Content/Paragraph001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Content/Paragraph003.xml",
+													BASE_W3C_TEST_SUITE_URL + "Content/Span001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Content/Span002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Content/Span005.xml",
+																																							
+													BASE_W3C_TEST_SUITE_URL + "Styling/Color001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/Color002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/Color004.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily003.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily004.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily005.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily006.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily007.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontFamily008.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontSize001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontStyle001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontStyle002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontWeight001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/FontWeight002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign003.xml",
+													BASE_W3C_TEST_SUITE_URL + "Styling/TextAlign004.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/BasicTiming003.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/BeginDur001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/BeginEnd001.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/BeginEnd002.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/BeginEnd003.xml",
+													BASE_W3C_TEST_SUITE_URL + "Timing/FixedBeginEnd002.xml"
+												];
+												
+			[Bindable]
+			private var captionBackgroundColor:uint = DEFAULT_CAPTION_BG_COLOR;
+							
+			private function init():void
+			{
+				mediaContainerUIComponent.container = new MediaContainer();
+				
+				mediaFactory = new MediaFactory();
+				
+				loadPlugin("org.osmf.captioning.CaptioningPluginInfo");
+				
+				mediaPlayer = new MediaPlayer();
+				mediaPlayer.addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange);		
+				mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onDurationChange);	
+				mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
+				mediaPlayer.addEventListener(SeekEvent.SEEKING_CHANGE, onSeekingChange);
+				mediaPlayer.addEventListener(MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE, onMediaPlayerStateChange);
+				
+				mediaPlayer.currentTimeUpdateInterval = DEFAULT_PROGRESS_DELAY;
+								
+				sliderDragging = false;
+				waitForSeek = false;
+				captioningEnabled = true;
+			}
+			
+			private function createVideoElement():MediaElement
+			{
+				return new VideoElement();
+			}
+
+			private function loadPlugin(source:String):void
+			{
+				var pluginResource:MediaResourceBase;
+				if (source.substr(0, 4) == "http" || source.substr(0, 4) == "file")
+				{
+					// This is a URL, create a URLResource
+					pluginResource = new URLResource(source);
+				}
+				else
+				{
+					// Assume this is a class
+					var pluginInfoRef:Class = flash.utils.getDefinitionByName(source) as Class;
+					pluginResource = new PluginInfoResource(new pluginInfoRef);
+				}
+				
+				loadPluginFromResource(pluginResource);
+			}
+			
+			private function loadPluginFromResource(pluginResource:MediaResourceBase):void
+			{
+				mediaFactory.addEventListener(MediaFactoryEvent.PLUGIN_LOAD, onPluginLoaded);
+				mediaFactory.addEventListener(MediaFactoryEvent.PLUGIN_LOAD_ERROR, onPluginLoadFailed);
+				mediaFactory.loadPlugin(pluginResource);
+			}
+			
+			private function onPluginLoaded(event:MediaFactoryEvent):void
+			{
+				debug("Plugin LOADED!"); 
+			}
+
+			private function onPluginLoadFailed(event:MediaFactoryEvent):void
+			{
+				debug("Plugin LOAD FAILED!");
+			}
+			
+   			private function onMediaError(event:MediaErrorEvent):void
+   			{
+   				Alert.show("Media Load Error : "+event.error.errorID+" - "+event.error.message);
+   			}
+			
+			private function onMediaPlayerStateChange(event:MediaPlayerStateChangeEvent):void
+			{
+				if (event.state == MediaPlayerState.PLAYBACK_ERROR)
+				{
+					Alert.show("Media Playback error!");
+				}
+			}
+			
+			private function onMediaSizeChange(event:DisplayObjectEvent):void 
+			{
+				var width:int = event.newWidth;
+				var height:int = event.newHeight;
+				
+				// Scale to native or smaller
+				if (width > MAX_VIDEO_WIDTH || height > MAX_VIDEO_HEIGHT)
+				{
+					if ((width/height) >= (MAX_VIDEO_WIDTH/MAX_VIDEO_HEIGHT))
+					{
+						mediaContainerUIComponent.width = MAX_VIDEO_WIDTH;
+						mediaContainerUIComponent.height = MAX_VIDEO_WIDTH * (height/width);
+					}
+					else
+					{
+						mediaContainerUIComponent.width = MAX_VIDEO_HEIGHT * (width/height);
+						mediaContainerUIComponent.height = MAX_VIDEO_HEIGHT;
+					}
+				}
+				else if (width > 0 && height > 0)
+				{
+					mediaContainerUIComponent.width = width;
+					mediaContainerUIComponent.height = height;			
+				}
+			}
+			
+			private function onDurationChange(event:TimeEvent):void
+			{
+				seekBar.maximum = event.time;
+				lblDuration.text = timeCode(event.time);
+			}
+						
+			private function onCurrentTimeChange(event:TimeEvent):void
+			{
+				if (mediaPlayer.temporal && !sliderDragging && !waitForSeek)
+				{
+					seekBar.value = event.time;
+					lblPlayhead.text = timeCode(event.time);
+				}
+			}
+			
+			private function onSeekingChange(event:SeekEvent):void
+			{
+				if (event.seeking)
+				{
+					clearCaptionText();
+				}
+				else
+				{
+					waitForSeek = false;
+				}
+			}
+			
+   			private function toggleDragging(state:Boolean):void
+   			{
+   				sliderDragging = state;
+   				if (!state)
+   				{
+   					waitForSeek = true;
+   					if (mediaPlayer.canSeek)
+   					{
+   						mediaPlayer.seek(seekBar.value); 
+   					}
+   				}
+   			}
+   			
+   			private function onTraitAdd(event:MediaElementEvent):void
+   			{
+   				switch (event.traitType)
+   				{
+   					case MediaTraitType.SEEK:
+   						seekBar.enabled = seekBar.visible = true;
+   						break;
+   				}	
+   			}
+   			
+   			private function onMetadataAdd(event:MediaElementEvent):void
+   			{
+				var metadata:TimelineMetadata = event.metadata as TimelineMetadata;
+				
+				if (metadata)
+				{
+					debug(">>> Timeline metadata added, namespace="+event.namespaceURL);
+					namespaces[metadata] = event.namespaceURL;
+					timelineMetadata = metadata;
+					timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_TIME_REACHED, onShowCaption);
+					timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_DURATION_REACHED, onHideCaption);
+				}
+   			}
+   			
+   			private function onMetadataRemove(event:MediaElementEvent):void
+   			{
+   				var metadata:TimelineMetadata = event.metadata as TimelineMetadata;
+   				
+   				if (metadata && timelineMetadata)
+   				{
+   					debug(">>> Timeline metadata removed, namespace="+event.namespaceURL);
+   					delete namespaces[metadata];
+   					timelineMetadata.removeEventListener(TimelineMetadataEvent.MARKER_TIME_REACHED, onShowCaption);
+   					timelineMetadata.removeEventListener(TimelineMetadataEvent.MARKER_DURATION_REACHED, onHideCaption);
+   					timelineMetadata = null;
+   				}
+   			}
+   			
+			private function onShowCaption(event:TimelineMetadataEvent):void
+			{
+				var caption:Caption = event.marker as Caption;
+				var ns:String = namespaces[event.currentTarget];
+
+				// Make sure this is a caption object, and just for good measure, we'll
+				// also check the namespace				
+				if (captioningEnabled && (caption != null) && (ns == CaptioningPluginInfo.CAPTIONING_TEMPORAL_METADATA_NAMESPACE))
+				{
+					this.currentCaption = caption;
+					this.captionLabel.htmlText = caption.text;
+					this.captionLabel.validateNow();
+					formatCaption(caption);
+				}
+			}
+			
+			/**
+			 * Handles formatting within the caption string.
+			 */
+			private function formatCaption(caption:Caption):void
+			{
+				debug(">>> in formatCaption() - caption.numCaptionFormats="+caption.numCaptionFormats);
+				
+				for (var i:uint = 0; i < caption.numCaptionFormats; i++) 
+				{
+					var captionFormat:CaptionFormat = caption.getCaptionFormatAt(i);
+					var txtFormat:TextFormat = new TextFormat();
+					var style:CaptionStyle = captionFormat.style;
+					
+					if (style.textColor != null) 
+					{
+						txtFormat.color = style.textColor;
+					}
+					
+					if (style.fontFamily != "") 
+					{
+						txtFormat.font = style.fontFamily;
+					}
+					
+					if (style.fontSize > 0) 
+					{
+						txtFormat.size = style.fontSize;
+					}
+					else
+					{
+						txtFormat.size = DEFAULT_CAPTION_FONT_SIZE;
+					}
+					
+					if (style.fontStyle != "") 
+					{
+						txtFormat.italic = (style.fontStyle == "italic") ? true : false;
+					}
+					
+					if (style.fontWeight != "") 
+					{
+						txtFormat.bold = (style.fontWeight == "bold") ? true : false;
+					}
+					
+					if (style.textAlign != "") 
+					{
+						txtFormat.align = style.textAlign;
+					}
+					
+					if (style.backgroundColor != null)
+					{
+						captionBackgroundColor = uint(style.backgroundColor);
+					}
+
+					if (captionLabel.wordWrap != style.wrapOption) 
+					{
+						captionLabel.wordWrap = style.wrapOption;
+					}
+					
+					debug(">>> style.textColor="+style.textColor);
+					debug(">>> style.backgroundColor="+style.backgroundColor);
+					debug(">>> style.fontStyle="+style.fontStyle);
+					debug(">>> txtFormat.italic="+txtFormat.italic);
+					debug(">>> captionLabel.text.length="+captionLabel.text.length+" captionFormat.startIndex="+captionFormat.startIndex+", captionFormat.endIndex="+captionFormat.endIndex); 
+							
+					
+					callLater(updateCaptionLabel, [txtFormat, captionFormat.startIndex, captionFormat.endIndex]);
+					
+					function updateCaptionLabel(txtFormat:TextFormat, start:int, end:int):void
+					{
+						captionLabel.mx_internal::getTextField().setTextFormat(txtFormat, start, end);
+					}
+				}				
+			}
+			
+			private function onHideCaption(event:TimelineMetadataEvent):void
+			{
+				var caption:Caption = event.marker as Caption;
+	
+				if (this.currentCaption.time == caption.time)
+				{
+					clearCaptionText();				
+				}
+			}
+			
+			private function clearCaptionText():void
+			{
+				trace(">>> CLEARING CAPTION TEXT!");
+				captionLabel.htmlText = "";
+				captionBackgroundColor = CaptioningPluginTest.DEFAULT_CAPTION_BG_COLOR;
+			}
+   									
+			private function onClickPlayBtn(event:Event):void
+			{
+				if (mediaPlayer.playing && mediaPlayer.canPause)
+				{
+					playBtn.label = "Play";
+					mediaPlayer.pause();
+				}
+				else if (mediaPlayer.paused && mediaPlayer.canPlay)
+				{
+					playBtn.label = "Pause";
+					mediaPlayer.play();
+				}
+			}
+			
+			private function loadMedia(url:String, timedTextFile:String):void
+			{
+				var resource:URLResource = new URLResource(url);
+				var dfxpFile:String = timedTextFile;
+			
+				// Assign to the resource the metadata that indicates that it should have a Timed Text
+				// document applied (and include the URL of that document).
+				var metadata:Metadata = new Metadata();
+												
+				metadata.addValue(CaptioningPluginInfo.CAPTIONING_METADATA_KEY_URI, dfxpFile);
+				resource.addMetadataValue(CaptioningPluginInfo.CAPTIONING_METADATA_NAMESPACE, metadata);
+
+				var netLoader:NetLoader = new NetLoader();
+
+				mediaFactory.addItem(new MediaFactoryItem("org.osmf.elements.video", netLoader.canHandleResource, createVideoElement));
+				var mediaElement:MediaElement = mediaFactory.createMediaElement(resource);
+
+				// Listen for traits to be added, so we can adjust the UI. For example, enable the seek bar
+				// when the SeekTrait is added
+				mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+				
+				// Listen for metadata to be added so we can add any desired event listeners on any
+				// metadata facets we care about.
+				mediaElement.addEventListener(MediaElementEvent.METADATA_ADD, onMetadataAdd);
+				
+				// Listen for metadata to be removed so we remove an event listeners
+				mediaElement.addEventListener(MediaElementEvent.METADATA_REMOVE, onMetadataRemove);
+
+				mediaElement.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError, false, 0, true);
+								
+				setMediaElement(mediaElement);
+				enablePlayerControls(true);
+				
+				// Now load the DFXP file separately so we can show it in the UI (note this has
+				// nothing to do with the functionality of the app, this is only for the 
+				// convenience of the user)
+				var fileRenderer:FileRenderer = new FileRenderer(this.dxfpFileContents, dfxpFile);
+			}
+			
+			private function setMediaElement(value:MediaElement):void
+			{
+				if (mediaPlayer.media != null)
+				{
+					mediaContainerUIComponent.container.removeMediaElement(mediaPlayer.media);
+				}
+				
+				if (value != null)
+				{
+					mediaContainerUIComponent.container.addMediaElement(value);
+				}
+					
+				mediaPlayer.media = value;
+			}
+
+			private function unloadMedia():void
+			{
+				setMediaElement(null);
+				enablePlayerControls(false);
+				clearCaptionText();
+			}			
+
+			private function enablePlayerControls(enable:Boolean=true):void
+			{
+				playBtn.enabled = seekBar.enabled = enable;
+			}
+					
+			private function showScrubTime(val:String):String 
+			{
+				return timeCode(Number(val));
+			}
+
+			private function timeCode(sec:Number):String 
+			{
+				var h:Number = Math.floor(sec/3600);
+				h = isNaN(h) ? 0 : h;
+				
+				var m:Number = Math.floor((sec%3600)/60);
+				m = isNaN(m) ? 0 : m;
+				
+				var s:Number = Math.floor((sec%3600)%60);
+				s = isNaN(s) ? 0 : s;
+				
+				return (h == 0 ? "":(h<10 ? "0"+h.toString()+":" : h.toString()+":"))+(m<10 ? "0"+m.toString() : m.toString())+":"+(s<10 ? "0"+s.toString() : s.toString());
+			}
+			
+			private function debug(msg:String):void
+			{
+				if (DEBUG)
+				{
+					trace(msg);
+				}
+			}
+									
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="mainContainer" paddingLeft="20" paddingTop="20">
+		<mx:HBox width="100%">
+			<mx:Label styleName="title" text="OSMF Captioning Test App" />
+		</mx:HBox>
+		<mx:Spacer height="5" />
+		<mx:VBox id="selectionContainer">
+			<mx:Form>
+				<mx:FormItem label="DFXP File:">
+					<mx:ComboBox id="cbTestFile" dataProvider="{this.timingTestFiles}" editable="true" />
+				</mx:FormItem>
+				<mx:FormItem label="Media File:">
+					<mx:HBox>
+						<mx:TextInput id="tiMediaURL" text="{STREAM_URL}" />
+						<mx:Button id="btnLoadMedia" label="Load Media Resource" click="{loadMedia(tiMediaURL.text, cbTestFile.selectedLabel)}"/>
+						<mx:Button id="btnUnloadMedia" label="Unload Media Resource" click="{unloadMedia()}"/>			
+					</mx:HBox>					
+				</mx:FormItem>
+			</mx:Form>
+		</mx:VBox>
+		<mx:HBox>
+			<mx:VBox id="videoContainer">
+			    <samples:MediaContainerUIComponent id="mediaContainerUIComponent" width="480" height="270"  />
+	    		<mx:HSlider id="seekBar" width="480" thumbPress="toggleDragging(true)" thumbRelease="toggleDragging(false)" 
+	    			dataTipFormatFunction="showScrubTime" enabled="false" />
+	    		<mx:HBox horizontalAlign="right" width="100%">
+	    			<mx:Label text="Position: " />
+					<mx:Label id="lblPlayhead" width="100" styleName="timeCode" />
+					<mx:Label text="Duration: " />
+	    			<mx:Label id="lblDuration" width="100" styleName="timeCode" />
+					<mx:Button id="playBtn" label="Pause" width="70" click="onClickPlayBtn(event)" enabled="false" />
+	    		</mx:HBox>
+				<mx:TextArea id="captionLabel" wordWrap="true" editable="false" styleName="captionStyle" backgroundColor="{captionBackgroundColor}"
+					width="100%" height="44" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off" visible="true"
+					creationComplete="captionLabel.x=mediaContainerUIComponent.x; captionLabel.y=mediaContainerUIComponent.height-captionLabel.height"/>						    					
+			</mx:VBox>
+			<mx:VBox id="dfxpFileContainer">
+				<mx:TextArea id="dxfpFileContents" editable="false" width="560" height="270" wordWrap="true" />
+				
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Application>

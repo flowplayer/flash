@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow title="Instructions" showCloseButton="true"
+				xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Form>
+		<mx:FormHeading label="Instructions:"/>
+		<mx:FormItem id="step1" label="1)">
+			<mx:Text id="step1Lbl" text="Select the 'Load Resource Data' Button"/>
+		</mx:FormItem>
+		<mx:FormItem id="step2" label="2)">
+			<mx:Text id="step2Lbl" text="Using the file browser, select a resource data XML file from your disk drive &#13;
+					 (an example of this can be found at http://zeri.digitalprimates.net/assets/TestResourceURIsData.xml)."/>
+		</mx:FormItem>
+		<mx:FormItem id="step3" label="3)">
+			<mx:Text id="step3Lbl" text="Wait for resource to load (the 'Run Tests' button will become active)."/>
+		</mx:FormItem>
+		<mx:FormItem id="step4" label="4)">
+			<mx:Text id="step4Lbl" text="Press the 'Run Tests' button."/>
+		</mx:FormItem>
+	</mx:Form>
+</mx:TitleWindow>
