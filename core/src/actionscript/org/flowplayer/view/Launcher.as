@@ -102,7 +102,7 @@ import org.flowplayer.model.DisplayPluginModel;
         private var _clickTimer:Timer = new Timer(200, 1);
         private var _clickEvent:MouseEvent;
 
-		//private var _screenMask:Sprite;
+		private var _screenMask:Sprite;
 
 		[Frame(factoryClass="org.flowplayer.view.Preloader")]
 		public function Launcher() {
@@ -230,8 +230,8 @@ import org.flowplayer.model.DisplayPluginModel;
 			log.debug("starting configured streams");
             startStreams();
 
-            //#508 disabling the stagevideo screen mask, canvas is visible without it.
-			//createScreenMask();
+            //#627 re-enabling screen mask for stage video.
+			createScreenMask();
             arrangeScreen();		
 			
             addListeners();
@@ -252,7 +252,7 @@ import org.flowplayer.model.DisplayPluginModel;
 		}
 
         //#508 disabling the stagevideo screen mask, canvas is visible without it.
-		/*private function createScreenMask():void {
+		private function createScreenMask():void {
 			blendMode = BlendMode.LAYER;
 			
 			_screenMask = new Sprite();
@@ -264,7 +264,7 @@ import org.flowplayer.model.DisplayPluginModel;
 			_screenMask.y = 0;
 			_screenMask.width = 100;
 			_screenMask.height = 100;
-		} */
+		}
 
 		private function resizeCanvasLogo():void {
 			_canvasLogo.alpha = 1;
@@ -739,9 +739,13 @@ import org.flowplayer.model.DisplayPluginModel;
 			graphics.endFill();
 
             //#508 disabling the stagevideo screen mask, canvas is visible without it.
-            /*CONFIG::FLASH_10_1 {
+            CONFIG::FLASH_10_1 {
 			    _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
-            } */
+
+                //#627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
+                _flowplayer.onFullscreen(onStageVideoFullscreen);
+                _flowplayer.onFullscreenExit(onStageVideoFullscreen);
+            }
 		}
 		
 		private function onMouseOut(event:MouseEvent):void {
@@ -753,35 +757,52 @@ import org.flowplayer.model.DisplayPluginModel;
 		}
 
         //#508 disabling the stagevideo screen mask, canvas is visible without it.
-		/*CONFIG::FLASH_10_1 {
-		private function onStageVideoStateChange(event:ClipEvent):void {
-			var stageVideo:StageVideo = event.info as StageVideo;
-			log.info("stage video state changed " + stageVideo);
+		CONFIG::FLASH_10_1 {
+            private function onStageVideoStateChange(event:ClipEvent):void {
+                var stageVideo:StageVideo = event.info as StageVideo;
+                log.info("stage video state changed " + stageVideo);
 
-			if ( stageVideo ) {
-				
-				_screenMask.width  = stageVideo.viewPort.width;
-				_screenMask.height = stageVideo.viewPort.height;
-				_screenMask.x = stageVideo.viewPort.x;
-				_screenMask.y = stageVideo.viewPort.y;
+                if ( stageVideo ) {
 
-                log.debug("mask dimensions " + _screenMask.width + " x " + _screenMask.height);
-                log.debug("mask pos " + _screenMask.x + ", " + _screenMask.y);
+                    _screenMask.width  = stageVideo.viewPort.width;
+                    _screenMask.height = stageVideo.viewPort.height;
+                    _screenMask.x = stageVideo.viewPort.x;
+                    _screenMask.y = stageVideo.viewPort.y;
 
-				if ( ! contains(_screenMask) ) {
-                    //#508 stage video mask was being added to the top layer and hiding all children.
-                    addChildAt(_screenMask, 1);
-					//addChildAt(_screenMask, _canvasLogo ? getChildIndex(_canvasLogo) + 1 : 1);
-					log.debug("adding mask");
-				}
-			} else {
-				if ( contains(_screenMask) ) {
-					log.debug("removing mask")
-					removeChild(_screenMask);
-				}
-			}
-		}
-        } */
+                    log.debug("mask dimensions " + _screenMask.width + " x " + _screenMask.height);
+                    log.debug("mask pos " + _screenMask.x + ", " + _screenMask.y);
+
+                    if ( ! contains(_screenMask) ) {
+                        //#508 stage video mask was being added to the top layer and hiding all children.
+                        addChildAt(_screenMask, 0);
+                        //addChildAt(_screenMask, _canvasLogo ? getChildIndex(_canvasLogo) + 1 : 1);
+                        log.debug("adding mask");
+                    }
+
+                    //#627 unbind the stagevideo state change events after the screen mask is setup.
+                    _flowplayer.playlist.unbind(onStageVideoStateChange);
+                } else {
+                    if ( contains(_screenMask) ) {
+                        log.debug("removing mask")
+                        removeChild(_screenMask);
+                        _flowplayer.playlist.unbind(onStageVideoStateChange);
+                    }
+                }
+            }
+
+            /**
+             * #627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
+             * @param event
+             */
+            private function onStageVideoFullscreen(event:PlayerEvent):void
+            {
+                //#627 if stage video is not configured or available unbind the fullscreen events on first try.
+                if (!_flowplayer.playlist.current.useStageVideo) {
+                    _flowplayer.unbind(onStageVideoFullscreen);
+                }
+                _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
+            }
+        }
 
 		private function createPanel():void {
 			_panel = new Panel();

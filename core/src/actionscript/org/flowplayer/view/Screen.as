@@ -271,7 +271,9 @@ package org.flowplayer.view {
         private function addListeners(eventSupport:ClipEventSupport):void {
             eventSupport.onPlaylistReplace(onPlaylistChanged);
             eventSupport.onClipAdd(onClipAdded);
-            eventSupport.onBufferFull(onBufferFull);
+            //eventSupport.onBufferFull(onBufferFull);
+            //#627 only detach / attach the display on start events which causes issues in buffering events after a seek in stagevideo.
+            eventSupport.onStart(onBufferFull);
 
             eventSupport.onBegin(onBegin);
             eventSupport.onStart(onStart);
