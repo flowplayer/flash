@@ -230,8 +230,8 @@ import org.flowplayer.model.DisplayPluginModel;
 			log.debug("starting configured streams");
             startStreams();
 
-            //#508 disabling the stagevideo screen mask, canvas is visible without it.
-			//createScreenMask();
+            //#627 re-enabling screen mask for stage video.
+			createScreenMask();
             arrangeScreen();		
 			
             addListeners();
@@ -796,6 +796,7 @@ import org.flowplayer.model.DisplayPluginModel;
              */
             private function onStageVideoFullscreen(event:PlayerEvent):void
             {
+                //#627 if stage video is not configured or available unbind the fullscreen events on first try.
                 if (!_flowplayer.playlist.current.useStageVideo) {
                     _flowplayer.unbind(onStageVideoFullscreen);
                 }
