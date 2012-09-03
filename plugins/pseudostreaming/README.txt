@@ -4,6 +4,8 @@ Version history:
 -----
 - #568 fix for bitrate switching in paused mode, pause the stream only during seeking while paused. now dispatched seek events while paused.
 - #602 don't seek to frame when start is set.
+- #630 move seek event dispatching to buffer full or else the time hasn't been updated yet.
+- #630 when the event is null we're in silent seek during controlbar dragging, only seek when not silent.
 
 3.2.8
 -----
