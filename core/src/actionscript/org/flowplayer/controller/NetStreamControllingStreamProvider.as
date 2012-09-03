@@ -138,6 +138,12 @@ package org.flowplayer.controller {
                 return clip.provider == (_model ? _model.name : (clip.parent ? 'httpInstream' : 'http'));
             });
 
+            //#614 when the clip ends if the next clip in the provider has a different provider close the provider stream.
+            clip.onFinish(closeStream, function():Boolean {
+                return _player.playlist.hasNext() && _player.playlist.nextClip.provider !== _model.name;
+
+            });
+
             clip.startDispatched = false;
             log.debug("previously started clip " + _startedClip);
             if (attempts == 3 && _startedClip && _startedClip == clip && _connection && _netStream) {
@@ -150,6 +156,17 @@ package org.flowplayer.controller {
 
                 connect(clip);
             }
+        }
+
+        /**
+         * #614 close the stream and unbind the event.
+         * @param event
+         */
+        private function closeStream(event:ClipEvent):void
+        {
+            netStream.close();
+            _startedClip = null;
+            event.target.unbind(closeStream);
         }
 
         private function replay(clip:Clip):void {
