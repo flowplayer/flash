@@ -104,9 +104,7 @@ package org.flowplayer.bwcheck.detect {
             loader.addEventListener(IOErrorEvent.IO_ERROR, onError);
 
             var request:URLRequest = new URLRequest(_referenceFileUrl + "?" + Math.random());
-            _nocache = new URLRequestHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-            var headers:Array = new Array(_nocache);
-            request.requestHeaders = headers;
+            //#6 cache control headers don't work on chrome windows, just use the cache busting url param.
             request.method = URLRequestMethod.GET;
             loader.load(request);
 
@@ -116,6 +114,7 @@ package org.flowplayer.bwcheck.detect {
         }
 
         protected function onError(event:IOErrorEvent):void {
+            log.error();
             var obj:Object = new Object();
             obj.application = "";
             obj.description = event.text;
