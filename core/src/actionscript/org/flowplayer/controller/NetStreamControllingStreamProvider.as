@@ -862,7 +862,8 @@ package org.flowplayer.controller {
 //                clip.setContent(null);
             } else {
                 silentSeek = true;
-                netStream.client = new NullNetStreamClient();
+                //#9 when replaying from stopping, connection does not receive callbacks anymore.
+                //netStream.client = new NullNetStreamClient();
                 netStream.pause();
                 netStream.seek(0);
             }
