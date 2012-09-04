@@ -234,9 +234,8 @@ package org.flowplayer.menu.ui {
                 adjustDockPosition();
             } else {
                 // the position will be adjuster every time the menu becomes visible
-                this.addEventListener(Event.ADDED_TO_STAGE, function(event:Event):void {
-                    adjustDockPosition();
-                });
+                //#7 adjust the dock once the stage is available
+                this.addEventListener(Event.ADDED_TO_STAGE, adjustDockOnStage);
             }
         }
 
@@ -251,11 +250,29 @@ package org.flowplayer.menu.ui {
             }
             if (! verticalPosConfigured) {
                 log.debug("stage == " + stage);
-                myModel.bottom = stage.stageHeight - DisplayObject(_menuButtonContainer).y;
+
+                if ( stage) {
+                    myModel.bottom = stage.stageHeight - DisplayObject(_menuButtonContainer).y;
+                } else {
+                   //#7 adjust the dock once the stage is available
+                   this.addEventListener(Event.ADDED_TO_STAGE, adjustDockOnStage);
+                   return;
+                }
+
                 log.debug("adjustDockPosition(), menuButtonContainer.y = " + _menuButtonContainer["y"]);
                 log.debug("adjustDockPosition(), vertical menu position adjusted to " + myModel.position);
             }
             _player.animationEngine.animate(this, myModel, 0);
+        }
+
+        /**
+         * #7 adjust the dock once the stage is available once only.
+         * @param event
+         */
+        private function adjustDockOnStage(event:Event):void
+        {
+            adjustDockPosition();
+            this.removeEventListener(Event.ADDED_TO_STAGE, adjustDockOnStage);
         }
 
         private function createDock():void {

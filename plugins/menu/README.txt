@@ -3,6 +3,7 @@ Version history:
 3.2.10
 ------
 - new build because of changes in common libraries this plugin uses
+- #7 check for stage availability before positioning the dock or position once stage is available when resetting menu items.
 
 3.2.9
 -----
