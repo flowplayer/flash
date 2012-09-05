@@ -146,10 +146,11 @@ package org.flowplayer.bitrateselect {
 
 
         //#488 regression with #r1764 filter onStart events to only work with bitrateselect configured clips. Problem when autobuffering with playlst splash images.
+        //#7 filter for clips with bitrateitems also.
         private function applyForClip(clip:Clip):Boolean {
             log.debug("applyForClip(), clip.urlResolvers == " + clip.urlResolvers);
             if (clip.urlResolvers == null) return false;
-            var apply:Boolean = clip.urlResolvers.indexOf(_model.name) >= 0;
+            var apply:Boolean = clip.urlResolvers.indexOf(_model.name) >= 0 && clip.getCustomProperty("bitrateItems");
             log.debug("applyForClip? " + apply);
             return apply;
         }

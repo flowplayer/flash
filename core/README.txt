@@ -8,6 +8,7 @@ Version history:
 - #614 when the clip ends if the next clip in the provider has a different provider close the provider stream.
 - #627 only detach / attach the display on start events which causes issues in buffering events after a seek in stagevideo.
 - #627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
+- #9 when replaying from stopping, connection does not receive callbacks anymore.
 
 3.2.12
 ------

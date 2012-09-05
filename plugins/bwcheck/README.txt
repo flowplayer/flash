@@ -4,6 +4,7 @@ Version history:
 ------
 - #547 Live dynamic stream switching not working on Internap CDN
 - #563 fixes for resolving bitrates with the bitrateselect and menu plugin.
+- #6 cache control headers don't work on chrome windows, just use the cache busting url param.
 
 3.2.9
 -----
