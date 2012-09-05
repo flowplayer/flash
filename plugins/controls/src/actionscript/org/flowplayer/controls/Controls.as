@@ -295,6 +295,9 @@ package org.flowplayer.controls {
          * @inheritDoc
          */
         override public function css(styleProps:Object = null):Object {
+            //#12 if css method used as a getter just return the current style config.
+            if (!styleProps) return _config.style;
+
             var result:Object = super.css(styleProps);
 
 			if ( _controlBarMover ) {
