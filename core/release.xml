@@ -1,7 +1,7 @@
 <project name="Flowplayer release" default="release">
 	<property file="build.properties" />
-	<property file="../release/cache.properties" />
-	<import file="${devkit-dir}/remotecopy.xml"/>
+	<property file="${user.home}/fprelease.properties" />
+	<import file="../lib/devkit/remotecopy.xml"/>
 	<import file="build.xml"/>
 
     <target name="release-core-resources">
@@ -40,6 +40,30 @@
         </remotecopy>
     </target>
 
+    <target name="upload-dev-core">
+        <remotecopy bucketname="flowplayer-releases/flowplayer" keyfile="${keyfile}" pass="${remotepass}" >
+            <releasefiles>
+                <fileset dir="${dist-dir}">
+                    <include name="${dist-name-dev}"/>
+                    <include name="${commercial-dist-name-dev}"/>
+                </fileset>
+                <fileset dir="${build-dir}">
+                    <include name="${player-binary}"/>
+                    <include name="${commercial-player-binary}"/>
+                </fileset>
+            </releasefiles>
+        </remotecopy>
+        <remotecopy bucketname="flowplayer-releases/swf" keyfile="${keyfile}" pass="${remotepass}">
+            <releasefiles>
+                <fileset dir="${build-dir}">
+                    <!--<include name="${player-binary}"/>-->
+                    <include name="${player-binary}"/>
+                    <include name="${commercial-player-binary}"/>
+                </fileset>
+            </releasefiles>
+        </remotecopy>
+    </target>
+
     <target name="release-core-resources-dev">
         <remotecopy-dev remotedir="${swfremotedir}" keyfile="${keyfile}" pass="${remotepass}">
             <releasefiles>
@@ -58,8 +82,8 @@
         <updatezip zip="${dist-dir}/latest.zip">
             <zipfiles>
                 <fileset dir="${build-dir}">
-                    <include name="${player-binary-versioned}"/>
-                    <include name="${commercial-player-binary-versioned}"/>
+                    <include name="flowplayer.swf"/>
+                    <include name="flowplayer.commercial.swf"/>
                 </fileset>
             </zipfiles>
         </updatezip>
@@ -83,11 +107,23 @@
 		</remotecopy>
 	</target>
 
-    <target name="release" description="Release to S3" depends="prepare, dist, release-core-resources">
+    <target name="release-js-plugins">
+        <iterate-plugins target="release-remote" buildfiles="${jsplugins.buildfiles}" basedirectory="../js-plugins"/>
+    </target>
+
+    <target name="release" description="Release to S3" depends="prepare, dist, release-core-resources, release-js-plugins">
         <iterate-plugins target="release-remote" />
+        <iterate-plugins target="write-filesize" buildfiles="${jsplugins.buildfiles}" basedirectory="../js-plugins"/>
         <antcall target="zip-swfs" />
         <antcall target="release-swf-zip" />
-        <antcall target="release-url-file" />
+        <antcall target="upload-release-files" />
+    </target>
+
+    <target name="upload-dev" description="Upload dev versions to S3, all plugins" depends="prepare, all-dist, upload-dev-core">
+        <iterate-plugins target="upload-dev-version" buildfiles="${allplugins.buildfiles}" />
+        <antcall target="zip-swfs" />
+        <antcall target="release-swf-zip" />
+        <antcall target="upload-release-files" />
     </target>
 
     <target name="release-dev" description="Release to the dev server" depends="prepare, dist, release-core-resources-dev">
@@ -95,17 +131,22 @@
     </target>
 
     <target name="zip-swfs" depends="zip-core-swfs">
-        <iterate-plugins target="zip-swfs" />
+        <iterate-plugins target="zip-swfs" buildfiles="${allplugins.buildfiles}" />
     </target>
 
-    <target name="release-url-file" depends="generate-url-file">
+    <target name="upload-release-files" depends="generate-url-file, generate-release-yaml, deploy-release-yaml">
         <remotecopy bucketname="flowplayer-releases/info" keyfile="${keyfile}" pass="${remotepass}" >
             <releasefiles>
                 <fileset dir="${core-dir}/dist">
                     <include name="dist.html" />    
+                    <include name="releases.yaml" />
                 </fileset>
             </releasefiles>
         </remotecopy>
+    </target>
+
+    <target name="deploy-release-yaml" depends="generate-release-yaml">
+        <copy file="${core-dir}/dist/releases.yaml" todir="${site.dir}" />
     </target>
 
     <target name="generate-url-file" description="generates a text file with paths to plugin zip files in flowplayer.org">
@@ -113,17 +154,80 @@
         <delete file="${url-file}" />
         <echo message="writing zip urls to ${url-file}" />
 
-<echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/${dist-name}"&#62;${dist-name}&#60;/a&#62; &#60;br /&#62;
+        <echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/flowplayer.zip"&#62;flowplayer.zip&#60;/a&#62; &#60;br /&#62;
 </echo>
-<echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/${commercial-dist-name}"&#62;${commercial-dist-name}&#60;/a&#62; &#60;br /&#62;
+        <echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/flowplayer.commercial.zip"&#62;flowplayer.commercial.zip&#60;/a&#62; &#60;br /&#62;
 </echo>
-<echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/${source-dist-name}"&#62;${source-dist-name}&#60;/a&#62; &#60;br /&#62;
+        <echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/flowplayer/flowplayer-src.zip"&#62;flowplayer-src.zip&#60;/a&#62; &#60;br /&#62;
 </echo>
-        <iterate-plugins target="write-zip-url" />
+        <iterate-plugins target="write-zip-url" buildfiles="${plugin.buildfiles}" />
+        <tstamp>
+            <format property="build.time" pattern="MMMM dd yyyy hh:mm aa"
+                    timezone="GMT" />
+        </tstamp>
 <echo file="${url-file}" append="true">
 &#60;br /&#62;
 &#60;a href="http://flowplayer-releases.s3.amazonaws.com/latest.zip"&#62;latest.zip: All latest dev-version swf files in one zip&#60;/a&#62; &#60;br /&#62;
+            &#60;br /&#62;
+            Build time: ${build.time} GMT
 </echo>
+    </target>
+
+    <target name="generate-release-yaml" description="Generates a YAML formatted file containing URLs to all released/uploaded plugins" depends="jsplugins">
+        <property name="yaml-file" value="${basedir}/dist/releases.yaml" />
+        <property name="urlbase" value="http://releases.flowplayer.org/" />
+        <delete file="${yaml-file}" />
+        <echo message="writing SWF urls to ${yaml-file}" />
+
+<echo file="${yaml-file}" append="true" message="urls:">
+</echo>
+<echo file="${yaml-file}" append="true" message="    swf:">
+</echo>
+<echo file="${yaml-file}" append="true" message="        base: ${urlbase}">
+</echo>
+<echo file="${yaml-file}" append="true" message="    js:">
+</echo>
+<echo file="${yaml-file}" append="true" message="        base: ${urlbase}">
+</echo>
+<echo file="${yaml-file}" append="true" message="    zip:">
+</echo>
+<echo file="${yaml-file}" append="true" message="        base: ${urlbase}">
+</echo>
+
+<echo file="${yaml-file}" append="true" message="versions:">
+</echo>
+<echo file="${yaml-file}" append="true" message="    swf:">
+</echo>
+<echo file="${yaml-file}" append="true" message="        player: ${version-info}">
+</echo>
+<echo file="${yaml-file}" append="true" message="        commercial: ${version-info}">
+</echo>
+<iterate-plugins target="write-version" buildfiles="${allplugins.buildfiles}" />
+<!-- 3rd party plugins -->
+<echo file="${yaml-file}" append="true" message="        cloudfrontsignedurl: ${cloudfront.version}">
+</echo>
+<echo file="${yaml-file}" append="true" message="        adsense: ${adsense.version}">
+</echo>
+
+<echo file="${yaml-file}" append="true" message="    js:">
+</echo>
+<echo file="${yaml-file}" append="true" message="        player: ${flowplayer-js-version-info}">
+</echo>
+
+<iterate-plugins target="write-version" buildfiles="${jsplugins.buildfiles}" basedirectory="../js-plugins"/>
+
+<echo file="${yaml-file}" append="true" message="    zip:">
+</echo>
+<echo file="${yaml-file}" append="true" message="        devkit: ${version-info}">
+</echo>
+<echo file="${yaml-file}" append="true" message="        flowplayer: ${version-info}">
+</echo>
+
+<echo file="${yaml-file}" append="true" message="    filesizes:">
+</echo>
+<iterate-plugins target="write-filesize" buildfiles="${allplugins.buildfiles}" />
+<iterate-plugins target="write-filesize" buildfiles="${jsplugins.buildfiles}" basedirectory="../js-plugins"/>
+
     </target>
 
 </project>

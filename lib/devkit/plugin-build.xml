@@ -303,12 +303,12 @@
 	
     
     <target name="write-zip-url">
-<echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/${basename}/${basename}.zip"&#62;${basename}.zip&#60;/a&#62; &#60;br /&#62;
-</echo>
+        <echo file="${url-file}" append="true">&#60;a href="http://flowplayer-releases.s3.amazonaws.com/${basename}/${basename}.zip"&#62;${basename}.zip&#60;/a&#62; &#60;br /&#62;
+    </echo>
     </target>
 
     <target name="write-version">
-        <echo file="${yaml-file}" append="true" message="        ${shortname}: ${version}${line.separator}" />
+        <echo file="${yaml-file}" append="true">        ${shortname}: ${version}${line.separator}</echo>
     </target>
 
     <target name="write-filesize">

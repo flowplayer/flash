@@ -6,9 +6,10 @@
 	<property file="${devkit-dir}/plugin-build.properties" />
 	<import file="${devkit-dir}/plugin-build.xml"/>
 	<property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
-	
-	<property name="basename" value="flowplayer.captions" />
-    <property name="releasedir" value="flowplayer.captions" />
+
+    <property name="shortname" value="captions" />
+    <property name="basename" value="flowplayer.${shortname}" />
+    <property name="releasedir" value="${basename}" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
 	<property name="plugin-swc" value="${basename}.swc" />

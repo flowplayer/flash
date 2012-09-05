@@ -1,12 +1,15 @@
 Version history:
 
+3.2.14
+------
+- #624 if there are alpha or opacity changes in a css call update the autohide original display properties.
+
 3.2.13
 ------
 - #583 fixes for handling autoHide fullscreenOnly property required for screen positioning.
 - #605 fixes for autohide method when currently disabled.
-- #492 hiding controlbar onStart fails (regression)
 - calling $f().getControls().setAutoHide({ enabled: false }) leaves controls visible
-- #624 if there are alpha or opacity changes in a css call update the autohide original display properties.
+- #492 hiding controlbar onStart fails (regression)
 
 3.2.12
 ------

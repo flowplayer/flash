@@ -5,9 +5,9 @@
 
     <property name="version-1" value="3"/>
     <property name="version-2" value="2"/>
-    <property name="version-3" value="14"/>
+    <property name="version-3" value="15"/>
     <property name="version-status" value=""/>
-    <property name="controls-version-info" value="3.2.13"/>
+    <property name="controls-version-info" value="3.2.14"/>
     <property name="audio-version-info" value="3.2.10"/>
     <property name="flowplayer-js-version-info" value="3.2.11"/>
     <property name="source-dist-root-folder" value="flowplayer"/>
@@ -361,7 +361,7 @@
                 <property name="keyfile" value="${keyfile}"/>
                 <property name="url-file" value="${url-file}"/>
                 <property name="yaml-file" value="${yaml-file}"/>
-                <property name="devkit-dir" value="${devkit-dir}"/>
+                <property name="devkit-dir" value="../${devkit-dir}"/>
                 <property name="js.deploy.dir" value="${js.deploy.dir}"/>
                 <property name="mxmlc-bin" value="${mxmlc-bin}" />
             </subant>
@@ -505,9 +505,9 @@
                 <include name="*.properties"/>
                 <include name="src/**/*"/>
             </zipfileset>
-            <zipfileset prefix="flowplayer.devkit/doc" dir="${apidoc-dir}">
-                <include name="**/*"/>
-            </zipfileset>
+            <!--<zipfileset prefix="flowplayer.devkit/doc" dir="${apidoc-dir}">-->
+                <!--<include name="**/*"/>-->
+            <!--</zipfileset>-->
         </zip>
     </target>
 
