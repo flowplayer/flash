@@ -105,7 +105,7 @@
     </target>
 
     <target name="deploy" if="deploy.dir" description="copies swf and js to deploy dirs" depends="jsplugins">
-        <copy todir="${deploy.dir}" overwrite="true">
+        <copy todir="${deploy.dir}" overwrite="true" verbose="true">
             <fileset dir="${build-dir}">
                 <include name="*swf"/>
             </fileset>
