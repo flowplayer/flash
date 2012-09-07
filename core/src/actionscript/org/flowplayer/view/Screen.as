@@ -273,7 +273,7 @@ package org.flowplayer.view {
             eventSupport.onClipAdd(onClipAdded);
             //eventSupport.onBufferFull(onBufferFull);
             //#627 only detach / attach the display on start events which causes issues in buffering events after a seek in stagevideo.
-            eventSupport.onStart(onBufferFull);
+           //eventSupport.onStart(onBufferFull);
 
             eventSupport.onBegin(onBegin);
             eventSupport.onStart(onStart);
@@ -312,6 +312,20 @@ package org.flowplayer.view {
             var clip:Clip = event.target as Clip;
             if (clip.metaData == false) return;
             handleStart(clip, event.info as Boolean);
+
+            //#15 fixes for #627, handle the display init on startup.
+            if (clip.type == ClipType.IMAGE) {
+                showDisplay(event);
+            }
+            if (clip.type == ClipType.VIDEO) {
+                var disp:MediaDisplay = _displays[clip];
+                if (! disp) return;
+                disp.init(clip);
+
+                if (clip.live) {
+                    showDisplay(event);
+                }
+            }
         }
 
         private function onResume(event:ClipEvent):void {
@@ -389,7 +403,7 @@ package org.flowplayer.view {
             showDisplay(event);
         }
 
-        private function onBufferFull(event:ClipEvent):void {
+        /*private function onBufferFull(event:ClipEvent):void {
             var clipNow:Clip = event.target as Clip;
             if (clipNow.type == ClipType.IMAGE) {
                 showDisplay(event);
@@ -403,7 +417,7 @@ package org.flowplayer.view {
                     showDisplay(event);
                 }
             }
-        }
+        }*/
 
         internal function hidePlay():void {
             if (playView.parent == this) {
