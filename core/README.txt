@@ -6,6 +6,7 @@ Version history:
 - #627 only detach / attach the display on start events which causes issues in buffering events after a seek in stagevideo.
 - #627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
 - #9 when replaying from stopping, connection does not receive callbacks anymore.
+- #15 fixes for #627, handle the display init on startup.
 
 3.2.13
 ------
