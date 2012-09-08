@@ -51,15 +51,11 @@ package org.flowplayer.controller {
                 //allow for chromeless swf video players to be added into the filter
                 return clip.type == ClipType.VIDEO || clip.type == ClipType.AUDIO || clip.type == ClipType.API;
             };
-            playlist.onBegin(onBegin, filter, true);
-
-            // commenting these out for now. To fix this: http://code.google.com/p/flowplayer-core/issues/detail?id=204
-            // we will see in testing if this causes trouble :-)
-//			playlist.onBufferFull(onBegin, filter, true);
-//			playlist.onStart(onBegin, filter, true);
+           playlist.onBegin(initContent, filter, true);
+           playlist.onStart(initContent, filter, true);
         }
 
-        private function onBegin(event:ClipEvent):void {
+        private function initContent(event:ClipEvent):void {
             var clip:Clip = event.target as Clip;
             log.info("onBegin, initializing content for clip " + clip);
             var video:DisplayObject = clip.getContent();
