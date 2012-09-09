@@ -243,8 +243,8 @@
         <unzip src="${dist-dir}/${basename}-${version}.zip" dest="${dist-dir}" />
 
         <echo message="Copying swfs to ${deploy-dir}" />
-        <copy file="${dist-dir}/${basename}/${plugin-binary-versioned}" todir="${deploy_dir}/${dist-dir}" overwrite="true" failonerror="false" />
-        <copy file="${dist-dir}/${basename}/${plugin-binary-versioned}" todir="${deploy_dir}/build" overwrite="true"  failonerror="false" />
+        <copy file="${dist-dir}/${basename}/${plugin-binary-versioned}" todir="${deploy_dir}/${dist-dir}" overwrite="true" failonerror="false" verbose="true" />
+        <copy file="${dist-dir}/${basename}/${plugin-binary-versioned}" todir="${deploy_dir}/build" overwrite="true"  failonerror="false" verbose="true" />
     </target>
 
 

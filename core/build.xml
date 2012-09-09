@@ -105,7 +105,7 @@
     </target>
 
     <target name="deploy" if="deploy.dir" description="copies swf and js to deploy dirs" depends="jsplugins">
-        <copy todir="${deploy.dir}" overwrite="true" verbose="true">
+        <copy todir="${deploy.dir}" overwrite="true">
             <fileset dir="${build-dir}">
                 <include name="*swf"/>
             </fileset>
@@ -393,14 +393,14 @@
         <!--</exec>-->
     </target>
 
-    <target name="zip" description="creates a distribution zip package" depends="build">
+    <target name="zip" description="creates a distribution zip package">
         <zip-player zip-name="${dist-name}" player-swf-dir="${build-dir}" player-swf="${player-binary-versioned}"
                     license="LICENSE.txt" example-dir="example-free"/>
         <copy file="${dist-dir}/${dist-name}" tofile="${dist-dir}/flowplayer.zip" />
         <copy file="${dist-dir}/${dist-name}" tofile="${dist-dir}/${dist-target-name}" />
     </target>
 
-    <target name="zip-biz" description="creates a Commercial distribution zip package" depends="build-biz">
+    <target name="zip-biz" description="creates a Commercial distribution zip package">
         <zip-player zip-name="${commercial-dist-name}" player-swf-dir="${build-dir}"
                     player-swf="${commercial-player-binary-versioned}" license="LICENSE_COMMERCIAL.txt"
                     example-dir="example-biz"/>
@@ -424,7 +424,7 @@
         <sequential>
             <echo message="++ Zipping @{zip-name} +++"></echo>
 
-            <zip destfile="${dist-dir}/@{zip-name}">
+            <zip destfile="${dist-dir}/@{zip-name}" update="false">
                 <zipfileset prefix="flowplayer" dir=".">
                     <include name="@{license}"/>
                     <!--<include name="flowplayer-${flowplayer-js-version-info}.min.js" />-->
@@ -511,7 +511,7 @@
         </zip>
     </target>
 
-    <target name="dist" description="Create distribution packages">
+    <target name="dist" description="Create distribution packages" depends="build-all">
         <iterate-plugins target="dist"/>
         <ant target="zip"/>
         <ant target="zip-biz"/>
