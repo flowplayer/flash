@@ -9,6 +9,7 @@ Version history:
 - #15 fixes for #627, handle the display init on startup.
 - #615 dispatch begin if in paused mode too early.
 - #629 if start has been dispatched already prevent dispatching many begin events.
+- #20 for the free player swap the logo with the stage video mask to display underneath not on top.
 
 3.2.13
 ------

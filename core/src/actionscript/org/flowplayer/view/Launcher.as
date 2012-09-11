@@ -775,7 +775,12 @@ import org.flowplayer.model.DisplayPluginModel;
                     if ( ! contains(_screenMask) ) {
                         //#508 stage video mask was being added to the top layer and hiding all children.
                         addChildAt(_screenMask, 0);
-                        //addChildAt(_screenMask, _canvasLogo ? getChildIndex(_canvasLogo) + 1 : 1);
+
+                        //#20 for the free player swap the logo with the stage video mask to display underneath not on top.
+                        CONFIG::freeVersion {
+                            swapChildren(_screenMask,  _canvasLogo);
+                        }
+                        //addChildAt(_screenMask, _canvasLogo ? 1 : 0);
                         log.debug("adding mask");
                     }
 
