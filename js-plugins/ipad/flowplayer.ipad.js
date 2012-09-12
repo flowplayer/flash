@@ -96,7 +96,7 @@ $f.addPlugin("ipad", function(options) {
 
 	extend(opts, options);
 
-	var validExtensions = validExtensions ? new RegExp('^\.(' + opts.validExtensions + ')$', 'i') : null;
+	var validExtensions = opts.validExtensions ? new RegExp('^\.(' + opts.validExtensions + ')$', 'i') : null;
 	var posterExtensions = new RegExp('^\.(' + opts.posterExtensions + ')$', 'i');
 
 	// some util funcs
