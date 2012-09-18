@@ -3,6 +3,7 @@ Version history:
 3.2.4
 -----
 - #601 dispatch resolver failure correctly.
+- #15 add cache busting to the file being checked for availability to play back correctly once resolving has completed.
 
 3.2.3
 -----

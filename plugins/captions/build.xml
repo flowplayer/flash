@@ -14,7 +14,7 @@
 	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
 	<property name="plugin-swc" value="${basename}.swc" />
 	
-	<property name="plugin-main-class" value="org/flowplayer/captions/Caption.as" />
+	<property name="plugin-main-class" value="org/flowplayer/captions/CaptionPluginFactory.as" />
 
 	<target name="release" description="makes a release" depends="build">
 		<copyrelease targetdir="flowplayer.captions">
