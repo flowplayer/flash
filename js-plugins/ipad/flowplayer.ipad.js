@@ -288,25 +288,25 @@ $f.addPlugin("ipad", function(options) {
 					video.fp_setPlaylist(clip.length !== undefined ? clip : [clip]);
 				}
 				
+				// #359 playlist-based splash images:
+				// check for a valid extension and set as the clip poster.
+				if (activeIndex == 0 && activePlaylist.length > 1 &&
+						posterExtensions.test(activePlaylist[activeIndex].extension)) {
+					var poster = activePlaylist[activeIndex].url;
+
+					// #359 add logging for poster image
+					console.log("Poster image available with url " + poster);
+
+					++activeIndex;
+					// not the last clip in the playlist
+					console.log("Not last clip in the playlist, moving to next one");
+					video.fp_play(activeIndex, false, true, poster);
+
+					return;
+				}
 				
 				if (validExtensions && ! validExtensions.test(activePlaylist[activeIndex].extension) ) {
-    				if ( activePlaylist.length > 1 && activeIndex < activePlaylist.length - 1) {
-        		        //#359 for images in a playlist check for a valid extension and set as the clip poster.
-                        var poster;
-
-                        if (posterExtensions.test(activePlaylist[activeIndex].extension)) {
-                            poster = activePlaylist[activeIndex].url;
-
-                            //#359 add logging for poster image
-                            console.log("Poster image available with url " + poster);
-                        }
-
-                        ++activeIndex;
-        				// not the last clip in the playlist
-        				console.log("Not last clip in the playlist, moving to next one");
-        				video.fp_play(activeIndex, false, true, poster);
-    				}
-    				return;
+					return;
 				}
 				
 				clip = activePlaylist[activeIndex];
