@@ -754,7 +754,9 @@ package org.flowplayer.controller {
             } else if (event.info.code == "NetStream.Buffer.Full") {
                 dispatchPlayEvent(ClipEventType.BUFFER_FULL);
             } else if (event.info.code == "NetStream.Play.Start") {
-                if (! _paused && canDispatchBegin()) {
+                //#615 dispatch begin if in paused mode too early.
+                //#629 if start has been dispatched already prevent dispatching many begin events.
+                if (canDispatchBegin() && !clip.startDispatched) {
                     log.debug("dispatching onBegin");
                     clip.dispatchEvent(new ClipEvent(ClipEventType.BEGIN, _pauseAfterStart));
                 }
