@@ -9,9 +9,9 @@
 		Flash embedding and provides the Flowplayer API.
 	-->
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.9.min.js"></script>
 
-	<!-- some minimal styling, can be removed -->
+    <!-- some minimal styling, can be removed -->
 	<link rel="stylesheet" type="text/css" href="style.css">
 
 	<!-- page title -->
@@ -33,7 +33,7 @@
 				//debug: true,
 				log : {
 					level: 'debug',
-                    filter: ['org.flowplayer.controller.*', 'org.flowplayer.pseudostreaming.*']
+                    filter: ['org.flowplayer.captions.*']
 //                    filter: ['org.flowplayer.pseudostreaming.*', 'org.flowplayer.captions.*' /*'org.flowplayer.view.Launcher', 'org.flowplayer.content.*'*/]
 				},
 				canvas: {

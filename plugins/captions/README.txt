@@ -1,5 +1,9 @@
 Version history:
 
+3.2.9
+-----
+- #19, loadCaptions() had disappeared somewhere, now works again
+
 3.2.8
 -----
 - addCaptions() takes in a JSON array of caption objects. The format of these JSON caption objects is now:

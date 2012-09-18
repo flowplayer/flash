@@ -118,7 +118,7 @@
         <echo message="release-remote: uploading to ${basename}" />
         <remotecopy bucketname="flowplayer-releases/${basename}" keyfile="${keyfile}" pass="${pass}">
             <releasefiles>
-                <fileset dir="${basename}">
+                <fileset dir=".">
                     <include name="${basename}-${version}.js" />
                     <include name="${basename}-${version}.min.js" />
                 </fileset>

@@ -118,6 +118,10 @@ package org.flowplayer.captions {
 
             Clip(_player.playlist.clips[clipIndex]).setCustomProperty("captionUrl", captions);
 
+           if (!_loader) {
+              _loader = new CaptionLoader(_player, _player.playlist, _config);
+           }
+
             //#574 re-load captions for the clip not the entire playlist.
             _loader.loadClipCaption(Clip(_player.playlist.clips[clipIndex]),function():void {
                     parseIfLoadedAndViewAvailable();

@@ -1,5 +1,11 @@
 Version history
 
+3.2.12
+------
+- #22, reinstate validExtensions variable
+- #26, make isFullscreen return something meaningful
+- #359, playlist-based splash images: check for a valid extension and set as the clip poster.
+
 3.2.9
 -----
 - fixed issue #381, cuepoint.time was left undefined

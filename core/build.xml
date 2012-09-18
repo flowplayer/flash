@@ -369,7 +369,7 @@
     </macrodef>
 
     <target name="release-plugin" description="releases one plugin, specify the plugin name with -Dplugin=">
-        <ant antfile="../${plugin}/build.xml" target="release-remote" dir="../${plugin}">
+        <ant antfile="build.xml" target="release-remote" dir="../plugins/${plugin}">
             <property name="remotedir" value="${remotedir}"/>
             <property name="all-swf-zip" value="${basedir}/dist/latest.zip"/>
             <property name="swfremotedir" value="${swfremotedir}"/>
@@ -377,6 +377,14 @@
             <property name="aws-secretKey" value="${aws-secretKey}"/>
             <property name="url-file" value="${url-file}"/>
             <property name="keyfile" value="${keyfile}"/>
+            <property name="devkit-dir" value="../${devkit-dir}"/>
+        </ant>
+    </target>
+
+
+    <target name="release-js-plugin" description="releases one JS plugin, specify the plugin name with -Dplugin=">
+        <ant antfile="build.xml" target="release-remote" dir="../js-plugins/${plugin}">
+            <property name="devkit-dir" value="../${devkit-dir}"/>
         </ant>
     </target>
 
