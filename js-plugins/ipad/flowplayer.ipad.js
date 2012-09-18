@@ -564,7 +564,10 @@ $f.addPlugin("ipad", function(options) {
 		}
 
 		video.fp_isFullscreen = function() {
-			return false; //video.webkitDisplayingFullscreen;
+			var isfullscreen = video.webkitDisplayingFullscreen;
+			if (isfullscreen !== undefined)
+				return isfullscreen;
+			return false;
 		}
 
 		video.fp_toggleFullscreen = function() {
