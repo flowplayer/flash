@@ -6,6 +6,7 @@ Version history:
 - #602 don't seek to frame when start is set.
 - #630 move seek event dispatching to buffer full or else the time hasn't been updated yet.
 - #630 when the event is null we're in silent seek during controlbar dragging, only seek when not silent.
+- #31 fix to dispatch start events properly when loading new items.
 
 3.2.8
 -----
