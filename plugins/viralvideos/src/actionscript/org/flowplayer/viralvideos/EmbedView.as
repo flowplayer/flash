@@ -49,6 +49,7 @@ package org.flowplayer.viralvideos {
         private var _optionsContainer:Sprite;
         private var _config:EmbedConfig;
         private var _buttonConfig:ButtonConfig;
+        private var _embedCodeStr:String;
 
         public function EmbedView(plugin:DisplayPluginModel, player:Flowplayer, config:EmbedConfig, buttonConfig:ButtonConfig, style:Object) {
             super("viral-embed", plugin, player, style);
@@ -164,7 +165,8 @@ package org.flowplayer.viralvideos {
 
         private function changeCode():void {
             log.debug("changeCode");
-            _embedCode.htmlText = '<span class="embed">' + _config.playerEmbed.getEmbedCode(true).replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</span>';
+            _embedCodeStr = _config.playerEmbed.getEmbedCode(true);
+            _embedCode.htmlText = '<span class="embed">' + _embedCodeStr.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</span>';
         }
 
         private function initEmbedCodeSettings():void {
@@ -252,7 +254,7 @@ package org.flowplayer.viralvideos {
 
         private function onCopyToClipboard(event:MouseEvent):void {
             initEmbedCodeSettings();
-            System.setClipboard(_config.playerEmbed.getEmbedCode(true));
+            System.setClipboard(_embedCodeStr);
             stage.focus = _embedCode;
             setSelection();
             _infoLabel.htmlText = '<span class="info">Copied to clipboard</span>';

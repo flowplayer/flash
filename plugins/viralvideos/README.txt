@@ -12,6 +12,7 @@ sVersion history:
 - #618 refactored server return to not require json output anymore and return success. Return success on all request errors with logging, return success on token error with logging. Added 3 new configurable email labels,
 "success", "required", "sending"
 - #12 if css method used as a getter just return the current style config.
+- #34 parse share config params from the player urls before generating the embed code.
 
 3.2.11
 ------
