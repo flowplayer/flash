@@ -13,7 +13,7 @@
 	<property name="lib-dir" value="lib" />
 	<property name="flex-libs-path" value="${flexlibsdir}" />
 	<property name="flowplayer-js-version-info" value="3.1.4" />
-	<property name="src-flowplayer" value="../core" />
+	<property name="src-flowplayer" value="../../core" />
     <property name="plugin-swc" value="${basename}.swc" />
     <property name="plugin-swc-versioned" value="${basename}-${version}.swc" />
 
