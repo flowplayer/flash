@@ -5,9 +5,9 @@
 
     <property name="version-1" value="3"/>
     <property name="version-2" value="2"/>
-    <property name="version-3" value="15"/>
-    <property name="version-status" value=""/>
-    <property name="controls-version-info" value="3.2.14"/>
+    <property name="version-3" value="16"/>
+    <property name="version-status" value="dev"/>
+    <property name="controls-version-info" value="3.2.15-dev"/>
     <property name="audio-version-info" value="3.2.10"/>
     <property name="flowplayer-js-version-info" value="3.2.11"/>
     <property name="source-dist-root-folder" value="flowplayer"/>
