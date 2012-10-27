@@ -45,10 +45,6 @@ public class BWStreamSelectionManager extends StreamSelectionManager {
         }
 
         override public function getStreamIndex(bandwidth:Number):Number {
-
-            //#417 if screen size rule is disabled do not do screen size checks for the index.
-            if (!_config.qos.screen) return super.getStreamIndex(bandwidth);
-
             for (var i:Number = streamItems.length - 1; i >= 0; i--) {
 
                 var item:BitrateItem = streamItems[i];
@@ -71,7 +67,8 @@ public class BWStreamSelectionManager extends StreamSelectionManager {
         }
 
         internal static function fitsScreen(item:BitrateItem, player:Flowplayer, config:Config):Boolean {
-            if (! item.width) return true;
+            //#47 regression with 417 disable screen checks with the qos screen property
+            if (! item.width || !config.qos.screen) return true;
 
             var screen:DisplayProperties = player.screen;
             var stage:Stage = screen.getDisplayObject().stage;
