@@ -139,9 +139,10 @@ package org.flowplayer.controller {
             });
 
             //#614 when the clip ends if the next clip in the provider has a different provider close the provider stream.
-            clip.onFinish(closeStream, function():Boolean {
+            clip.onFinish(closeStream, function(clip:Clip):Boolean {
+                //#42 pass instream clips through and close the stream
+                if (clip.isInStream) return true;
                 return _player.playlist.hasNext() && _player.playlist.nextClip.provider !== _model.name;
-
             });
 
             clip.startDispatched = false;
@@ -164,7 +165,7 @@ package org.flowplayer.controller {
          */
         private function closeStream(event:ClipEvent):void
         {
-            netStream.close();
+            if (netStream) netStream.close();
             _startedClip = null;
             event.target.unbind(closeStream);
         }

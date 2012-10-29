@@ -110,6 +110,10 @@ package org.flowplayer.controls.scrubber {
 
         override protected function onPlayResumed(event:ClipEvent):void {
 			super.onPlayResumed(event);
+
+            //#42 when returning and resuming from an instream clip, restart the time update timer.
+            if (!_timeUpdateTimer.running) _timeUpdateTimer.start();
+
             log.info("received " + event + ", time " + _player.status.time);
 			if (_player.status.time < 0.5) {
                 if (_enableOnStart) {
