@@ -2,27 +2,13 @@
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<!-- 
-	Flowplayer website, forums & jQuery Tools by Tero Piirainen 
-	
-	Prefer web standards over Flash. Video is the only exception.	
--->
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
 
 		<title>Flowplayer - Flash Video Player for the Web</title>
-		<meta name="Description" content="Embed video streams to your website. Superior alternative to YouTube. Open Sourced under the GPL license. No other software makes this smoother." />	
-		<meta name="Keywords" content="video player for the web, flash video player,web media player,free video player,free flv player,mp4 flash player,mp4 player,open source video player,flash 9 video,flash video,web video,flv player,flv video" />		
-	
 
-	
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-	<meta name="Distribution" content="Global" />
-	<meta name="Author" content="Tero Piirainen" />
-	<meta name="Robots" content="index,follow" /> 
- 
 
 	
 	
@@ -76,7 +62,7 @@
 
 <a name="anchor"></a>
 
-
+<h2><em>Basic</em> example with a single bitrate</h2>
 
 <p>
 
@@ -84,7 +70,7 @@
 
 
 <div style="width:425px;height:300px;margin:30px auto">
-   
+
 
 
 <!-- player container-->
@@ -102,25 +88,119 @@
 flowplayer("player", "@PLAYER_SWF@", {
     // configure the required plugins
     plugins:  {
-    
+
         httpstreaming: {
             url: '@MAIN_PLAYER_SWF@'
         }
-
     },
 
 
     clip: {
         url: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/chunklist-b400000.m3u8",
         ipadUrl: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/chunklist-b400000.m3u8",
-        //url: "http://thread-life.herokuapp.com/threads/369/alternates.m3u8?low_res=true",
-        //ipadUrl: "http://thread-life.herokuapp.com/threads/369/alternates.m3u8?low_res=true",
         urlResolvers: "httpstreaming",
-        provider: "httpstreaming"
+        provider: "httpstreaming",
+        autoPlay: false
     },
     log: {
         level: 'debug',
-        filter: 'org.electroteque.m3u8.*'
+        filter: 'org.osmf.*, org.electroteque.m3u8.*, org.flowplayer.bitrateselect.*'
+    }
+
+}).ipad();
+</script>
+
+
+
+</div>
+
+<div class="box code">
+<pre><code class="javascript">
+flowplayer("player", "@PLAYER_SWF@", {
+    // configure the required plugins
+    plugins:  {
+
+        httpstreaming: {
+            url: '@MAIN_PLAYER_SWF@'
+        }
+    },
+
+
+    clip: {
+        url: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/chunklist-b400000.m3u8",
+        ipadUrl: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/chunklist-b400000.m3u8",
+        urlResolvers: ["httpstreaming","brselect"],
+        provider: "httpstreaming",
+        autoPlay: false
+    },
+    log: {
+        level: 'debug',
+        filter: 'org.osmf.*, org.electroteque.m3u8.*, org.flowplayer.bitrateselect.*'
+    }
+
+}).ipad();
+
+</pre>
+</div>
+
+
+<h2><em>Multi</em> bitrate example with menu selection.</h2>
+
+<p>
+
+</p>
+
+
+<div style="width:425px;height:300px;margin:30px auto">
+
+<a
+    href=""
+    style="display:block;width:425x;height:300px;"
+    id="bitrate">
+
+</a>
+
+<!-- Flowplayer installation and configuration -->
+<script type="text/javascript" >
+flowplayer("bitrate", "@PLAYER_SWF@", {
+    // configure the required plugins
+    plugins:  {
+    
+        httpstreaming: {
+            url: '@MAIN_PLAYER_SWF@',
+
+
+        },
+        menu: {
+            url: "flowplayer.menu.swf",
+            items: [
+                                        // you can have an optional label as the first item
+                                        // the bitrate specific items are filled here based on the clip's bitrates
+                                        { label: "select bitrate:", enabled: false }
+                                    ]
+        },
+        brselect: {
+            url: "flowplayer.bitrateselect.swf",
+            menu: true
+        }
+
+    },
+
+
+    clip: {
+        url: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/playlist.m3u8",
+        ipadUrl: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/playlist.m3u8",
+        urlResolvers: ["httpstreaming","brselect"],
+        provider: "httpstreaming",
+        autoPlay: false,
+        bitrates: {
+            labels: { "300": "Low", "400": "Medium", "600": "High"  },
+            default: 600
+        },
+    },
+    log: {
+        level: 'debug',
+        filter: 'org.osmf.*, org.electroteque.m3u8.*, org.flowplayer.bitrateselect.*'
     }
 
 }).ipad();
@@ -129,6 +209,54 @@ flowplayer("player", "@PLAYER_SWF@", {
 
 
 
+</div>
+
+<div class="box code">
+<pre><code class="javascript">
+flowplayer("player", "@PLAYER_SWF@", {
+    // configure the required plugins
+    plugins:  {
+
+        httpstreaming: {
+            url: '@MAIN_PLAYER_SWF@',
+
+
+        },
+        menu: {
+            url: "flowplayer.menu.swf",
+            items: [
+                                        // you can have an optional label as the first item
+                                        // the bitrate specific items are filled here based on the clip's bitrates
+                                        { label: "select bitrate:", enabled: false }
+                                    ]
+        },
+        brselect: {
+            url: "flowplayer.bitrateselect.swf",
+            menu: true
+        }
+
+    },
+
+
+    clip: {
+        url: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/playlist.m3u8",
+        ipadUrl: "http://184.72.239.149/vod/smil:bigbuckbunnyiphone.smil/playlist.m3u8",
+        urlResolvers: ["httpstreaming","brselect"],
+        provider: "httpstreaming",
+        autoPlay: false,
+        bitrates: {
+            labels: { "300": "Low", "400": "Medium", "600": "High"  },
+            default: 600
+        },
+    },
+    log: {
+        level: 'debug',
+        filter: 'org.osmf.*, org.electroteque.m3u8.*, org.flowplayer.bitrateselect.*'
+    }
+
+}).ipad();
+
+</pre>
 </div>
 
 

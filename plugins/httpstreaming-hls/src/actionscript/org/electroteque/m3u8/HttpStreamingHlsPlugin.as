@@ -1,7 +1,7 @@
 /*
  *
  * By: Daniel Rossi, <electroteque@gmail.com>
- * Copyright (c) 2012 Electroteque Multimedia
+ * Copyright (c) 2012 Electroteque Media
  *
  * Released under the MIT License:
  * http://www.opensource.org/licenses/mit-license.php
