@@ -6,3 +6,5 @@ The Apple Http Live Streaming features come from http://code.google.com/p/apple-
 2) Change the location of the build property osmf-dir to the location of the osmf 2.0 checkout or download.
 3) Run ant example
 4) Load example in build/example/index.html
+
+Examples available at http://flowplayer.electroteque.org/httpstreaminghls
