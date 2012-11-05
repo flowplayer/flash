@@ -104,6 +104,8 @@ package org.electroteque.m3u8 {
          */
         override protected function doLoad(event:ClipEvent, netStream:NetStream, clip:Clip):void {
             if (!netResource) return;
+            clip.onPlayStatus(onPlayStatus);
+
             _bufferStart = clip.currentTime;
             _startSeekDone = false;
             netStream.play(clip.url, clip.start);
@@ -377,6 +379,29 @@ package org.electroteque.m3u8 {
             return true;
         }
 
+        protected function onPlayStatus(event:ClipEvent) : void {
+            log.debug("onPlayStatus() -- " + event.info.code);
+            if (event.info.code == "NetStream.Play.TransitionComplete"){
+                dispatchEvent(new ClipEvent(ClipEventType.SWITCH_COMPLETE));
+            }
+            return;
+        }
+
+        /**
+         * Setup switch events on the netstream
+         * @param event
+         */
+        override protected function onNetStatus(event:NetStatusEvent) : void {
+            log.debug("onNetStatus(), code: " + event.info.code + ", paused? " + paused + ", seeking? " + seeking);
+            switch(event.info.code){
+                case "NetStream.Play.Transition":
+                    log.debug("Stream Transition -- " + event.info.details);
+                    dispatchEvent(new ClipEvent(ClipEventType.SWITCH, event.info.details));
+                    break;
+            }
+            return;
+        }
+
         /**
          * @inherit
          * @param event
@@ -481,14 +506,6 @@ package org.electroteque.m3u8 {
             return true;
         }
 
-        /**
-         * @inherit
-         * @param event
-         */
-        override protected function onNetStatus(event:NetStatusEvent):void {
-            log.info("onNetStatus: " + event.info.code);
-
-        }
 
         public function getDefaultConfig():Object {
             return null;

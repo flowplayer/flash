@@ -181,8 +181,29 @@ flowplayer("bitrate", "@PLAYER_SWF@", {
         },
         brselect: {
             url: "flowplayer.bitrateselect.swf",
-            menu: true
-        }
+            menu: true,
+            onStreamSwitchBegin: function (newItem, currentItem) {
+                $f("bitrate").getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+            },
+            onStreamSwitch: function (newItem) {
+                $f("bitrate").getPlugin('content').setHtml("Switched to: " + newItem.streamName + " with bitrate: " + newItem.bitrate);
+            }
+        },
+        content: {
+                                    url: 'flowplayer.content.swf',
+                                    bottom: 30, left: 0, width: 250, height: 150,
+                                    backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                                    textDecoration: 'outline',
+                                    style: {
+                                        body: {
+                                            fontSize: 14,
+                                            fontFamily: 'Arial',
+                                            textAlign: 'center',
+                                            color: '#ffffff'
+                                        }
+                                    }
+         }
 
     },
 
@@ -195,7 +216,7 @@ flowplayer("bitrate", "@PLAYER_SWF@", {
         autoPlay: false,
         bitrates: {
             labels: { "300": "Low", "400": "Medium", "600": "High"  },
-            default: 600
+            default: 400
         },
     },
     log: {
@@ -232,7 +253,28 @@ flowplayer("player", "@PLAYER_SWF@", {
         },
         brselect: {
             url: "flowplayer.bitrateselect.swf",
-            menu: true
+            menu: true,
+            onStreamSwitchBegin: function (newItem, currentItem) {
+                $f("bitrate").getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
+            },
+            onStreamSwitch: function (newItem) {
+                $f("bitrate").getPlugin('content').setHtml("Switched to: " + newItem.streamName + " with bitrate: " + newItem.bitrate);
+            }
+        },
+        content: {
+                            url: 'flowplayer.content.swf',
+                            bottom: 30, left: 0, width: 250, height: 150,
+                            backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
+                            textDecoration: 'outline',
+                            style: {
+                                body: {
+                                    fontSize: 14,
+                                    fontFamily: 'Arial',
+                                    textAlign: 'center',
+                                    color: '#ffffff'
+                                }
+                            }
         }
 
     },
@@ -246,7 +288,7 @@ flowplayer("player", "@PLAYER_SWF@", {
         autoPlay: false,
         bitrates: {
             labels: { "300": "Low", "400": "Medium", "600": "High"  },
-            default: 600
+            default: 400
         },
     },
     log: {
