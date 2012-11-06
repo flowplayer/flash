@@ -13,7 +13,11 @@ package org.flowplayer.util {
 
     public class DomainUtilTest extends TestCase {
 
-        public function test1():void {
+//       public function test0():void {
+//          trace(DomainUtil.foobarjees());
+//       }
+
+       public function test1():void {
             assertEquals("foo.on.ca", DomainUtil.stripSubdomain("foo.on.ca"));
         }
 
@@ -30,9 +34,12 @@ package org.flowplayer.util {
             assertEquals("blacksun.us.com", DomainUtil.stripSubdomain("blacksun.us.com"));
             assertEquals("blacksun.us.com", DomainUtil.stripSubdomain("www.blacksun.us.com"));
 
-            /*
-             * Test cases from http://publicsuffix.org/list/test.txt
-             */
+           assertEquals("presse.com", DomainUtil.stripSubdomain("nubar.presse.com"));
+
+
+           /*
+           * Test cases from http://publicsuffix.org/list/test.txt
+           */
 //            checkPublicSuffix(null, null);
 //# Mixed case.
 //            checkPublicSuffix('COM', null);
@@ -63,8 +70,8 @@ package org.flowplayer.util {
         }
 
         public function testMisc():void {
-            assertEquals('home.pl', DomainUtil.stripSubdomain(' www.pss3.home.pl'));
-            assertEquals('ais5.pl', DomainUtil.stripSubdomain(' xxx.ais5.pl'));
+            assertEquals('home.pl', DomainUtil.stripSubdomain('www.pss3.home.pl'));
+            assertEquals('ais5.pl', DomainUtil.stripSubdomain('xxx.ais5.pl'));
         }
 
         public function testParseDomain():void {
@@ -73,11 +80,11 @@ package org.flowplayer.util {
 
         public function testIPAddressDomain():void {
             trace(DomainUtil.parseDomain('123.123.123.64', true));
-            assertEquals("123.64", DomainUtil.parseDomain('123.123.123.64', true));
+            assertEquals("123.123.123.64", DomainUtil.parseDomain('123.123.123.64', true));
         }
 
         public function testIPAddressDomain2():void {
-            assertEquals("123.64", DomainUtil.parseDomain('123.123.64', true));
+            assertEquals("123.123.64", DomainUtil.parseDomain('123.123.64', true));
         }
 
         public function testIPAddressDomain3():void {
