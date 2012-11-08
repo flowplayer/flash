@@ -172,10 +172,12 @@ package org.flowplayer.controller {
 
         private function replay(clip:Clip):void {
             try {
+                clip.dispatchEvent(new ClipEvent(ClipEventType.BEGIN, _pauseAfterStart));
+                //#52 when replaying flag start has dispatched on the current clip.
+                clip.startDispatched = true;
                 seek(new ClipEvent(ClipEventType.SEEK, 0), 0);
                 netStream.resume();
                 _started = true;
-                clip.dispatchEvent(new ClipEvent(ClipEventType.BEGIN, _pauseAfterStart));
                 clip.dispatchEvent(new ClipEvent(ClipEventType.START));
             } catch (e:Error) {
                 if (e.errorID == 2154) {
