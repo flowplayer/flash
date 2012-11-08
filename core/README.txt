@@ -8,6 +8,9 @@ Version history:
 - #20 for the free player swap the logo with the stage video mask to display underneath not on top.
 - #42 pass in stream clips through and close the stream before returning to the parent clip.
 - #52 when replaying flag start has dispatched on the current clip.
+- #44 fixes for #627 check if the stagevideo dimensions and positioning has changed to update the stage video mask with.
+unbinding and binding stage video events caused issues with instream playlists therefore has to be kept binded.
+unbinded stage video events during seeking to prevent the mask repositioning.
 
 3.2.14
 ------
