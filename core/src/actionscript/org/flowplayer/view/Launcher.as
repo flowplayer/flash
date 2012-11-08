@@ -16,8 +16,6 @@
  *    along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.flowplayer.view {
-    import flash.external.ExternalInterface;
-
     import org.flowplayer.config.Config;
 	import org.flowplayer.config.ConfigParser;
 	import org.flowplayer.config.ExternalInterfaceHelper;
@@ -101,12 +99,7 @@ package org.flowplayer.view {
         private var _clickCount:int;
         private var _clickTimer:Timer = new Timer(200, 1);
         private var _clickEvent:MouseEvent;
-
-        private var _screenMaskWidth:Number;
-        private var _screenMaskHeight:Number;
-
 		private var _screenMask:Sprite;
-        private var _stageEventCount:Number;
 
 		[Frame(factoryClass="org.flowplayer.view.Preloader")]
 		public function Launcher() {
