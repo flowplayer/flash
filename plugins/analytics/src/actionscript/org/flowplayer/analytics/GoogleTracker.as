@@ -11,25 +11,27 @@
 package org.flowplayer.analytics {
     import com.google.analytics.GATracker;
     import com.google.analytics.AnalyticsTracker;
-    import com.google.analytics.debug.DebugConfiguration;
-
+    import com.google.analytics.log;
     import flash.display.Sprite;
-    import flash.external.ExternalInterface;
+    import flash.utils.getTimer;
 
-    import flash.ui.Keyboard;
-
-import flash.utils.getTimer;
-
-import org.flowplayer.model.*;
-
+    import org.flowplayer.model.Clip;
+    import org.flowplayer.model.ClipEvent;
+    import org.flowplayer.model.ClipEventType;
+    import org.flowplayer.model.Plugin;
+    import org.flowplayer.model.PluginModel;
+    import org.flowplayer.model.PluginError;
+    import org.flowplayer.model.PlayerEvent;
+    import org.flowplayer.model.Playlist;
     import org.flowplayer.util.Log;
     import org.flowplayer.util.PropertyBinder;
     import org.flowplayer.util.URLUtil;
     import org.flowplayer.view.Flowplayer;
-    import org.flowplayer.view.StyleableSprite;
+
+
 
     public class GoogleTracker extends Sprite implements Plugin {
-        private var log:Log = new Log(this);
+        private var _log:Log = new Log(this);
         private var _model:PluginModel;
         private var _player:Flowplayer;
         private var _config:Config;
@@ -42,8 +44,22 @@ import org.flowplayer.model.*;
             _config = Config(new PropertyBinder(new Config()).copyProperties(model.config));
         }
 
+        //#49 add new logging method for the analytics library
+        LOG::P
+        private function gaLogOutput(log:String):void
+        {
+            _log.debug(log);
+        }
+
         public function onLoad(player:Flowplayer):void {
             _player = player;
+
+            //#49 add new logging method for the analytics library
+            LOG::P {
+                log.level = log.VERBOSE;
+                log.output = gaLogOutput;
+            }
+
             var events:Events = _config.events;
             var playlist:Playlist = _player.playlist;
             createClipEventTracker(playlist.onStart, events.start, true);
@@ -75,12 +91,12 @@ import org.flowplayer.model.*;
 
         private function startTimeTracking(event:ClipEvent):void {
             _startTimeMillis = getTimer();
-            log.debug("startTimeTracking(), started at " + _startTimeMillis + ", total view time " + _viewDurationMillis + " milliseconds");
+            _log.debug("startTimeTracking(), started at " + _startTimeMillis + ", total view time " + _viewDurationMillis + " milliseconds");
         }
 
         private function stopTimeTracking(event:ClipEvent = null):void {
             _viewDurationMillis += getTimer() - _startTimeMillis;
-            log.debug("stopTimeTracking(), total view time " + _viewDurationMillis + " milliseconds");
+            _log.debug("stopTimeTracking(), total view time " + _viewDurationMillis + " milliseconds");
         }
 
         private function createClipEventTracker(eventBinder:Function, eventName:String, doTrack:Boolean):void {
@@ -108,9 +124,9 @@ import org.flowplayer.model.*;
                     });
         }
 
-        public function getCategory():String {
-            var clipCategory:String = String(_player.playlist.current.getCustomProperty("eventCategory"));
-            if (clipCategory) return clipCategory;
+        public function get category():String {
+            if (_player.playlist.current.getCustomProperty("eventCategory"))
+                return String(_player.playlist.current.getCustomProperty("eventCategory"));
 
             var pageUrl:String = URLUtil.pageUrl;
             if (pageUrl) return pageUrl;
@@ -121,18 +137,24 @@ import org.flowplayer.model.*;
 
         private function instantiateTracker():void {
             try {
-                var _confdebug:DebugConfiguration = new DebugConfiguration();
-                _confdebug.minimizedOnStart = true;
-
-                if (! _config.accountId) {
-                    _model.dispatchError(PluginError.ERROR, "Google Analytics account ID not specified. Look it up in your Analytics account, the format is 'UA-XXXXXX-N'");
-                    return;
+                _log.debug("Creating tracker in " + _config.mode + " mode using " + _config.accountId);
+                //#49 refactor to latest analytics library changes
+                switch (_config.mode) {
+                    case "Bridge":
+                        if (!_config.trackingObj) {
+                            _model.dispatchError(PluginError.ERROR, "Google Analytics tracking object name not specified. ");
+                            return;
+                        }
+                        _tracker = new GATracker(this, _config.trackingObj, _config.mode);
+                    break;
+                    default:
+                        if (!_config.accountId) {
+                            _model.dispatchError(PluginError.ERROR, "Google Analytics account ID not specified. Look it up in your Analytics account, the format is 'UA-XXXXXX-N'");
+                            return;
+                        }
+                        _tracker = new GATracker(this, _config.accountId, _config.mode);
+                    break;
                 }
-
-                log.debug("Creating tracker in AS3 mode using " + _config.accountId + ", debug ? " + _config.debug);
-                _tracker = new GATracker(this, _config.accountId, "AS3", _config.debug);
-                _tracker.debug.showHideKey = Keyboard.F6; // use the F6 key to toggle visual debug display
-
             } catch(e:Error) {
                 _model.dispatchError(PluginError.ERROR, "Unable to create tracker: " + e);
             }
@@ -147,12 +169,12 @@ import org.flowplayer.model.*;
             try {
                 var time:int = trackViewDuration ? (_viewDurationMillis / 1000) : int(_player.status ? _player.status.time : 0);
 
-                log.debug("Tracking " + eventName + "[" + (clip.completeUrl + (clip.isInStream ? ": instream" : "")) + "] : " + time + " on page " + getCategory());
+                _log.debug("Tracking " + eventName + "[" + (clip.completeUrl + (clip.isInStream ? ": instream" : "")) + "] : " + time + " on page " + category);
                 if (_tracker.isReady()) {
-                    _tracker.trackEvent(getCategory(), eventName, clip.completeUrl + (clip.isInStream ? ": instream" : ""), time);
+                    _tracker.trackEvent(category, eventName, clip.completeUrl + (clip.isInStream ? ": instream" : ""), time);
                 }
             } catch (e:Error) {
-                log.error("Got error while tracking event " + eventName);
+                _log.error("Got error while tracking event " + eventName);
             }
         }
 
@@ -171,7 +193,7 @@ import org.flowplayer.model.*;
         public function setEventName(oldName:String, newName:Object):void {
             var newProp:Object = {};
             newProp[oldName] = newName == "false" ? null : newName;
-            log.debug("setEventName()", newProp);
+            _log.debug("setEventName()", newProp);
             new PropertyBinder(_config.events).copyProperties(newProp, true);
         }
 
