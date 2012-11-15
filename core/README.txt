@@ -11,6 +11,7 @@ Version history:
 - #44 fixes for #627 check if the stagevideo dimensions and positioning has changed to update the stage video mask with.
 unbinding and binding stage video events caused issues with instream playlists therefore has to be kept binded.
 unbinded stage video events during seeking to prevent the mask repositioning.
+- #53 update url filter to accomodate for pretty urls with semi colons.
 
 3.2.14
 ------
@@ -18,6 +19,7 @@ unbinded stage video events during seeking to prevent the mask repositioning.
 - #627 only detach / attach the display on start events which causes issues in buffering events after a seek in stagevideo.
 - #627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
 - #9 when replaying from stopping, connection does not receive callbacks anymore.
+
 
 
 
