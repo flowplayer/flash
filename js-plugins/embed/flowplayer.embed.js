@@ -10,7 +10,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-(function() {
+!function() {
 
 	// converts paths to absolute URL's as required in external sites 
 	function toAbsolute(url, base) {
@@ -90,4 +90,4 @@
 		
 	});
 	
-})();		
+}();

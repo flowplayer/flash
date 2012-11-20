@@ -12,7 +12,7 @@
  * Released under the MIT License:
  * http://www.opensource.org/licenses/mit-license.php
  */
-(function($) {
+!function($) {
 
 	$f.addPlugin("bitrateselect", function(container, options) {
 
@@ -118,4 +118,4 @@
         return self;
 	});
 
-})(jQuery);
+}(jQuery);

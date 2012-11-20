@@ -9,7 +9,7 @@
  * Since : March 2008
  * Date  : @DATE
  */
-(function() {
+!function() {
 
 	var IE = document.all,
 		 URL = 'http://get.adobe.com/flashplayer',
@@ -300,4 +300,4 @@
 		};
 	}
 
-})();
+}();

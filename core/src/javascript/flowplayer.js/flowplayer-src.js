@@ -21,7 +21,7 @@
  * Date: @DATE
  * Revision: @REVISION
  */
-(function() {
+!function() {
 
 /*
 	FEATURES
@@ -1291,4 +1291,4 @@ if (typeof jQuery == 'function') {
 //}}}
 
 
-})();
+}();
