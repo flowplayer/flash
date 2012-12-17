@@ -12,6 +12,7 @@ Version history:
 unbinding and binding stage video events caused issues with instream playlists therefore has to be kept binded.
 unbinded stage video events during seeking to prevent the mask repositioning.
 - #53 update url filter to accomodate for pretty urls with semi colons.
+- #50 if we have metadata already set it is being updated during seeks and switching, dispatch metadata change events instead.
 
 3.2.14
 ------

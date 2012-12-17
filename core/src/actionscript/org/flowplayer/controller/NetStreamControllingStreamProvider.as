@@ -138,6 +138,11 @@ package org.flowplayer.controller {
                 return clip.provider == (_model ? _model.name : (clip.parent ? 'httpInstream' : 'http'));
             });
 
+            //#50 dispatch metadata events on updates also
+            clip.onMetaDataChange(onMetaData, function(clip:Clip):Boolean {
+                return clip.provider == (_model ? _model.name : (clip.parent ? 'httpInstream' : 'http'));
+            });
+
             //#614 when the clip ends if the next clip in the provider has a different provider close the provider stream.
             clip.onFinish(closeStream, function(clip:Clip):Boolean {
                 //#42 pass instream clips through and close the stream
@@ -146,6 +151,10 @@ package org.flowplayer.controller {
             });
 
             clip.startDispatched = false;
+
+            //#50 clear metadata when replaying in a playlist
+            clip.metaData = false;
+
             log.debug("previously started clip " + _startedClip);
             if (attempts == 3 && _startedClip && _startedClip == clip && _connection && _netStream) {
                 log.info("playing previous clip again, reusing existing connection and resuming");
@@ -805,6 +814,8 @@ package org.flowplayer.controller {
 
         private function onConnectionSuccess(connection:NetConnection):void {
             _connection = connection;
+            //reset start dispatching if reconnecting
+            clip.startDispatched = false;
             //#430 adding event listeners for netconnection
             connection.addEventListener(NetStatusEvent.NET_STATUS, _onNetStatus);
             _createNetStream();
