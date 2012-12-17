@@ -13,6 +13,7 @@ sVersion history:
 "success", "required", "sending"
 - #12 if css method used as a getter just return the current style config.
 - #34 parse share config params from the player urls before generating the embed code.
+- #60 use new helper methods to hide / show the dock when auto hide is enabled or not.
 
 3.2.11
 ------
