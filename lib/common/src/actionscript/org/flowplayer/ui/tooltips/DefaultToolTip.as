@@ -342,12 +342,12 @@ package org.flowplayer.ui.tooltips {
 		
 		private function setOffset():void {
 			switch( this._align ){
-				case "left":
+				case "right":
 					this._offSet = - _defaultWidth +  ( _buffer * 6 ) + this._hookSize; 
-					this._hookOffSet = this._defaultWidth - ( _buffer * 6 ) - this._hookSize; 
+					this._hookOffSet = this._defaultWidth - ( _buffer * 6 ) - this._hookSize;
 				break;
 				
-				case "right":
+				case "left":
 					this._offSet = 0 - ( _buffer * 6 ) - this._hookSize;
 					this._hookOffSet =  _buffer * 6 + this._hookSize;
 				break;
