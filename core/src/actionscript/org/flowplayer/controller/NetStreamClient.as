@@ -47,6 +47,7 @@ package org.flowplayer.controller {
         }
 
         public function onMetaData(infoObject:Object):void {
+
             log.info("onMetaData, current clip " + _clip);
 
             log.debug("onMetaData, data for clip " + _clip + ":");
@@ -77,7 +78,7 @@ package org.flowplayer.controller {
             }
 
             log.debug("metaData : ", metaData);
-            _clip.metaData = metaData;
+
 
             if (metaData.cuePoints && _clip.cuepoints.length == 0) {
                 log.debug("clip has embedded cuepoints");
@@ -86,7 +87,15 @@ package org.flowplayer.controller {
 
             _previousUrl = _clip.url;
 
-            _clip.dispatch(ClipEventType.METADATA);
+            //#50 if we have metadata already set it is being updated during seeks and switching, dispatch metadata change events instead.
+            if (_clip.metaData) {
+                _clip.metaData = metaData;
+                _clip.dispatch(ClipEventType.METADATA_CHANGED);
+            } else {
+                _clip.metaData = metaData;
+                _clip.dispatch(ClipEventType.METADATA);
+            }
+
             log.info("metaData parsed and injected to the clip");
         }
 

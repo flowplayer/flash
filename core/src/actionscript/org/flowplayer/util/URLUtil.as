@@ -36,7 +36,8 @@ package org.flowplayer.util {
 		}
 		
 		public static function isValid(URL:String):Boolean {
-			var regex:RegExp = /^http(s)?:\/\/((\d+\.\d+\.\d+\.\d+)|(([\w-]+\.)+([a-z,A-Z][\w-]*)))(:[1-9][0-9]*)?(\/([\w-.\/:%+@&=]+[\w- .\/?:%+@&=]*)?)?(#(.*))?$/i;
+            //#53 update url filter to accomodate for pretty urls with semi colons.
+            var regex:RegExp = /^http(s)?:\/\/((\d+\.\d+\.\d+\.\d+)|(([\w-]+\.)+([a-z,A-Z][\w-]*)))(:[1-9][0-9]*)?(\/(?:%+@&=)|([\w-.\/:;%+@&=]+[\w-.\/?:;%+@&=]*)?)?(#(.*))?$/i;
 			return regex.test(URL);
 		}
 

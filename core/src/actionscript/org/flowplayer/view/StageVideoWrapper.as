@@ -170,14 +170,17 @@ package org.flowplayer.view {
 				return;
 
 			var p:Point = localToGlobal(new Point(0, 0));
+
+
+
             var r:Rectangle = _visible ? new Rectangle(p.x, p.y, width, height) : new Rectangle(0, 0, 0, 0);
+
             _stageVideo.viewPort = r;
 			_clip.dispatch(ClipEventType.STAGE_VIDEO_STATE_CHANGE, stageVideo);
 		}
 
 		override public function set width(value:Number):void {
 			super.width = value;
-			_updateStageVideo();
 		}
 		
 		override public function set height(value:Number):void {

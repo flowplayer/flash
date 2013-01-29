@@ -1,4 +1,4 @@
-/*
+ /*
  * This file is part of Flowplayer, http://flowplayer.org
  *
  * By: Daniel Rossi, <electroteque@gmail.com>
@@ -467,11 +467,12 @@ import org.flowplayer.model.Plugin;
         }
 
         public function displayButtons(display:Boolean):void {
+            //#60 use new helper methods to hide / show the dock when auto hide is enabled or not.
             if (display) {
-                _iconDock.startAutoHide();
+                _iconDock.show();
             } else {
                 log.debug("stopping auto hide and hiding buttons");
-                _iconDock.stopAutoHide(false);
+                _iconDock.hide();
             }
         }
 
