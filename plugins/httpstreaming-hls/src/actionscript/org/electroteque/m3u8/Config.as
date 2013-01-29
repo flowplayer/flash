@@ -11,6 +11,7 @@ package org.electroteque.m3u8 {
     public class Config {
         private var _retryInterval:int = 10;
         private var _maxRetries:int = 100;
+        private var _redirectUrl:String;
 
         public function set retryInterval(value:int):void
         {
@@ -30,6 +31,16 @@ package org.electroteque.m3u8 {
         public function get maxRetries():int
         {
             return _maxRetries;
+        }
+
+        public function set redirectUrl(value:String):void
+        {
+            _redirectUrl = value;
+        }
+
+        public function get redirectUrl():String
+        {
+            return _redirectUrl;
         }
     }
 }
