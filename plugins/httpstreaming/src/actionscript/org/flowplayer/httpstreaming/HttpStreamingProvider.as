@@ -119,7 +119,8 @@ package org.flowplayer.httpstreaming {
                 case "NetStream.Play.UnpublishNotify":
                 case "NetStream.Play.Stop":
                     //#550 for live streams once unpublished,  stop the player to prevent streamnotfound errors reconnecting.
-                   _player.stop();
+                   //#27 regression caused by #550, only stop the player for live streams. caused issues when stopping between playlist items.
+                   if (clip.live && !_player.playlist.hasNext()) _player.stop();
                     break;
             }
             return;

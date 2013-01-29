@@ -1,15 +1,28 @@
 Version history:
 
+3.2.15
+------
+- #15 fixes for #627, handle the display init on startup.
+- #615 dispatch begin if in paused mode too early.
+- #629 if start has been dispatched already prevent dispatching many begin events.
+- #20 for the free player swap the logo with the stage video mask to display underneath not on top.
+- #42 pass in stream clips through and close the stream before returning to the parent clip.
+- #52 when replaying flag start has dispatched on the current clip.
+- #44 fixes for #627 check if the stagevideo dimensions and positioning has changed to update the stage video mask with.
+unbinding and binding stage video events caused issues with instream playlists therefore has to be kept binded.
+unbinded stage video events during seeking to prevent the mask repositioning.
+- #53 update url filter to accomodate for pretty urls with semi colons.
+- #50 if we have metadata already set it is being updated during seeks and switching, dispatch metadata change events instead.
+
 3.2.14
 ------
 - #614 when the clip ends if the next clip in the provider has a different provider close the provider stream.
 - #627 only detach / attach the display on start events which causes issues in buffering events after a seek in stagevideo.
 - #627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
 - #9 when replaying from stopping, connection does not receive callbacks anymore.
-- #15 fixes for #627, handle the display init on startup.
-- #615 dispatch begin if in paused mode too early.
-- #629 if start has been dispatched already prevent dispatching many begin events.
-- #20 for the free player swap the logo with the stage video mask to display underneath not on top.
+
+
+
 
 3.2.13
 ------

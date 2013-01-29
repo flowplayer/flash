@@ -61,6 +61,10 @@ package org.flowplayer.model {
 			setListener(ClipEventType.METADATA, listener, clipFilter, false, addToFront);
 		}
 
+        public function onMetaDataChange(listener:Function, clipFilter:Function = null, addToFront:Boolean = false):void {
+            setListener(ClipEventType.METADATA_CHANGED, listener, clipFilter, false, addToFront);
+        }
+
 		public function onBeforeBegin(listener:Function, clipFilter:Function = null, addToFront:Boolean = false):void {
 			setListener(ClipEventType.BEGIN, listener, clipFilter, true, addToFront);
 		}

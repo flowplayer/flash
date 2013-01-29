@@ -3,6 +3,8 @@ Version history:
 3.2.11
 ------
 - #6 cache control headers don't work on chrome windows, just use the cache busting url param.
+- #47 close the connection or else wowza dispatches two bwcheck events.
+- #47 regression with 417 disable screen checks with the qos screen property.
 
 3.2.10
 ------

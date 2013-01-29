@@ -146,6 +146,24 @@ package org.flowplayer.ui.dock {
             _autoHide.stop(leaveVisible);
         }
 
+        //#60 add helper methods to hide / show the dock when autohide is enabled or not.
+        [External]
+        public function show():void {
+            if (_config.autoHide.enabled)
+                startAutoHide()
+            else
+                _player.animationEngine.fadeIn(this);
+        }
+
+        [External]
+        public function hide():void {
+            if (_config.autoHide.enabled)
+                stopAutoHide(false);
+            else
+                _player.animationEngine.fadeOut(this);
+        }
+
+
         public function cancelAnimation():void {
             _autoHide.cancelAnimation();
         }

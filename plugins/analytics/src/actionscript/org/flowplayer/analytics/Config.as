@@ -15,6 +15,7 @@ package org.flowplayer.analytics {
         private var _debug:Boolean = false;
         private var _mode:String = "AS3";
         private var _accountId:String; // required
+        private var _trackingObj:String;
         private var _events:Events = new Events();
 
         // possible values are "video", "audio", "image"
@@ -39,21 +40,21 @@ package org.flowplayer.analytics {
         }
 
         [Value]
+        public function get trackingObj():String {
+            return _trackingObj;
+        }
+
+        public function set trackingObj(value:String):void {
+            _trackingObj = value;
+        }
+
+        [Value]
         public function get events():Events {
             return _events;
         }
 
         public function setEvents(value:Object):void {
             _events = Events(new PropertyBinder(_events).copyProperties(value));
-        }
-
-        [Value]
-        public function get debug():Boolean {
-            return _debug;
-        }
-
-        public function set debug(value:Boolean):void {
-            _debug = value;
         }
 
         public function get clipTypes():Array {
