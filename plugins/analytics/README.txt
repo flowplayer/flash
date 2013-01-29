@@ -1,5 +1,11 @@
 Version history:
 
+3.2.9
+-----
+- Refactored to changes in the google analytics library for Bridge mode support. Debug view support is removed but with the option of a build build. Reinstating the trackingObj config
+to configure the bridge mode.
+TODO: May require V5 async support. _gat._getTracker is deprecated use _gat._createTracker instead.
+
 3.2.8
 -----
 - Bridge mode now removed from code also

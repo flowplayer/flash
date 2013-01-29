@@ -12,8 +12,8 @@ package org.flowplayer.viralvideos {
     import com.adobe.serialization.json.JSON;
 
     import flash.display.Stage;
-
-    import flash.external.ExternalInterface;
+    import flash.net.URLVariables;
+    import flash.utils.ByteArray;
 
     import org.flowplayer.model.DisplayPluginModel;
     import org.flowplayer.model.PluginModel;
@@ -23,9 +23,6 @@ package org.flowplayer.viralvideos {
     import org.flowplayer.view.StyleableSprite;
     import org.flowplayer.viralvideos.config.Config;
     import org.flowplayer.viralvideos.config.EmbedConfig;
-
-    import flash.utils.ByteArray;
-
     import org.flowplayer.viralvideos.config.ShareConfig;
 
     public class PlayerEmbed {
@@ -241,14 +238,16 @@ package org.flowplayer.viralvideos {
         public function getEmbedCode(escaped:Boolean = false):String {
 
             var configStr:String = getPlayerConfig(escaped);
+            //#34 parse share config params from the player urls before generating the embed code.
+            var playerSwfURL:String = formatURL(_player.config.playerSwfUrl);
             var code:String =
                     '<object name="player" id="_fp_' + Math.random() + '" width="' + width + '" height="' + height + '"' +
-                            '    data="' + _player.config.playerSwfUrl + '"  type="application/x-shockwave-flash">' +
+                            '    data="' + playerSwfURL + '"  type="application/x-shockwave-flash">' +
                             '    <param value="true" name="allowfullscreen"/>' +
                             '    <param value="always" name="allowscriptaccess"/>' +
                             '    <param value="' + _embedConfig.wmode + '" name="wmode"/>' +
                             '    <param value="high" name="quality"/>' +
-                            '    <param name="movie" value="' + _player.config.playerSwfUrl + '" />' +
+                            '    <param name="movie" value="' + playerSwfURL + '" />' +
                             '    <param value="config=' + configStr + '" name="flashvars"/>';
 
             if (_embedConfig.fallbackUrls.length > 0) {
@@ -265,6 +264,20 @@ package org.flowplayer.viralvideos {
 
             code += '</object>';
             return code;
+        }
+
+        /**
+         * #34 parse share config params from the player urls before generating the embed code.
+         * @param url
+         * @return
+         */
+        private function formatURL(url:String):String
+        {
+            var parts:Array = url.split("?");
+            if (!parts[1]) return url;
+			var vars:URLVariables = new URLVariables(parts[1]);
+			delete(vars.config);
+            return parts[0] + "?" + vars.toString();
         }
 
         public function get width():int {

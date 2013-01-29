@@ -29,7 +29,9 @@ package org.flowplayer.bwcheck.detect {
         }
 
         public function onBWDone(...args):void {
-            log.debug("onBWDone, " + info);
+            log.debug("onBWDone, ");
+            //#47 close the connection or else wowza dispatches two bwcheck events.
+            connection.close();
             var obj:Object = new Object();
             var kbitDown:int = args[0];
             var deltaDown:int = args[1];

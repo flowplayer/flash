@@ -10,22 +10,22 @@
  */
 package org.flowplayer.menu.ui {
     import flash.display.DisplayObject;
-    import flash.display.DisplayObject;
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.filters.DropShadowFilter;
 
-    import org.flowplayer.config.Config;
+    //import org.flowplayer.config.Config;
     import org.flowplayer.config.ConfigParser;
     import org.flowplayer.controller.ResourceLoader;
     import org.flowplayer.flow_internal;
 
     import org.flowplayer.menu.*;
     import org.flowplayer.model.DisplayPluginModel;
-    import org.flowplayer.model.DisplayProperties;
+    //import org.flowplayer.model.DisplayProperties;
     import org.flowplayer.model.Plugin;
-    import org.flowplayer.model.PluginEvent;
+    //import org.flowplayer.model.PluginEvent;
     import org.flowplayer.model.PluginModel;
+    import org.flowplayer.model.PlayerEvent;
     import org.flowplayer.ui.containers.WidgetContainer;
     import org.flowplayer.ui.containers.WidgetContainerEvent;
     import org.flowplayer.ui.dock.Dock;
@@ -166,6 +166,16 @@ package org.flowplayer.menu.ui {
                 updateModelHeight();
                 _model.dispatchOnLoad();
             }
+
+            //#36 adjust the menu during fullscreen events as this is prevented once added to the stage.
+            _player.onFullscreen(function(event:PlayerEvent):void {
+                adjustDockPosition();
+            });
+
+            _player.onFullscreenExit(function(event:PlayerEvent):void {
+                adjustDockPosition();
+            });
+
 
             createMenuButton(player);
         }
