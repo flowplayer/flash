@@ -11,7 +11,7 @@
  *
  */
 
- (function($) {
+!function($) {
 
         $f.addPlugin("playlist", function(wrap, options) {
 
@@ -240,4 +240,4 @@
 
         });
 
-})(jQuery);
+}(jQuery);
