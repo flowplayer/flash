@@ -1,10 +1,10 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.11.min.js"></script>
 
 
-	<!-- page title -->
+    <!-- page title -->
 	<title>Minimal Flowplayer setup</title>
 
 </head><body>
@@ -35,16 +35,16 @@
             console.log("onResume");
         },
 
-
-        clip: {
-            url: 'mp4:vod/demo.flowplayervod/bbb-800.mp4',
+            clip: {
+            url: 'mp4:Tommy_Emmanuel_-_Classical_Gas_HD_qm',
+            live: true,
             provider: 'rtmp'
         },
 
         plugins: {
             rtmp: {
                 url: 'flowplayer.rtmp.swf',
-                netConnectionUrl: 'rtmp://rtmp01.hddn.com/play'
+                netConnectionUrl: 'rtmp://streamforce1.tv:8080/vod'
             }
         }
     });
