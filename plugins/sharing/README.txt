@@ -1,5 +1,9 @@
 Version history:
 
+3.2.14
+------
+- Added helper methods to hide / show the dock when autohide is enabled or not, issue #60
+
 3.2.10
 -------
 - #605 Fixes for autoHide configuration

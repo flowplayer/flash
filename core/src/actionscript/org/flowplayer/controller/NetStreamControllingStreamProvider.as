@@ -152,19 +152,21 @@ package org.flowplayer.controller {
 
             clip.startDispatched = false;
 
-            //#50 clear metadata when replaying in a playlist
-            clip.metaData = false;
-
             log.debug("previously started clip " + _startedClip);
             if (attempts == 3 && _startedClip && _startedClip == clip && _connection && _netStream) {
                 log.info("playing previous clip again, reusing existing connection and resuming");
                 _started = false;
                 replay(clip);
             } else {
-                log.debug("will create a new connection");
-                _startedClip = clip;
+               log.debug("will create a new connection");
+               _startedClip = clip;
 
-                connect(clip);
+               //#50 clear metadata when replaying in a playlist
+               if (clip.metaData != false) {
+                   clip.metaData = null;
+               }
+
+               connect(clip);
             }
         }
 
@@ -856,31 +858,9 @@ package org.flowplayer.controller {
             _stopping = true;
 
             if (clip.live) {
-                _netStream.close();
-                _netStream = null;
-
+               this.closeStreamAndConnection(netStream);
             } else if (closeStreamAndConnection) {
-                _startedClip = null;
-                log.debug("doStop(), closing netStream and connection");
-
-                if (clip.getContent() is Video) {
-                    Video(clip.getContent()).clear();
-                }
-
-                try {
-                    netStream.close();
-                    _netStream = null;
-                } catch (e:Error) {
-                }
-
-                if (_connection) {
-                    _connection.close();
-                    _connection = null;
-                }
-
-                dispatchPlayEvent(ClipEventType.BUFFER_STOP);
-
-//                clip.setContent(null);
+               this.closeStreamAndConnection(netStream);
             } else {
                 silentSeek = true;
                 //#9 when replaying from stopping, connection does not receive callbacks anymore.
@@ -891,8 +871,30 @@ package org.flowplayer.controller {
             dispatchEvent(event);
         }
 
-        private function _createNetStream():void {
-            _netStream = createNetStream(_connection) || new NetStream(_connection);
+       private function closeStreamAndConnection(netStream:NetStream):void {
+          _startedClip = null;
+          log.debug("doStop(), closing netStream and connection");
+
+          if (clip.getContent() is Video) {
+             Video(clip.getContent()).clear();
+          }
+
+          try {
+             netStream.close();
+             _netStream = null;
+          } catch (e:Error) {
+          }
+
+          if (_connection) {
+             _connection.close();
+             _connection = null;
+          }
+
+          dispatchPlayEvent(ClipEventType.BUFFER_STOP);
+       }
+
+       private function _createNetStream():void {
+          _netStream = createNetStream(_connection) || new NetStream(_connection);
             netStream.client = new NetStreamClient(clip, _player.config, _streamCallbacks);
             _netStream.bufferTime = clip.bufferLength;
             _volumeController.netStream = _netStream;

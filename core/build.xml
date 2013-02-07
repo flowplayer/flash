@@ -9,7 +9,7 @@
     <property name="version-status" value="dev"/>
     <property name="controls-version-info" value="3.2.15-dev"/>
     <property name="audio-version-info" value="3.2.10"/>
-    <property name="flowplayer-js-version-info" value="3.2.11"/>
+    <property name="flowplayer-js-version-info" value="3.2.12-dev"/>
     <property name="source-dist-root-folder" value="flowplayer"/>
 
     <property name="version-status-quoted" value="&quot;&#39;${version-status}&#39;&quot;"/>
