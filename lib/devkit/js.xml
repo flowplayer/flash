@@ -9,6 +9,7 @@
         <equals arg1="${shortname}" arg2="flowplayer"/>
     </condition>
 
+    <property name="devkit-dir" value="../../../../lib/devkit" />
 	<property name="source.file" value="${basedir}/${basename}.js"/>
 	<property name="rhino" value="${DEVKIT_HOME}/lib/rhino.jar"/>
 	<property name="yui.path" value="${DEVKIT_HOME}/lib/yuicompressor-2.4.2.jar"/>

@@ -116,7 +116,7 @@ package org.flowplayer.view {
 			addItem(menu, new ContextMenuItem("Flowplayer comes without any warranty", false, false));
 			// 3 Link to license
 			addItem(menu, new ContextMenuItem("GNU GENERAL PUBLIC LICENSE...", false, true), function(event:ContextMenuEvent):void {
-				navigateToURL(new URLRequest("http://flowplayer.org/license_gpl.html"), "_self");
+				navigateToURL(new URLRequest("http://flowplayer.org/license/"), "_self");
 			});
 			return menu; 
 		}

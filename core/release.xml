@@ -150,7 +150,9 @@
     </target>
 
     <target name="generate-url-file" description="generates a text file with paths to plugin zip files in flowplayer.org">
-        <property name="url-file" value="${core-dir}/dist/dist.html" />
+        <!--<property name="url-file-from-plugins" value="${basedir}/dist/dist.html" />-->
+        <property name="url-file" value="${basedir}/dist/dist.html" />
+
         <delete file="${url-file}" />
         <echo message="writing zip urls to ${url-file}" />
 

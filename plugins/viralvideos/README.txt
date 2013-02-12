@@ -1,5 +1,9 @@
 sVersion history:
 
+3.2.14
+------
+- Added helper methods to hide / show the dock when autohide is enabled or not, issue #60
+
 3.2.12
 ------
 - #606 check for controls first if disabled.

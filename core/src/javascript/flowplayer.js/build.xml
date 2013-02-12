@@ -2,10 +2,10 @@
 <!-- projet name is used as a base name for distribution files -->
 <project name="flowplayer" default="min">	
 	
-	<property name="DEVKIT_HOME" value="../../../../../lib/devkit"/>
+	<property name="DEVKIT_HOME" value="../../../../lib/devkit"/>
 	<import file="${DEVKIT_HOME}/js.xml"/>
 
-	<property name="version" value="3.2.11"/>
+	<property name="version" value="3.2.12"/>
 	
 	<!-- concat -->
 	<target name="concat">

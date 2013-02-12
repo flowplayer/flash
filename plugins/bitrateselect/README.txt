@@ -1,5 +1,9 @@
 Version history:
 
+3.2.14
+------
+- Added helper methods to hide / show the dock when autohide is enabled or not, issue #60
+
 3.2.13
 ------
 - #7 add start event filter for clips with bitrateitems as well as bitrateselect resolver checks.
