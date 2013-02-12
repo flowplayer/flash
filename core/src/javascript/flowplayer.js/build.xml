@@ -5,7 +5,7 @@
 	<property name="DEVKIT_HOME" value="../../../../lib/devkit"/>
 	<import file="${DEVKIT_HOME}/js.xml"/>
 
-	<property name="version" value="3.2.12-dev"/>
+	<property name="version" value="3.2.12"/>
 	
 	<!-- concat -->
 	<target name="concat">

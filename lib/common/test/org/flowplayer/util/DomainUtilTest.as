@@ -80,11 +80,11 @@ package org.flowplayer.util {
 
         public function testIPAddressDomain():void {
             trace(DomainUtil.parseDomain('123.123.123.64', true));
-            assertEquals("123.123.123.64", DomainUtil.parseDomain('123.123.123.64', true));
+            assertEquals("123.64", DomainUtil.parseDomain('123.123.123.64', true));
         }
 
         public function testIPAddressDomain2():void {
-            assertEquals("123.123.64", DomainUtil.parseDomain('123.123.64', true));
+            assertEquals("123.64", DomainUtil.parseDomain('123.123.64', true));
         }
 
         public function testIPAddressDomain3():void {

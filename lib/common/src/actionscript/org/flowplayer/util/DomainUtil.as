@@ -22,7 +22,7 @@ package org.flowplayer.util {
             if (stripSubdomains || domain.indexOf("www.") == 0) {
                 if (hasAllNumbers(domain)) {
                     trace("IP address in URL");
-                   return domain;
+                    return parseIPAddressDomain(domain);
                 }
 
                 domain = stripSubdomain(domain);
@@ -39,6 +39,12 @@ package org.flowplayer.util {
                 }
             }
             return true;
+        }
+
+        private static function parseIPAddressDomain(domain:String):String {
+            var parts:Array = domain.split(".");
+            if (parts.length <= 2) return domain;
+            return parts[parts.length - 2] + "." + parts[parts.length - 1];
         }
 
         private static function isNumber(n:String):Boolean {
