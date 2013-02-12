@@ -1,9 +1,12 @@
 Version history:
 
+3.2.15
+------
+- #42 when returning and resuming from an instream clip, restart the time update timer.
+
 3.2.14
 ------
 - #624 if there are alpha or opacity changes in a css call update the autohide original display properties.
-- #42 when returning and resuming from an instream clip, restart the time update timer.
 
 3.2.13
 ------

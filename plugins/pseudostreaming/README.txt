@@ -1,6 +1,6 @@
 Version history:
 
-3.2.11
+3.2.12
 ------
 - #31 fix to dispatch start events properly when loading new items.
 

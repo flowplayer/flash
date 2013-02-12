@@ -500,6 +500,7 @@ package org.flowplayer.model {
 		}
 		
 		public function set metaData(metaData:Object):void {
+         log.debug("received metadata", metaData);
 			this._metaData = metaData;
 		}
 		

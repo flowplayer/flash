@@ -1,5 +1,9 @@
 Version history:
 
+3.2.12
+------
+- fix for resuming live streams with Wowza
+
 3.2.11
 ------
 - fixes to stepping functions.

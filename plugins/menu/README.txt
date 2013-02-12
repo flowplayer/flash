@@ -1,9 +1,12 @@
 Version history:
 
+3.2.12
+------
+- #36 adjust the menu during fullscreen events as this is prevented once added to the stage.
+
 3.2.11
 ------
 - #7 check for stage availability before positioning the dock or position once stage is available when resetting menu items.
-- #36 adjust the menu during fullscreen events as this is prevented once added to the stage.
 
 3.2.10
 ------

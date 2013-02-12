@@ -18,9 +18,9 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer.commercial.swf",
+    flowplayer("player", "../build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.controls.scrubber.ScrubberSlider'},
+        log: { level: 'debug', filter: 'org.flowplayer.view.Screen'},
 
         key: '#$b6223bfbd646c621758',
 
@@ -69,7 +69,7 @@
         },
 
                 playlist: [
-                    "http://stream.flowplayer.org/Extremists.flv"
+                    "http://stream.flowplayer.org/flowplayer-700.flv"
                 ],
 
         clip: {
@@ -77,26 +77,11 @@
 //            duration: 20,
             bufferLength: 10,
             autoPlay: true,
-            autoBuffering:true
+            autoBuffering: true
 //            ,
 //            duration: 20
-        },
-
-        plugins: {
-            controls: {
-                url: 'flowplayer.controls.swf',
-                playlist: true,
-                scrubber: {
-                    backgroundColor: 0
-                },
-                autoHide: false
-            }
-//            content: {
-//                url: 'flowplayer.content.swf',
-//                html: '<img src="../build/play.png" width="100" height="100"/>',
-//                height: 200
-//            }
         }
+
 
     });
 </script>
