@@ -32,6 +32,7 @@ package org.electroteque.m3u8 {
     import flash.net.NetConnection;
     import flash.events.TimerEvent;
     import flash.utils.Timer;
+    import flash.utils.setTimeout;
 
     import at.matthew.httpstreaming.parser.HttpStreamingM3U8ManifestParser;
     import at.matthew.httpstreaming.model.HttpStreamingM3U8Manifest;
@@ -47,6 +48,20 @@ package org.electroteque.m3u8 {
     import org.osmf.net.StreamingURLResource;
 
     import org.osmf.net.httpstreaming.HTTPNetStream;
+
+    CONFIG::REDIRECT {
+        import flash.net.URLLoader;
+        import flash.net.URLRequest;
+        import flash.events.IOErrorEvent;
+        import flash.events.Event;
+        import flash.net.URLRequestMethod;
+        import flash.net.URLVariables;
+    }
+
+    CONFIG::LOGGING
+    {
+        import org.osmf.logging.Log;
+    }
 
     public class HttpStreamingHlsProvider extends NetStreamControllingStreamProvider implements ClipURLResolver, ErrorHandler, Plugin {
         protected var _bufferStart:Number;
@@ -74,7 +89,14 @@ package org.electroteque.m3u8 {
          */
         override public function onConfig(model:PluginModel):void {
             _model = model;
+
+            CONFIG::LOGGING
+            {
+                Log.loggerFactory = new OsmfLoggerFactory();
+            }
+
             _config = new PropertyBinder(new Config(), null).copyProperties(model.config) as Config;
+
         }
 
         /**
@@ -121,7 +143,70 @@ package org.electroteque.m3u8 {
         public function resolve(provider:StreamProvider, clip:Clip, successListener:Function):void {
             _clip = clip;
             _successListener = successListener;
-            loadM3U8(_clip.completeUrl, onM3U8Loaded);
+
+            if (clip.resolvedUrl) {
+                if (_successListener != null) {
+                    _successListener(_clip);
+                }
+                return;
+            }
+
+            if (CONFIG::REDIRECT) {
+                if (_config.redirectUrl) {
+                    getRedirectUrl(_clip.completeUrl, onM3U8RedirectUrl);
+                } else {
+                    loadM3U8(_clip.completeUrl, onM3U8Loaded);
+                }
+            } else {
+                loadM3U8(_clip.completeUrl, onM3U8Loaded);
+            }
+
+            //loadM3U8(_clip.completeUrl, onM3U8Loaded);
+        }
+
+        CONFIG::REDIRECT {
+        /**
+         * Reload the m3u8 feed with the redirected url
+         * @param url
+         */
+        private function onM3U8RedirectUrl(url:String):void
+        {
+            _clip.setResolvedUrl(null, url);
+            loadM3U8(_clip.resolvedUrl, onM3U8Loaded);
+        }
+
+        /**
+         * Get the redirection url to obtain the baseurl from using a proxy script.
+         * This is required because of a limitation in flash obtaining the response url.
+         *
+         * @param m3u8Url
+         * @param loadedCallback
+         */
+        private function getRedirectUrl(m3u8Url:String, loadedCallback:Function):void {
+
+            var loader:URLLoader = new URLLoader();
+            loader.addEventListener(Event.COMPLETE, function(event:Event):void {
+                if (!URLLoader(event.target).data) {
+                    handleStreamNotFound("Redirected url not found");
+                    return;
+                }
+                loadedCallback(URLLoader(event.target).data);
+            });
+
+            loader.addEventListener(IOErrorEvent.IO_ERROR, function(event:IOErrorEvent):void {
+                handleStreamNotFound("Error loading Redirect service");
+            });
+
+            var urlVars:URLVariables = new URLVariables();
+            urlVars.url = encodeURI(m3u8Url);
+
+            var request:URLRequest = new URLRequest(encodeURI(_config.redirectUrl));
+            request.method = URLRequestMethod.POST;
+            request.data = urlVars;
+
+            loader.load(request);
+
+        }
         }
 
 
@@ -162,20 +247,20 @@ package org.electroteque.m3u8 {
             if (_clip.getCustomProperty("bitrates")) {
                 bitrateOptions = _clip.getCustomProperty("bitrates");
             } else {
-                bitrateOptions.default = dynResource.streamItems[0].bitrate;
+                bitrateOptions.default = streamItems[0].bitrate;
 
-                if (dynResource.streamItems.length == 2) {
-                    bitrateOptions.sd = dynResource.streamItems[0].bitrate;
-                    bitrateOptions.hd = dynResource.streamItems[dynResource.streamItems.length - 1].bitrate;
+                if (streamItems.length == 2) {
+                    bitrateOptions.sd = streamItems[0].bitrate;
+                    bitrateOptions.hd = streamItems[streamItems.length - 1].bitrate;
                 }
             }
 
-            for (var index:int = 0; index < dynResource.streamItems.length; index++) {
+            for (var index:int = 0; index < streamItems.length; index++) {
                 var item:DynamicStreamingItem = streamItems[index];
 
                 var bitrateItem:BitrateItem = new BitrateItem();
                 bitrateItem.url = item.streamName;
-                bitrateItem.bitrate = item.bitrate / 1000;
+                bitrateItem.bitrate = item.bitrate;
                 bitrateItem.index = index;
                 bitrateItem.width = item.width;
                 bitrateItem.height = item.height;
@@ -392,12 +477,15 @@ package org.electroteque.m3u8 {
          * @param event
          */
         override protected function onNetStatus(event:NetStatusEvent) : void {
-            log.debug("onNetStatus(), code: " + event.info.code + ", paused? " + paused + ", seeking? " + seeking);
+            log.error("onNetStatus(), code: " + event.info.code + ", paused? " + paused + ", seeking? " + seeking);
             switch(event.info.code){
                 case "NetStream.Play.Transition":
                     log.debug("Stream Transition -- " + event.info.details);
                     dispatchEvent(new ClipEvent(ClipEventType.SWITCH, event.info.details));
                     break;
+                case "NetStream.Play.Complete":
+                    clip.dispatchBeforeEvent(new ClipEvent(ClipEventType.FINISH));
+                break;
             }
             return;
         }
@@ -411,7 +499,14 @@ package org.electroteque.m3u8 {
         override protected function doStop(event:ClipEvent, netStream:NetStream, closeStreamAndConnection:Boolean = false):void {
             _currentClip = null;
             log.debug("Clearing clip and stopping ");
-            super.doStop(event, netStream, closeStreamAndConnection);
+
+            //netStream.pause();
+            //this.seek(null, 0);
+
+            netStream.close();
+
+            this.dispatchEvent(event);
+            //super.doStop(event, netStream, closeStreamAndConnection);
         }
 
         /**
@@ -423,8 +518,20 @@ package org.electroteque.m3u8 {
         override protected function doSeek(event : ClipEvent, netStream : NetStream, seconds : Number) : void {
             var seekTime:int = int(seconds);
             _bufferStart = seekTime;
-            log.debug("calling netStream.seek(" + seekTime + ")");
+            log.error("calling netStream.seek(" + seekTime + ")");
             seeking = true;
+           // if (seekTime <= 0) return;
+
+           // if (seekTime == 0) seekTime = -1;
+
+
+            //#515 when seeking on startup set a delay or else the initial time is treated as the clip start time.
+            if (time <= 0 ) {
+                setTimeout(function():void {
+                    netStream.seek(seconds);
+                }, 250);
+                return;
+            }
             netStream.seek(seekTime);
         }
 

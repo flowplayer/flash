@@ -10,6 +10,7 @@ Version history:
 - added new configuration variable 'inBufferSeek' that can be used to disable "Smart Seek" that became available
   in Adobe FMS 3.5.3. Use this if you are running a RTMP server that does not support this in buffer seeking (smart seek).
 - #614 test if there is no more playlist items left to dispatch finish on buffer empty events where the stream appears to hang.
+- #77 for live streams once unpublished,  stop the player to prevent streamnotfound errors reconnecting or if the server shuts down.
 
 3.2.9
 -----
