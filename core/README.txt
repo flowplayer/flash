@@ -1,5 +1,9 @@
 Version history:
 
+3.2.16
+------
+- #75 set the child display list different when a gradient is set.
+
 3.2.15
 ------
 - #15 fixes for #627, handle the display init on startup.
