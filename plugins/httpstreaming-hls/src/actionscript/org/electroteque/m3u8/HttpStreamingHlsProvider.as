@@ -82,6 +82,8 @@ package org.electroteque.m3u8 {
         protected var _successListener:Function;
         protected var _retryTimer:Timer;
         protected var _retryCount:int;
+        private var _receivedStop:Boolean;
+        private var _hasNext:Boolean;
 
         /**
          * @inherit
@@ -477,7 +479,7 @@ package org.electroteque.m3u8 {
          * @param event
          */
         override protected function onNetStatus(event:NetStatusEvent) : void {
-            log.error("onNetStatus(), code: " + event.info.code + ", paused? " + paused + ", seeking? " + seeking);
+            log.debug("onNetStatus(), code: " + event.info.code + ", paused? " + paused + ", seeking? " + seeking);
             switch(event.info.code){
                 case "NetStream.Play.Transition":
                     log.debug("Stream Transition -- " + event.info.details);
@@ -486,6 +488,16 @@ package org.electroteque.m3u8 {
                 case "NetStream.Play.Complete":
                     clip.dispatchBeforeEvent(new ClipEvent(ClipEventType.FINISH));
                 break;
+                case "NetStream.Play.Stop":
+                    _receivedStop = true;
+                    _hasNext = _player.playlist.hasNext();
+                    break;
+                case "NetStream.Buffer.Empty":
+                    if ((clip.duration - _player.status.time < 1 && clip.duration > 0) && !_player.playlist.hasNext())
+                    {
+                        doStop(new ClipEvent(ClipEventType.STOP), netStream);
+                    }
+                    break;
             }
             return;
         }
@@ -496,17 +508,10 @@ package org.electroteque.m3u8 {
          * @param netStream
          * @param closeStreamAndConnection
          */
-        override protected function doStop(event:ClipEvent, netStream:NetStream, closeStreamAndConnection:Boolean = false):void {
+       override protected function doStop(event:ClipEvent, netStream:NetStream, closeStreamAndConnection:Boolean = true):void {
             _currentClip = null;
             log.debug("Clearing clip and stopping ");
-
-            //netStream.pause();
-            //this.seek(null, 0);
-
-            netStream.close();
-
-            this.dispatchEvent(event);
-            //super.doStop(event, netStream, closeStreamAndConnection);
+            super.doStop(event, netStream, closeStreamAndConnection);
         }
 
         /**
@@ -518,7 +523,7 @@ package org.electroteque.m3u8 {
         override protected function doSeek(event : ClipEvent, netStream : NetStream, seconds : Number) : void {
             var seekTime:int = int(seconds);
             _bufferStart = seekTime;
-            log.error("calling netStream.seek(" + seekTime + ")");
+            log.debug("calling netStream.seek(" + seekTime + ")");
             seeking = true;
            // if (seekTime <= 0) return;
 
@@ -584,9 +589,10 @@ package org.electroteque.m3u8 {
          * @inherit
          */
         override public function get bufferStart() : Number {
-            if (!clip) return 0;
-            if (!netStream) return 0;
-            return Math.max(0, getCurrentPlayheadTime(netStream));
+            //if (!clip) return 0;
+            //if (!netStream) return 0;
+            return 0;
+            //return Math.max(0, getCurrentPlayheadTime(netStream));
         }
 
         /**

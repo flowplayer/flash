@@ -1,5 +1,10 @@
 Version history:
 
+3.2.12
+------
+- New code requires to be compiled against OSMF 2.0
+- Refactored changes with dynamic stream switching features for rtmp and httpstreaming. Switching rules and metrics differ between them.
+
 3.2.11
 ------
 - #6 cache control headers don't work on chrome windows, just use the cache busting url param.

@@ -1,3 +1,7 @@
+3.2.10
+------
+- New code requires to be compiled against OSMF 2.0
+
 3.2.9
 -----
 - http://code.google.com/p/flowplayer-core/issues/detail?id=486

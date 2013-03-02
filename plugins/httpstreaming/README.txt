@@ -1,5 +1,9 @@
 Version history:
 
+3.2.10
+------
+- New code requires to be compiled against OSMF 2.0
+
 3.2.9
 -----
 - #515 when seeking on startup set a delay or else the initial time is treated as the clip start time.
