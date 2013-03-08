@@ -18,7 +18,7 @@
 
 
     <!-- target dir is dynamic -->
-	<var name="target.dir" value="${basedir}"/>
+	<var name="target.dir" value="../../../../core/build"/>
 
 	<if>
 		<contains string="${basedir}" substring="/tools/"/>
