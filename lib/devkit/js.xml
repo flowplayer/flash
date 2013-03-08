@@ -18,7 +18,7 @@
 
 
     <!-- target dir is dynamic -->
-	<var name="target.dir" value="../../../../core/build"/>
+	<var name="target.dir" value="${basedir}/../../core/build"/>
 
 	<if>
 		<contains string="${basedir}" substring="/tools/"/>
@@ -101,7 +101,7 @@
         <property name="target.file" value="${target.dir}/${basename}-${version}.min.js"/>
         <echo message="copying ${target.file}" />
         <copy file="${target.file}" todir="${js.deploy.dir}" />
-        <copy file="${target.dir}/${basename}.js" todir="${js.deploy.dir}" />
+        <copy file="${basedir}/${basename}.js" todir="${js.deploy.dir}" />
     </target>
 
     <target name="release-remote">
