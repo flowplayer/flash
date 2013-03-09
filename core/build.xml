@@ -537,7 +537,7 @@
     </target>
 
     <target name="dist" description="Create distribution packages" depends="build-all">
-        <iterate-plugins target="dist"/>
+        <iterate-plugins target="dist" buildfiles="${allplugins.buildfiles}"/>
         <ant target="zip"/>
         <ant target="zip-biz"/>
         <ant target="zip-devkit"/>
