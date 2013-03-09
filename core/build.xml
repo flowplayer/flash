@@ -104,6 +104,13 @@
         <example player-swf="${player-binary-versioned}" example-dir="example-free"/>
     </target>
 
+    <target name="dobuild-all" depends="check-uptodate, build-lib, plugins-all" unless="uptodate.main">
+        <antcall target="prepare"/>
+        <property name="licenselib" value="${lib-dir}/licensekey"/>
+        <antcall target="compile"/>
+        <example player-swf="${player-binary-versioned}" example-dir="example-free"/>
+    </target>
+
     <target name="deploy" if="deploy.dir" description="copies swf and js to deploy dirs" depends="jsplugins">
         <copy todir="${deploy.dir}" overwrite="true">
             <fileset dir="${build-dir}">
@@ -113,7 +120,8 @@
         <iterate-plugins target="deploy" buildfiles="${jsplugins.buildfiles}" basedirectory="../js-plugins" />
     </target>
 
-    <target name="build" description="builds all" depends="dobuild, deploy" />
+    <target name="build" description="builds the free version, and plugins listed in build.properties" depends="dobuild, deploy" />
+    <target name="build-all" description="builds all" depends="dobuild-all, build-biz"/>
 
     <target name="build-biz" description="builds all" depends="check-uptodate, build-lib, plugins"
             unless="uptodate.commercial">
@@ -123,7 +131,6 @@
         <example player-swf="${commercial-player-binary-versioned}" example-dir="example-biz"/>
     </target>
 
-    <target name="build-all" description="builds all" depends="build, build-biz"/>
 
     <target name="zip-bundled">
         <antcall target="prepare"/>
@@ -336,6 +343,12 @@
 
     <target name="plugins" description="Build all plugins">
         <iterate-plugins target="deploy"/>
+        <iterate-plugins target="min" buildfiles="${jsplugins.buildfiles}" basedirectory="../js-plugins"/>
+    </target>
+
+    <target name="plugins-all" description="Build all plugins">
+        <iterate-plugins target="deploy" buildfiles="${allplugins.buildfiles}"/>
+        <iterate-plugins target="min" buildfiles="${alljsplugins.buildfiles}" basedirectory="../js-plugins"/>
     </target>
 
     <target name="plugin-names" description="Echoes all plugin names">
@@ -361,6 +374,7 @@
                 <property name="keyfile" value="${keyfile}"/>
                 <property name="url-file" value="${url-file}"/>
                 <property name="yaml-file" value="${yaml-file}"/>
+                <property name="dist-file" value="${dist-file}" />
                 <property name="devkit-dir" value="../${devkit-dir}"/>
                 <property name="js.deploy.dir" value="${js.deploy.dir}"/>
                 <property name="mxmlc-bin" value="${mxmlc-bin}" />
@@ -406,6 +420,8 @@
                     license="LICENSE.txt" example-dir="example-free"/>
         <copy file="${dist-dir}/${dist-name}" tofile="${dist-dir}/flowplayer.zip" />
         <copy file="${dist-dir}/${dist-name}" tofile="${dist-dir}/${dist-target-name}" />
+        <copy file="${build-dir}/${player-binary}" todir="${dist-dir}" />
+        <copy file="${build-dir}/${player-binary-versioned}" todir="${dist-dir}" />
     </target>
 
     <target name="zip-biz" description="creates a Commercial distribution zip package">
@@ -414,7 +430,8 @@
                     example-dir="example-biz"/>
         <copy file="${dist-dir}/${commercial-dist-name}" tofile="${dist-dir}/flowplayer.commercial.zip" />
         <copy file="${dist-dir}/${commercial-dist-name}" tofile="${dist-dir}/${commercial-dist-target-name}" />
-
+        <copy file="${build-dir}/${commercial-player-binary}" todir="${dist-dir}" />
+        <copy file="${build-dir}/${commercial-player-binary-versioned}" todir="${dist-dir}" />
 
         <zip-player zip-name="${multidomain-dist-name}" player-swf-dir="${build-dir}"
                     player-swf="${commercial-player-binary-versioned}" license="LICENSE_MULTIDOMAIN.txt"

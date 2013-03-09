@@ -18,7 +18,7 @@
 
 
     <!-- target dir is dynamic -->
-	<var name="target.dir" value="${basedir}/../../core/build"/>
+	<var name="target.dir" value="${basedir}/../../core/dist"/>
 
 	<if>
 		<contains string="${basedir}" substring="/tools/"/>
@@ -95,6 +95,14 @@
     <target name="write-filesize">
         <length property="filesize" file="${target.dir}/${basename}-${version}.js" />
         <echo file="${yaml-file}" append="true" message="    ${basename}.js: ${filesize}${line.separator}" />
+    </target>
+
+    <target name="write-dist-info">
+        <echo file="${dist-file}" append="true" message="${basename}:${line.separator}" />
+        <echo file="${dist-file}" append="true" message="    folder: ${basename}${line.separator}" />
+        <echo file="${dist-file}" append="true" message="    files:${line.separator}" />
+        <echo file="${dist-file}" append="true" message="        - ${basename}.js${line.separator}" />
+        <echo file="${dist-file}" append="true" message="        - ${basename}.min.js${line.separator}" />
     </target>
 
     <target name="deploy" if="js.deploy.dir">

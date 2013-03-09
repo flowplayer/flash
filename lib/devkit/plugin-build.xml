@@ -319,6 +319,14 @@
         <echo file="${yaml-file}" append="true" message="    ${basename}.zip: ${zip.filesize}${line.separator}" />
     </target>
 
+    <target name="write-dist-info">
+        <echo file="${dist-file}" append="true" message="${basename}:${line.separator}" />
+        <echo file="${dist-file}" append="true" message="    folder: ${releasedir}${line.separator}" />
+        <echo file="${dist-file}" append="true" message="    files:${line.separator}" />
+        <echo file="${dist-file}" append="true" message="        - ${basename}-${version}.zip${line.separator}" />
+        <echo file="${dist-file}" append="true" message="        - ${basename}-${version}.swf${line.separator}" />
+    </target>
+
 	<target name="source-zip" depends="prepare" unless="pluginproxy">
 		<zip destfile="${dist-dir}/${basename}-${version}-src.zip">
 			<zipfileset prefix="${basename}" dir=".">
