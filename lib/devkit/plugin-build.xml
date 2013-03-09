@@ -314,9 +314,9 @@
 
     <target name="write-filesize">
         <length property="filesize" file="${build-dir}/${plugin-binary}" />
-        <echo file="${yaml-file}" append="true" message="        ${plugin-binary}: ${filesize}${line.separator}" />
+        <echo file="${yaml-file}" append="true" message="    ${plugin-binary}: ${filesize}${line.separator}" />
         <length property="zip.filesize" file="${dist-dir}/${basename}-${version}.zip" />
-        <echo file="${yaml-file}" append="true" message="        ${basename}.zip: ${zip.filesize}${line.separator}" />
+        <echo file="${yaml-file}" append="true" message="    ${basename}.zip: ${zip.filesize}${line.separator}" />
     </target>
 
 	<target name="source-zip" depends="prepare" unless="pluginproxy">

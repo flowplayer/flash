@@ -94,7 +94,7 @@
 
     <target name="write-filesize">
         <length property="filesize" file="${target.dir}/${basename}-${version}.js" />
-        <echo file="${yaml-file}" append="true" message="        ${basename}.js: ${filesize}${line.separator}" />
+        <echo file="${yaml-file}" append="true" message="    ${basename}.js: ${filesize}${line.separator}" />
     </target>
 
     <target name="deploy" if="js.deploy.dir">
