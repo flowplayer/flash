@@ -78,6 +78,7 @@ package org.flowplayer.content {
             _text.multiline = true;
             _text.antiAliasType = AntiAliasType.ADVANCED;
             _text.condenseWhite = true;
+            _text.selectable = false;
 
             log.info("style.textDecoration " + style.textDecoration);
             if (style.textDecoration == "outline") {

@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../flowplayer-3.2.11.min.js"></script>
 
 
 	<!-- page title -->
@@ -16,7 +16,7 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer-3.2.11.swf",
+    flowplayer("player", "../build/flowplayer-3.2.15.swf",
     {
         log: { level: 'debug', filter: 'org.flowplayer.controls.scrubber.ScrubberSlider, org.flowplayer.audio.*' },
 
@@ -33,7 +33,10 @@
         },
 
         onPause: function() {
-            console.log("onPause");
+			setTimeout(function() { 
+				console.log("onPause" + $f().getTime());
+			}, 5000);
+            //console.log("onPause" + $f().getTime());
         },
 
         onResume: function() {

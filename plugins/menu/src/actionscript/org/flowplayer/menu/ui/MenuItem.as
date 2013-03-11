@@ -40,13 +40,17 @@ package org.flowplayer.menu.ui {
 
         private var _buffer:int = 10;
 
+        private var _selected:Boolean;
+
         public function MenuItem(player:Flowplayer, config:MenuItemConfig, animationEngine:AnimationEngine) {
             _player = player;
             super(config, animationEngine);
         }
 
         override protected function onClicked(event:MouseEvent):void {
-            if (! itemConfig.toggle) return;
+
+            if (!itemConfig.toggle) return;
+
             if (_tickMark.parent) {
                 removeChild(_tickMark);
             } else {
@@ -55,7 +59,13 @@ package org.flowplayer.menu.ui {
         }
 
         public function set selected(selected:Boolean):void {
-//            if (! _tickMark) return;
+            _selected = selected;
+
+            if (! _tickMark) {
+                this.enabled = !selected;
+                return;
+            }
+
             if (selected && ! _tickMark.parent) {
                 addChild(_tickMark);
             } else if (_tickMark.parent) {
@@ -64,7 +74,8 @@ package org.flowplayer.menu.ui {
         }
 
         public function get selected():Boolean {
-            return _tickMark.parent != null;
+            return _selected;
+            //return _tickMark.parent != null;
         }
 
         override protected function createFace():DisplayObjectContainer {
@@ -74,9 +85,9 @@ package org.flowplayer.menu.ui {
         override protected function childrenCreated():void {
             if (itemConfig.toggle) {
                 _tickMark = new TickMark();
-                if (itemConfig.selected) {
+                /*if (itemConfig.selected) {
                     addChild(_tickMark);
-                }
+                } */
             }
             _text = addChild(TextUtil.createTextField(false, null, 12, true)) as TextField;
             _text.selectable = false;
@@ -150,15 +161,15 @@ package org.flowplayer.menu.ui {
         }
 
         override protected function doEnable(enabled:Boolean):void {
-            _text.textColor = enabled ? config.fontColor: config.disabledColor;
-            _text.alpha = enabled ? config.fontAlpha : config.disabledAlpha;
             if (_tickMark) {
+                _text.textColor = enabled ? config.fontColor: config.disabledColor;
+                _text.alpha = enabled ? config.fontAlpha : config.disabledAlpha;
                 GraphicsUtil.transformColor(_tickMark, enabled ? config.fontColorRGBA : config.disabledRGBA);
             }
         }
 
         override protected function get disabledDisplayObject():DisplayObject {
-            return null;
+            return itemConfig.toggle || itemConfig.title ? null : super.disabledDisplayObject;
         }
 
         private function get itemConfig():MenuItemConfig {return _config as MenuItemConfig;}

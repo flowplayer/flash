@@ -110,9 +110,9 @@ package org.flowplayer.bitrateselect {
 
                 if (_config.menu) {
                     initBitrateMenu(clip);
-                    if (_menuPlugin) {
+                    /*if (_menuPlugin) {
                         _menuPlugin.enableItems(true, _menuItems);
-                    }
+                    }*/
                 }
 
             }, applyForClip);
@@ -202,6 +202,8 @@ package org.flowplayer.bitrateselect {
             for (var i:Number = items.length - 1; i >= 0; i--) {
                 var item:BitrateItem = items[i];
 
+                var selected:Boolean = _streamSelectionManager.currentBitrateItem.bitrate == item.bitrate;
+
                 _menuItems.push(_menuPlugin["addItem"](
                         {
                             selectedCallback: function(menuItem:Object):void {
@@ -210,10 +212,11 @@ package org.flowplayer.bitrateselect {
                             },
                             //#586 set a default menu label to the bitrate with a k postfix if the bitrate label is not set.
                             label: item.label ? item.label : item.bitrate + "k",
-                            enabled: false,
-                            toggle: true,
+                            //enabled: !selected,
+                            //enabled: true,
+                            toggle: false,
                             //get the resolved mapped bitrate and set the selected item
-                            selected: _streamSelectionManager.currentBitrateItem.bitrate == item.bitrate,
+                            selected: selected,
                             bitrateItem: item,
                             group: "bitrate"
                          }, items.indexOf(item) == 0));
@@ -362,6 +365,22 @@ package org.flowplayer.bitrateselect {
 
                 _streamSwitchManager.switchStream(bitrateItem);
             }
+        }
+
+        /**
+         * Gets the current bitrate. The returned value is the bitrate in use after the latest bitrate transition has been completed. If
+         * a transition is in progress the value reflects the bitrate right now being used, not the one we are changing to.
+         * @return
+         */
+        [External]
+        public function get bitrate():Number {
+            log.debug("get bitrate(), returning current bitrate");
+            return currentItem.bitrate;
+        }
+
+        [External]
+        public function get currentItem():BitrateItem {
+            return _streamSelectionManager.currentBitrateItem;
         }
 
         public function set onFailure(listener:Function):void {

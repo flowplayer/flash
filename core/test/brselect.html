@@ -1,6 +1,6 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../flowplayer-3.2.11.min.js"></script>
     <script type="text/javascript" src="http://cdn.jquerytools.org/1.2.5/full/jquery.tools.min.js"></script>
     <script type="text/javascript" src="../../jsplugins/bitrateselect/trunk/flowplayer.bitrateselect-3.2.8.min.js"></script>
 
@@ -56,15 +56,15 @@
 
         clip: {
             bitrates: [
-                {
+               /* {
                     url: "mp4:bbb-400", width: 320, height: 180, bitrate: 400,
                     // this is the default bitrate, the playback kicks off with this and after that
                     // Quality Of Service monitoring adjusts to the most appropriate bitrate
                     label: '400'
-                },
-                { url: "mp4:bbb-800", width: 480, bitrate: 800, isDefault: true, label: '800' },
-                { url: "mp4:bbb-1200", width: 720, bitrate: 1200, label: '1200' },
-                { url: "mp4:bbb-1600", width: 1080, bitrate: 1600, label: '1600' }
+                },*/
+                { url: "mp4:bbb-800", width: 480, bitrate: 800, isDefault: true, label: '800', sd: true },
+                { url: "mp4:bbb-1200", width: 720, bitrate: 1200, label: '1200', hd: true },
+                //{ url: "mp4:bbb-1600", width: 1080, bitrate: 1600, label: '1600' }
             ],
             urlResolvers: 'bitrateselect',
             provider: 'rtmp'
@@ -74,8 +74,10 @@
                 url: 'flowplayer.bitrateselect.swf',
 
                 hdButton: {
-                    place: 'none',
-                    splash: false
+                    place: 'both',
+                    splash: true,
+					onLabel: "вкл On",
+  					offLabel: "выкл Off"
                 },
 
                 onStreamSwitchBegin: function (newItem, currentItem) {
@@ -107,7 +109,7 @@
             }
         }
 
-    }).bitrateselect('#options');
+    });
 </script>
 	</div>
 	

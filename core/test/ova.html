@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../flowplayer-3.2.11.min.js"></script>
 
 
 	<!-- page title -->
@@ -43,36 +43,34 @@
         // Videos to be played:
         playlist: [
             {
-                url: "http://cdn.tv3.ie/content/videos/0116/midrolltest2_Tv3_4x3_1_29046.mp4",
+                //url: "http://content.bitsontherun.com/videos/rO8PIVrl-393434.mp4",
+				url: 'api:YE7VzlLtp-4',
                 autoPlay: true,
                 autoBuffering: true,
-                provider: "rtmp",
+                provider: "youtube",
 
                 // use smil and bwcheck when resolving the clip URL
-                urlResolvers: [ "smil" ]
+              //  urlResolvers: [ "smil" ]
             }
         ],
 
         // All FP Plug ins:
         plugins:
         {
-            controls:
+            /*controls:
             {
                 url:"tw3.swf"
-            },
+            },*/
 
-            rtmp: {
-                url: "flowplayer.rtmp.swf"
+            youtube: {
+                url: "flowplayer.youtube.swf"
             },
 
             // the SMIL plugin reads in and parses the SMIL, and provides
             // the bitrates info to the bw detection plugin
-            smil: {
-                url: "flowplayer.smil.swf"
-            },
-
+           
             ova: {
-                "url": "flowplayer.ova-0.6.0-build-12.swf",
+                "url": "ova.swf",
 
                 "playOnce": true,
                 "autoPlay": true,
@@ -82,21 +80,16 @@
                 "ads": {
                     "servers": [
                         {
-                            "type": "AdTech",
-                            "apiAddress": "http://adserver.adtech.de/?adrawdata/3.0/561.1"
+                           "type": "OpenX",
+                           "apiAddress": "http://openx.openvideoads.org/openx/www/delivery/fc.php"
                         }
                     ],
-                    "schedule": [
+                   "schedule": [
                         {
-                            "zone": "2217280/0/1725", // composed of placement/page-id/size-id
-                            "position": "pre-roll"
-                        },
-                        {
-                            "zone": "2621900/0/1726",
-                            "position": "mid-roll",
-                            "startTime": "00:01:26"
+                           "zone": "5",
+                           "position": "pre-roll"
                         }
-                    ]
+                   ]
                 }
             }
         }

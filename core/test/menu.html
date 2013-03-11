@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.9.min.js"></script>
+    <script src="../flowplayer-3.2.11.min.js"></script>
 
 
 	<!-- page title -->
@@ -16,17 +16,18 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer.swf",
+    flowplayer("player", {src: "../build/flowplayer.swf", wmode: "direct"},
             {
                 log: {
                     level: 'debug',
-                    filter: 'org.flowplayer.menu.ui.Menu'
+                    filter: 'org.flowplayer.view.Launcher.*'
                 },
                 clip: {
                     autoPlay: false,
                     provider: 'rtmp',
 
                     urlResolvers: 'brselect',
+					accelerated: true,
 
                     bitrates: [
                         { url: "mp4:bbb-400",
@@ -51,13 +52,16 @@
                         console.log("onBegin");
                     }
                 },
+				/*screen: {
+			       backgroundGradient: "none"
+			    },*/
                 plugins: {
                     menu: {
                         url: 'flowplayer.menu.swf',
                         items: [
                             // you can have an optional label as the first item
                             // the bitrate specific items are filled here based on the clip's bitrates
-                            { label: "select bitrate:", enabled: false }
+                            { label: "select bitrate:", enabled: false, title: true }
                         ],
                         width: 300,
                         right: 0
@@ -109,8 +113,15 @@
                 }
 
             });
+
+function getbitrate() {
+	console.log($f().getClip().bitrate);
+	console.log($f().getClip().mappedBitrate);
+	console.log($f().getPlugin("brselect").getCurrentItem());
+	console.log($f().getPlugin("brselect").getBitrate());
+}
 </script>
     </div>
-	
+	<button onclick="getbitrate();return false;">GET</button>
 
 </body></html>

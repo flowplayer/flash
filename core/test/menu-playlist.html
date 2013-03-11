@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../flowplayer-3.2.11.min.js"></script>
 
 
 	<!-- page title -->
@@ -18,7 +18,7 @@
 <script>
     flowplayer("player", "../build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.menu.ui.Menu' },
+        log: { level: 'debug', filter: 'org.flowplayer.menu.*' },
 //        log: { level: 'debug', filter: 'org.flowplayer.menu.Menu,org.flowplayer.bitrateselect.BitrateSelectProvider' },
         onStart: function() {
             console.log("onStart");
@@ -63,12 +63,12 @@
             menu: {
                 url: 'flowplayer.menu.swf',
                 items: [
-                    { label: '<b>first clip</b><br/><i>3:30</i>', imageUrl: 'http://static.flowplayer.org/img/demos/thumb1.jpg', index: 0 },
-                    { label: 'second clip', imageUrl: 'http://static.flowplayer.org/img/demos/thumb2.jpg', index: 1 },
-                    { label: '<b>third clip</b><br/><i>3:66</i>', imageUrl: 'http://static.flowplayer.org/img/demos/thumb3.jpg', index: 2 },
-                    { label: 'fourth clip', imageUrl: 'http://static.flowplayer.org/img/demos/thumb4.jpg', index: 3 },
-                    { label: '<b>fifth clip</b><br/><i>13:30</i>', imageUrl: 'http://static.flowplayer.org/img/demos/thumb5.jpg', index: 4 },
-                    { label: 'sixth clip', imageUrl: 'http://static.flowplayer.org/img/demos/thumb1.jpg', index: 5 }
+                    { label: '<b>first clip</b><br/><i>3:30</i>', index: 0 },
+                    { label: 'second clip', index: 1 },
+                    { label: '<b>third clip</b><br/><i>3:66</i>', index: 2 },
+                    { label: 'fourth clip', index: 3 },
+                    { label: '<b>fifth clip</b><br/><i>13:30</i>', index: 4 },
+                    { label: 'sixth clip', index: 5 }
                 ],
 
                 // default style for items

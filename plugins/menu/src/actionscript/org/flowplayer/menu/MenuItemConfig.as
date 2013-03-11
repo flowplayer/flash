@@ -28,7 +28,17 @@ package org.flowplayer.menu {
 
         private var _toggle:Boolean;
         private var _selected:Boolean; // is this initially selected. For toggle items.
-        private var _group:String; // you can group items, see the MenuConfig.itemsIn(group) method
+        private var _group:String = "default"; // you can group items, see the MenuConfig.itemsIn(group) method
+
+        private var _title:Boolean;
+
+        public function get title():Boolean {
+            return _title;
+        }
+
+        public function set title(value:Boolean):void {
+            _title = value;
+        }
 
         [Value]
         public function get label():String {

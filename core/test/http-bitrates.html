@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../flowplayer-3.2.11.min.js"></script>
 
 
 	<!-- page title -->
@@ -16,9 +16,9 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer-3.2.8-dev.swf",
+    flowplayer("player", "../build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        log: { level: 'debug', filter: 'org.flowplayer.ui.tooltips.*' },
         onStart: function() {
             console.log("onStart");
         },
@@ -39,7 +39,8 @@
             url: "sample1.f4m",
             urlResolvers: ['f4m','bwcheck'],
             provider: 'httpstreaming',
-            baseUrl: "http://httpstreaming.electroteque.org/videos/vod/"
+			baseUrl: 'http://stream.flowplayer.org/httpstreaming/',
+            //baseUrl: "http://httpstreaming.electroteque.org/videos/vod/"
 
         },
         plugins:  {
@@ -57,26 +58,27 @@
                 url: 'flowplayer.httpstreaming.swf'
             },
             bwcheck: {
-                url: 'flowplayer.bwcheck.swf',
+                url: 'flowplayer.bwcheck-httpstreaming.swf',
                 netConnectionUrl: 'http://flowplayer.electroteque.org/swf/flowplayer-bwcheck.swf',
                 bitrateProfileName: 'HTTPBitrateProfile',
-                dynamic: false,
+                dynamic: true,
                 //onStreamSwitch: switchStreamInfo,
                 //onStreamSwitchBegin: switchStreamInfoBegin,
                 // this method is called when the bandwidth check is done
                 //	onBwDone: bwDoneInfo,
-                hdButton: { place: "dock" },
+                //hdButton: { place: "dock" },
 
                 // show the selected file in the content box. This is not used in real installations.
                 onStreamSwitchBegin: function (newItem, currentItem) {
                     console.log("Will switch to: " + newItem.streamName +
                      " from " + currentItem.streamName);
-//                   $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
-//                    " from " + currentItem.streamName);
+                   $f("player").getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
+                    " from " + currentItem.streamName);
                 },
                 onStreamSwitch: function (newItem) {
-                    console.log('content').setHtml("Switched to: " + newItem.streamName);
-//                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
+			
+                  // console.log("Switched to: " + newItem.streamName);
+                    $f("player").getPlugin('content').setHtml("Switched to: " + newItem.streamName);
                 }
             },
             content: {
@@ -92,7 +94,11 @@
                         color: '#ffffff'
                     }
                 }
-            }
+            },
+			controls: { 
+				stop: true, 
+				tooltips: { buttons: true, play: "fuckn stop this label" }
+			}
 
         }
     });

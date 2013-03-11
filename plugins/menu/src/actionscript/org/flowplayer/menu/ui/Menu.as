@@ -74,6 +74,9 @@ package org.flowplayer.menu.ui {
             var itemConfig:MenuItemConfig = _config.addItem(itemConf);
             log.debug("addItem(), color == " + itemConfig.color + ", overColor == " + itemConfig.overColor);
             createItem(itemConfig);
+
+
+
             updateModelHeight();
             if (_menuButtonContainer && model.visible && adjustPosition) {
                 adjustDockPosition();
@@ -323,10 +326,16 @@ package org.flowplayer.menu.ui {
             item.tabEnabled = true;
             item.tabIndex = tabIndex;
 
+            item.buttonMode = true;
+            item.mouseChildren = false;
+
+            if (!itemConfig.title) item.selected = itemConfig.selected;
+
             var menu:Menu = this;
             item.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void {
-                if (! item.enabled) return;
+                if (!MenuItem(event.target).enabled) return;
                 if (menu.alpha == 0) return;
+                //MenuItem(event.target).selected = true;
                 _player.animationEngine.fadeOut(menu);
                 itemConfig.fireCallback(model);
                 deselectOtherItemsInGroup(itemConfig);
@@ -342,6 +351,8 @@ package org.flowplayer.menu.ui {
                 var relatedItem:MenuItemConfig = itemsInGroup[i] as MenuItemConfig;
                 if (relatedItem != itemConfig) {
                     relatedItem.view.selected = false;
+                } else {
+                    relatedItem.view.selected = true;
                 }
             }
         }
