@@ -25,6 +25,7 @@ package org.osmf.net.httpstreaming.dvr
 	import flash.net.NetConnection;
 	
 	import org.osmf.events.DVRStreamInfoEvent;
+	import org.osmf.net.NetClient;
 	import org.osmf.net.NetStreamCodes;
 	import org.osmf.net.httpstreaming.HTTPNetStream;
 	import org.osmf.traits.TimeTrait;
@@ -45,6 +46,7 @@ package org.osmf.net.httpstreaming.dvr
 			_dvrInfo = dvrInfo;
 			_stream.addEventListener(DVRStreamInfoEvent.DVRSTREAMINFO, onDVRStreamInfo);
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
+			NetClient(_stream.client).addHandler(NetStreamCodes.ON_PLAY_STATUS, onPlayStatus);
 		}
 		
 		override public function get duration():Number
@@ -79,6 +81,18 @@ package org.osmf.net.httpstreaming.dvr
 				case NetStreamCodes.NETSTREAM_PLAY_UNPUBLISH_NOTIFY:
 					// When a live stream is unpublished, we should signal that
 					// the stream has stopped.
+					signalComplete();
+					break;
+			}
+		}
+		
+		private function onPlayStatus(event:Object):void
+		{			
+			switch(event.code)
+			{
+				case NetStreamCodes.NETSTREAM_PLAY_COMPLETE:
+					// For streaming, NetStream.Play.Complete means playback
+					// has completed.  But this isn't fired for progressive.
 					signalComplete();
 					break;
 			}

@@ -1,5 +1,9 @@
 Version history:
 
+3.2.13
+------
+- #77 for live streams once unpublished,  stop the player to prevent streamnotfound errors reconnecting or if the server shuts down.
+
 3.2.12
 ------
 - fix for resuming live streams with Wowza

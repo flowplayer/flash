@@ -19,6 +19,8 @@
  **********************************************************/
 package org.osmf.smpte.tt.styling
 {	
+	import flash.utils.Dictionary;
+	
 	import org.osmf.smpte.tt.errors.SMPTETTException;
 	import org.osmf.smpte.tt.utilities.StringUtils;
 
@@ -26,7 +28,9 @@ package org.osmf.smpte.tt.styling
 	{
 		private static const hexRegExp:RegExp = /^\s*(?:#|0x)([\dA-Fa-f][\dA-Fa-f][\dA-Fa-f][\dA-Fa-f][\dA-Fa-f][\dA-Fa-f])([\dA-Fa-f][\dA-Fa-f])?\s*$/;
 		private static const rgbaRegExp:RegExp = /^\s*rgb(a)?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\)|(?:\s*,\s*(\d+(?:.?\d+)*)\)))\s*$/;
-
+		
+		private static var _cache:Dictionary = new Dictionary(); 
+		
 		private var _color:uint = 0x000000;
 		public function get color():uint
 		{
@@ -66,6 +70,12 @@ package org.osmf.smpte.tt.styling
 				c:uint,
 				a:Number=1,
 				ce:ColorExpression;
+			
+			if (_cache[input])
+			{
+				return _cache[input]
+			}
+			
 			try {
 				if(hexRegExp.test(input))
 				{
@@ -94,10 +104,13 @@ package org.osmf.smpte.tt.styling
 			} catch(err:Error){
 				throw(new SMPTETTException("Invalid colour format string: "+input));
 			}
+			
+			_cache[input] = ce;
 			return ce;
 		}
 		
-		private static function namedColor(p_input:String):ColorExpression{
+		private static function namedColor(p_input:String):ColorExpression
+		{
 			var ce:ColorExpression;
 			switch(p_input){
 				case "transparent": 
@@ -206,7 +219,7 @@ package org.osmf.smpte.tt.styling
 		
 		public function ColorExpression(p_color:uint=0,p_alpha:Number=1){
 			_color = p_color;
-			_alpha = p_alpha;
+			_alpha = p_alpha;			
 		}
 		
 	}

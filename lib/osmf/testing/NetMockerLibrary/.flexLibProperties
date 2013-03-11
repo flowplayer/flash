@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="1">
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
   <includeClasses>
     <classEntry path="org.osmf.netmocker.DefaultNetConnectionFactory"/>
     <classEntry path="org.osmf.netmocker.EventInfo"/>
     <classEntry path="org.osmf.netmocker.IMockNetLoader"/>
-    <classEntry path="org.osmf.netmocker.MockHTTPNetStreamMetrics"/>
     <classEntry path="org.osmf.netmocker.MockNetConnection"/>
     <classEntry path="org.osmf.netmocker.MockNetLoader"/>
     <classEntry path="org.osmf.netmocker.MockNetStream"/>

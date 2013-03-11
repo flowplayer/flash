@@ -5,8 +5,8 @@
 
     <property name="version-1" value="3"/>
     <property name="version-2" value="2"/>
-    <property name="version-3" value="16"/>
-    <property name="version-status" value=""/>
+    <property name="version-3" value="17"/>
+    <property name="version-status" value="dev"/>
     <property name="controls-version-info" value="3.2.15"/>
     <property name="audio-version-info" value="3.2.10"/>
     <property name="flowplayer-js-version-info" value="3.2.12"/>
@@ -364,6 +364,7 @@
         <attribute name="buildfiles" default="${plugin.buildfiles}"/>
         <attribute name="basedirectory" default="${plugins.dir}"/>
         <sequential>
+            <echo message="plugin buildfiles @{buildfiles}" />
             <subant target="@{target}">
                 <fileset dir="@{basedirectory}" includes="@{buildfiles}"/>
                 <property name="remotedir" value="${remotedir}"/>

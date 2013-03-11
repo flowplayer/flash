@@ -399,6 +399,31 @@ package org.osmf.utils
 		 **/
 		public static const F4M_MEDIA_MISSING:String 					= "f4mMediaMissing";
 		
+		/**
+		 * @private
+		 **/
+		public static const METRIC_NOT_FOUND:String 					= "metricNotFound";
+		
+		/**
+		 * @private
+		 **/
+		public static const METRIC_FACTORY_NULL:String 					= "metricFactoryNull";
+		
+		/**
+		 * @private
+		 **/
+		public static const METRIC_ALREADY_EXISTS:String 				= "metricAlreadyExists";
+		
+		/**
+		 * @private
+		 **/
+		public static const NETSTREAM_LIVE_STALL:String 				= "netStreamLiveStall";
+		
+		/**
+		 * @private
+		 **/
+		public static const NETSTREAM_LIVE_RESUME:String 				= "netStreamLiveResume";
+				
 		
 		private static const resourceDict:Dictionary = new Dictionary();
 		{
@@ -475,6 +500,12 @@ package org.osmf.utils
 			resourceDict[MULTICAST_NOT_SUPPORT_MBR]					= "Multicast does not support MBR";
 			resourceDict[F4M_FILE_INVALID]							= "The F4M document contains errors";
 			resourceDict[F4M_MEDIA_MISSING]							= "The F4M document doesn't contain media informations.";
+			
+			resourceDict[METRIC_ALREADY_EXISTS]						= "The metric already exists.";
+			resourceDict[METRIC_FACTORY_NULL]						= "The metric factory was not set.";
+			resourceDict[METRIC_NOT_FOUND]							= "The metric was not found.";
+			resourceDict[NETSTREAM_LIVE_STALL]						= "Live playback stalled.";
+			resourceDict[NETSTREAM_LIVE_RESUME]						= "Live playback resumed.";
 			
 			resourceDict["missingStringResource"]					= "No string for resource {0}";
 		}

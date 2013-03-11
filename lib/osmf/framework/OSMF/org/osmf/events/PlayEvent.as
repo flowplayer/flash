@@ -62,6 +62,39 @@ package org.osmf.events
 		public static const PLAY_STATE_CHANGE:String = "playStateChange";
 		
 		/**
+		 * <p>The PlayEvent.LIVE_STALL constant defines the value
+		 * of the type property of the event object for a liveStall
+		 * event.</p>
+		 * 
+		 * <p>Dispatched  when playback runs out of content for a live stream but the
+		 * stream is not done.</p>
+		 * 
+		 * @eventType liveStall
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 2.0
+		 */
+		public static const LIVE_STALL:String = "liveStall";
+		
+		/**
+		 * <p>The PlayEvent.LIVE_RESUME constant defines the value
+		 * of the type property of the event object for a liveResume
+		 * event.</p>
+		 * 
+		 * <p>Dispatched  when playback resumes after a live stall</p>
+		 * 
+		 * @eventType liveResume
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 2.0
+		 */
+		public static const LIVE_RESUME:String = "liveResume";
+		
+		/**
 		 * Constructor.
 		 * 
 		 * @param type Event type.

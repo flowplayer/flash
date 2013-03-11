@@ -44,20 +44,6 @@ package org.osmf.containers
 			container.addMediaElement(new MediaElement());
 		}
 		
-		[Ignore("This test needs further review: it seems to fail on IE for no apparent reason")]
-		[Test]
-		public function testExternalFunctions():void
-		{
-			if (ExternalInterface.available)
-			{
-				var container:HTMLMediaContainer = new HTMLMediaContainer("test");
-				
-				Assert.assertTrue(ExternalInterface.call("function(){return document.osmf;}"));
-				Assert.assertTrue(ExternalInterface.call("function(){return document.osmf.containers;}"));
-				Assert.assertTrue(ExternalInterface.call("function(){return document.osmf.containers.MediaFrameworkTest_test;}"));
-			}
-		}
-		
 		[Test]
 		public function testHTMLMediaContainer():void
 		{

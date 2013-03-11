@@ -22,6 +22,7 @@ package org.osmf.smpte.tt.media
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.external.ExternalInterface;
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
 	
@@ -47,10 +48,14 @@ package org.osmf.smpte.tt.media
 	import org.osmf.metadata.TimelineMarker;
 	import org.osmf.metadata.TimelineMetadata;
 	import org.osmf.smpte.tt.SMPTETTPluginInfo;
+	import org.osmf.smpte.tt.architecture.creation.SMPTETTFactoryFacade;
 	import org.osmf.smpte.tt.captions.CaptionElement;
 	import org.osmf.smpte.tt.captions.CaptioningDocument;
+	import org.osmf.smpte.tt.captions.TimedTextElement;
+	import org.osmf.smpte.tt.captions.TimedTextElementType;
 	import org.osmf.smpte.tt.loader.SMPTETTLoadTrait;
 	import org.osmf.smpte.tt.loader.SMPTETTLoader;
+	import org.osmf.smpte.tt.timing.TimeExpression;
 	import org.osmf.traits.DisplayObjectTrait;
 	import org.osmf.traits.LoadState;
 	import org.osmf.traits.LoadTrait;
@@ -79,7 +84,7 @@ package org.osmf.smpte.tt.media
 		 **/ 
 		public static const MEDIA_ERROR_INVALID_PROXIED_ELEMENT:int = 2201;
 		
-		private static const DEBUG:Boolean = true;
+		public static const DEBUG:Boolean = false;
 		
 		/**
 		 * Constructor.
@@ -135,7 +140,6 @@ package org.osmf.smpte.tt.media
 		 */
 		override public function set proxiedElement(value:MediaElement):void
 		{
-			
 			super.proxiedElement = value; 
 						
 			if (value != null)
@@ -202,22 +206,22 @@ package org.osmf.smpte.tt.media
 						loadCaptions(timedTextURL);
 					} 
 					else if (!_continueLoadOnFailure)
-					{
+					{	
 						dispatchEvent(new MediaErrorEvent( MediaErrorEvent.MEDIA_ERROR, false, false, 
 										new MediaError(MEDIA_ERROR_INVALID_PROXIED_ELEMENT)));
 					}
 					
 					// Listen for traits to be added so we can add any desired event listeners on any
 					// traits we care about.
-					proxiedElement.addEventListener( MediaElementEvent.TRAIT_ADD, _onAddTrait );
-					proxiedElement.addEventListener( MediaElementEvent.TRAIT_REMOVE, _onRemoveTrait );
+					proxiedElement.addEventListener( MediaElementEvent.TRAIT_ADD, _onAddTrait, false, 0, true );
+					proxiedElement.addEventListener( MediaElementEvent.TRAIT_REMOVE, _onRemoveTrait, false, 0, true );
 					
 					// Listen for metadata to be added so we can add any desired event listeners on any
 					// metadata facets we care about.
-					proxiedElement.addEventListener(MediaElementEvent.METADATA_ADD, onMetadataAdd);
+					proxiedElement.addEventListener(MediaElementEvent.METADATA_ADD, onMetadataAdd, false, 0, true);
 					
 					// Listen for metadata to be removed so we can remove an event listener.
-					proxiedElement.addEventListener(MediaElementEvent.METADATA_REMOVE, onMetadataRemove);
+					proxiedElement.addEventListener(MediaElementEvent.METADATA_REMOVE, onMetadataRemove, false, 0, true);
 					
 					// Listen for metadata add change and remove events so that we can respond to changes
 					// to the SMPTE-TT url and showCaptions
@@ -252,7 +256,7 @@ package org.osmf.smpte.tt.media
 		 */
 		protected function onMetadataValueAdd(event:MetadataEvent):void
 		{
-			//trace(event.type+ " { "+event.key +", " +event.value+" } ");
+			debug(event.type+ " { "+event.key +", " +event.value+" } ");
 			var metadata:Metadata = event.target as Metadata;
 			switch(event.key)
 			{
@@ -273,6 +277,7 @@ package org.osmf.smpte.tt.media
 				}
 				case SMPTETTPluginInfo.SMPTETT_METADATA_KEY_URI:
 				{
+					proxiedElement.removeMetadata(SMPTETTPluginInfo.SMPTETT_TEMPORAL_METADATA_NAMESPACE);
 					var timedTextURL:String = event.value as String;
 					if (timedTextURL)
 					{ 
@@ -286,6 +291,10 @@ package org.osmf.smpte.tt.media
 					break;
 				}
 			}
+			if (_queueLoad && _timedTextURL)
+			{
+				loadCaptions(_timedTextURL);
+			}
 		}
 		
 		/**
@@ -293,7 +302,7 @@ package org.osmf.smpte.tt.media
 		 */
 		protected function onMetadataValueChange(event:MetadataEvent):void
 		{
-			//trace(event.type+ " { "+event.key +", " +event.value+" } ");
+			debug(event.type+ " { "+event.key +", " +event.value+" } ");
 			var metadata:Metadata = event.target as Metadata;
 			switch(event.key)
 			{
@@ -335,7 +344,7 @@ package org.osmf.smpte.tt.media
 		 */
 		protected function onMetadataValueRemove(event:MetadataEvent):void
 		{
-			//trace(event.type+ " { "+event.key +", " +event.value+" } ");
+			//debug(event.type+ " { "+event.key +", " +event.value+" } ");
 			var metadata:Metadata = event.target as Metadata;
 			switch(event.key)
 			{
@@ -372,54 +381,123 @@ package org.osmf.smpte.tt.media
 		 */
 		private function loadCaptions(timedTextURL:String):void
 		{
+			var timeTrait:TimeTrait = proxiedElement.getTrait(MediaTraitType.TIME) as TimeTrait;
+			
+			if (!timeTrait || timeTrait.duration==0
+				|| !_mediaPlayer
+				|| !_mediaContainer
+				|| !_mediaFactory)
+			{
+				debug("queueLoad of "+timedTextURL);
+				_queueLoad = true;
+				_timedTextURL = timedTextURL;
+				return;
+			}
+			
+			_queueLoad = false;
+			_timedTextURL = null;
+			
 			debug( "loadCaptions(\""+timedTextURL+"\");");
-			if (_mediaPlayer && _mediaPlayer.canPause)
+			
+			var smptettLoader:SMPTETTLoader = SMPTETTFactoryFacade.getSMPTETTLoader();
+			var urlResource:URLResource = new URLResource(timedTextURL);
+			
+			
+			if (_mediaPlayer)
+			{
+				// pauseMediaPlayerDuringLoadCaptions();
+				updateEndTimetoMediaDuration(smptettLoader);
+			}
+			
+			loadTrait = createLoadTrait(smptettLoader,urlResource);	
+			addLoadTraitListeners(loadTrait);
+			loadTrait.load();
+			// addTrait(MediaTraitType.LOAD, loadTrait);
+		}
+
+		protected function pauseMediaPlayerDuringLoadCaptions():void
+		{
+			if(_mediaPlayer.canPause)
 			{
 				if (_mediaPlayer.playing) _wasPlaying = true;
 				if (_mediaPlayer.paused) _wasPaused = true;
 				_mediaPlayer.pause();
 			}
-			
-			loadTrait = new SMPTETTLoadTrait(new SMPTETTLoader(), new URLResource(timedTextURL));	
-			loadTrait.addEventListener(LoadEvent.LOAD_STATE_CHANGE, onLoadStateChange, false, 99, true);
-			addTrait(MediaTraitType.LOAD, loadTrait);
+		}
+
+		protected function updateEndTimetoMediaDuration(smptettLoader:SMPTETTLoader):void
+		{
+			if(_mediaPlayer.duration)
+			{
+				TimeExpression.initializeParameters();
+				smptettLoader.endTime = TimeExpression.parse(_mediaPlayer.duration+"s");
+			}
+		}
+
+		protected function createLoadTrait(smptettLoader:SMPTETTLoader, urlResource:URLResource):SMPTETTLoadTrait
+		{
+			return new SMPTETTLoadTrait(smptettLoader, urlResource);
+		}
+
+		protected function addLoadTraitListeners(trait:SMPTETTLoadTrait):void
+		{
+			loadTrait.addEventListener(LoadEvent.LOAD_STATE_CHANGE, onLoadStateChange, false, int.MAX_VALUE, true);
 		}
 		
 		/**
 		 * @private
 		 */
-		private function onLoadStateChange(event:LoadEvent):void
+		protected function onLoadStateChange(event:LoadEvent):void
 		{
 			if (event.loadState == LoadState.READY)
-			{
-				var document:CaptioningDocument = loadTrait.document;
-				
-				// Create a TimelineMetadata object to associate
-				// the captions with the media element.
-				var SMPTETTMetadata:TimelineMetadata = proxiedElement.getMetadata(SMPTETTPluginInfo.SMPTETT_TEMPORAL_METADATA_NAMESPACE) as TimelineMetadata;
-				if (SMPTETTMetadata == null)
-				{
-					SMPTETTMetadata = new TimelineMetadata(proxiedElement);
-					proxiedElement.addMetadata(SMPTETTPluginInfo.SMPTETT_TEMPORAL_METADATA_NAMESPACE, SMPTETTMetadata);
-				}
-				
-				if (document) 
-					addTimelineMarkers(document, SMPTETTMetadata);
-				
+			{				
+				addMetaDataTimelineMarkers();
 				cleanUp();
 			}
 			else if (event.loadState == LoadState.LOAD_ERROR)
 			{
-				if (!_continueLoadOnFailure)
-				{
-					dispatchEvent(event.clone());
-				}
-				else
-				{
-					cleanUp();
-				}
+				onLoadStateChange_Error(event);
 			}
 		}
+
+
+		protected function addMetaDataTimelineMarkers():void
+		{
+			var document:CaptioningDocument = loadTrait.document;
+		
+			// Create a TimelineMetadata object to associate
+			// the captions with the media element.
+			var SMPTETTMetadata:TimelineMetadata = getOrCreateTimelineMetaData();
+			if (document) 
+					addTimelineMarkers(document, SMPTETTMetadata);
+		
+			// cleanUp();
+		}
+
+		protected function getOrCreateTimelineMetaData():TimelineMetadata
+		{
+			var SMPTETTMetadata:TimelineMetadata = proxiedElement.getMetadata(SMPTETTPluginInfo.SMPTETT_TEMPORAL_METADATA_NAMESPACE) as TimelineMetadata;
+			if (SMPTETTMetadata == null)
+			{
+				SMPTETTMetadata = new TimelineMetadata(proxiedElement);
+				proxiedElement.addMetadata(SMPTETTPluginInfo.SMPTETT_TEMPORAL_METADATA_NAMESPACE, SMPTETTMetadata);
+			}
+			return SMPTETTMetadata;
+		}
+
+
+		protected function onLoadStateChange_Error(event:LoadEvent):void
+		{
+			if (!_continueLoadOnFailure)
+			{
+				dispatchEvent(event.clone());
+			}
+			else
+			{
+				cleanUp();
+			}
+		}
+		
 		
 		/**
 		 * @private
@@ -429,16 +507,15 @@ package org.osmf.smpte.tt.media
 			// Our work is done, remove the custom LoadTrait.  This will
 			// expose the base LoadTrait, which we can then use to do
 			// the actual load.
-			removeTrait(MediaTraitType.LOAD);
-			
 			var loadTrait:LoadTrait = getTrait(MediaTraitType.LOAD) as LoadTrait;
-			
+						
 			if (loadTrait != null 
 				&& loadTrait.loadState == LoadState.UNINITIALIZED)
-				loadTrait.load();
-				
+				loadTrait.load();	
+			
 			if (_mediaPlayer && _mediaPlayer.canPlay)
 			{
+				
 				if (_wasPlaying)
 				{
 					_mediaPlayer.play();
@@ -451,20 +528,87 @@ package org.osmf.smpte.tt.media
 				}
 				
 				showNearestCaption(_mediaPlayer.currentTime);
+			}		
+		}
+		
+		protected var captionElementsDisplayed:Dictionary;
+		protected var totalCaptionElementsToDisplay:uint = 0;
+		
+		/**
+		 * @private
+		 */
+		protected function addTimelineMarkers(document:CaptioningDocument, 
+											SMPTETTMetadata:TimelineMetadata):void
+		{
+			buildCaptioningMediaElement(document);
+			
+			addEachCaptionToMetaData(document,SMPTETTMetadata);
+		}
+
+		protected function addEachCaptionToMetaData(document:CaptioningDocument, SMPTETTMetadata:TimelineMetadata):void
+		{
+			for each(var c:CaptionElement in document.captionElements){
+		
+				if (c)
+				{
+					SMPTETTMetadata.addMarker(c);
+					if (DEBUG) addCaptionElementToDisplay(c);
+				}
 			}
 		}
 		
 		/**
 		 * @private
 		 */
-		private function addTimelineMarkers(document:CaptioningDocument, 
-											SMPTETTMetadata:TimelineMetadata):void
+		protected function addCaptionElementToDisplay(captionElement:CaptionElement):void
 		{
-			buildCaptioningMediaElement(document);
+			if (!DEBUG) return;
 			
-			for each(var c:CaptionElement in document.captionElements){
+			if (!captionElementsDisplayed)
+			{ 
+				captionElementsDisplayed = new Dictionary();
+			}
+			if (captionElement.captionElementType == TimedTextElementType.Text)
+			{
+				captionElementsDisplayed[captionElement] = {index:totalCaptionElementsToDisplay++, displayed:false};
+			} else
+			{
+				var c:CaptionElement;
+				for each(c in captionElement.children)
+				{
+					addCaptionElementToDisplay(c);
+				}
 				
-				if (c) SMPTETTMetadata.addMarker(c);
+				for each(c in captionElement.siblings)
+				{
+					addCaptionElementToDisplay(c);
+				}
+			}
+		}
+		
+		protected function flagCaptionElementAsDisplayed(captionElement:CaptionElement):void
+		{
+			
+			if (!DEBUG) return;
+						
+			if (captionElement.captionElementType == TimedTextElementType.Text 
+				&& captionElementsDisplayed[captionElement]
+				&& captionElementsDisplayed[captionElement].displayed == false)
+			{
+				captionElementsDisplayed[captionElement].displayed = true;
+				debug((captionElementsDisplayed[captionElement].index)+" of "+(totalCaptionElementsToDisplay-1)+":\t"+captionElement.regionId+"\t"+TimeExpression.parse(captionElement.begin+"s")+"\t"+TimeExpression.parse(captionElement.end+"s")+"\t"+captionElement.content);
+			} else
+			{
+				var c:CaptionElement;
+				for each(c in captionElement.children)
+				{
+					flagCaptionElementAsDisplayed(c);
+				}
+				
+				for each(c in captionElement.siblings)
+				{
+					flagCaptionElementAsDisplayed(c);
+				}
 			}
 		}
 		
@@ -473,6 +617,8 @@ package org.osmf.smpte.tt.media
 		 */
 		private function buildCaptioningMediaElement(document:CaptioningDocument):void
 		{
+			if (captioningMediaElement) {return;}
+			
 			var mediaContainer:IMediaContainer = proxiedElement.container;
 			
 			if (!mediaContainer && _mediaContainer)  
@@ -487,19 +633,31 @@ package org.osmf.smpte.tt.media
 			
 			if (parallelElement)
 			{				
-				parallelElement.addChild(captioningMediaElement);
+				addToParallelElement(parallelElement,captioningMediaElement);
 				
 				captioningMediaElement.mediaElement = mediaElement;
 				
-				for (var i:uint=0; i<document.captionRegions.length; i++)
+				var len:int = document.captionRegions.length
+				for (var i:uint=0; i<len; i++)
 				{
-					
-					var region:RegionLayoutTargetSprite =
-							captioningMediaElement.addRegion(document.captionRegions[i]);				
-					region.mediaElement = mediaElement;
+					regionSpriteAddMediaElement(document,i,captioningMediaElement);
 				}
 			}
 		}
+
+		protected function regionSpriteAddMediaElement(document:CaptioningDocument, i:uint, p_captioningMediaElement:CaptioningMediaElement):void
+		{
+			var region:RegionLayoutTargetSprite =
+					p_captioningMediaElement.addRegion(document.captionRegions[i]);				
+			region.mediaElement = mediaElement;
+		}
+
+
+		protected function addToParallelElement(parallelElement:ParallelElement, p_captioningMediaElement:CaptioningMediaElement):void
+		{
+			parallelElement.addChild(p_captioningMediaElement);
+		}
+
 		
 		/**
 		 * @private
@@ -517,10 +675,63 @@ package org.osmf.smpte.tt.media
 				_currentCaption = captionElement;
 				captioningMediaElement.addCaption(captionElement);
 				
+				if (DEBUG) flagCaptionElementAsDisplayed(captionElement);
+				
 				// Start the _currentPositionTimer to monitor playhead position.
-				if(_currentPositionTimer) 
+				if(_currentPositionTimer 
+					&& (_seeked
+						|| hasDescendantMarkerEvents(TimedTextElement(captionElement))))
+				{
+					_currentPositionTimer.delay = CURRENT_POSITION_UPDATE_INTERVAL;
 					_currentPositionTimer.start();
+				}
 			}
+		}
+		
+		/**
+		 * @private
+		 */	
+		private function hasDescendantMarkerEvents(timedTextElement:TimedTextElement):Boolean
+		{
+			var bool:Boolean = false;
+			var t:TimedTextElement;
+			for each(t in timedTextElement.animations)
+			{
+				if(t.begin != timedTextElement.begin || t.end != timedTextElement.end)
+				{
+					return true;
+				}
+			}
+			for each(t in timedTextElement.children)
+			{
+				if(t.begin != timedTextElement.begin || t.end != timedTextElement.end)
+				{
+					return true;
+				} else 
+				{
+					bool = hasDescendantMarkerEvents(t);
+				}
+			}	
+			for each(t in timedTextElement.siblings)
+			{
+				if(t.begin != timedTextElement.begin || t.end != timedTextElement.end)
+				{
+					return true;
+				} else 
+				{
+					bool = hasDescendantMarkerEvents(t);
+				}
+			}
+			var captionElement:CaptionElement = timedTextElement as CaptionElement;
+			if(captionElement)
+			{
+				var regionLayoutTargetSprite:RegionLayoutTargetSprite = captioningMediaElement.getRegionById(captionElement.regionId);
+				if(regionLayoutTargetSprite && regionLayoutTargetSprite.captionRegion.animations.length>0)
+				{
+					return true;
+				}
+			}
+			return bool;
 		}
 		
 		/**
@@ -535,7 +746,6 @@ package org.osmf.smpte.tt.media
 			{
 				 clearCaptionElement(captionElement);
 				 _currentCaption = null;
-				 _currentPositionTimer.stop();
 			}
 		}
 		
@@ -561,14 +771,10 @@ package org.osmf.smpte.tt.media
 		 */	
 		private function clearCaptionText():void
 		{
-			if (captioningMediaElement)
-				captioningMediaElement.removeCaption();
-			
-			if(captioningMediaElement 
-				&& _currentPositionTimer)
+			if (captioningMediaElement && _currentCaption)
 			{
-				_currentPositionTimer.stop();
-				captioningMediaElement.validateCaptions();
+				clearCaptionElement(_currentCaption);
+				_currentCaption = null;
 			}
 		}
 		
@@ -584,8 +790,8 @@ package org.osmf.smpte.tt.media
 				debug(">>> Timeline metadata added to "+event.target+", namespace="+event.namespaceURL+" "+event.metadata);
 				_namespaces[metadata] = event.namespaceURL;
 				_timelineMetadata = metadata;
-				_timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_TIME_REACHED, onShowCaption);
-				_timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_DURATION_REACHED, onHideCaption);
+				_timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_TIME_REACHED, onShowCaption, false, 0, true);
+				_timelineMetadata.addEventListener(TimelineMetadataEvent.MARKER_DURATION_REACHED, onHideCaption, false, 0, true);
 			} 
 			else
 			{
@@ -622,11 +828,16 @@ package org.osmf.smpte.tt.media
 		private function onPlayStateChange(event:PlayEvent):void
 		{
 			debug(event.target + " onPlayStateChange: " + event.playState);
-			if(captioningMediaElement 
-				&& event.playState != PlayState.PLAYING)
+			if (!captioningMediaElement) return;
+			if (event.playState != PlayState.PLAYING)
 			{
+				if (_wasPlaying) _wasPlaying = false;
 				_currentPositionTimer.stop();
 				captioningMediaElement.validateCaptions();
+			} 
+			else if (event.playState != PlayState.PAUSED)
+			{
+				if (_wasPaused) _wasPaused = false;
 			}
 		}
 		
@@ -643,12 +854,18 @@ package org.osmf.smpte.tt.media
 		 */
 		private function onMediaSizeChange(event:DisplayObjectEvent):void
 		{			
-			var dot:DisplayObjectTrait = event.target as DisplayObjectTrait;
+			var dot:DisplayObjectTrait = _mediaElement.getTrait(MediaTraitType.DISPLAY_OBJECT) as DisplayObjectTrait;
 			
-			debug(dot+" "+dot.displayObject + " onMediaSizeChange: {mediaWidth:"+event.newWidth+", mediaHeight:"+event.newHeight+"}");
+			if (!dot) return;
+			
+			debug(dot+" "+ dot.displayObject + " onMediaSizeChange: {mediaWidth:"+dot.mediaWidth+", mediaHeight:"+dot.mediaHeight+"}");
 
-			if (captioningMediaElement)
-				captioningMediaElement.setIntrinsicDimensions(event.newWidth, event.newHeight);
+			if (captioningMediaElement 
+				&& !isNaN(dot.mediaWidth) 
+				&& !isNaN(dot.mediaHeight)
+				&& dot.mediaWidth
+				&& dot.mediaHeight)
+				captioningMediaElement.setIntrinsicDimensions(dot.mediaWidth, dot.mediaHeight);
 		}
 		
 		/**
@@ -659,32 +876,41 @@ package org.osmf.smpte.tt.media
 			// debug(event.target + " onSeekingChange: " + event.seeking);
 			_currentPositionTimer.stop();
 			_seeked = true;
-			clearCaptionText();
+			if (event.seeking) 
+				clearCaptionText();
 			showNearestCaption(event.time);
 			_seeked = false;
+		}
+		
+		private function findNearestCaption(time:Number):CaptionElement
+		{
+			if (!_timelineMetadata) return null;
+			var i:int = 0;
+			var toShow:CaptionElement;
+			var	captionElement:CaptionElement;
+			while (i<_timelineMetadata.numMarkers)
+			{
+				captionElement = _timelineMetadata.getMarkerAt(i) as CaptionElement;
+				if (captionElement.isActiveAtPosition(time,true))
+				{
+					toShow = captionElement;
+				} else if (toShow
+						 &&	time>captionElement.end 
+						 && captionElement.end<toShow.end)
+				{
+					toShow = null;
+				}
+				i++;
+			}
+			return toShow;
 		}
 		
 		/**
 		 * @private
 		 */
-		private function showNearestCaption(time:Number):void
+		protected function showNearestCaption(time:Number):void
 		{
-			if (!_timelineMetadata) return;
-			
-			var toShow:CaptionElement;
-			
-			for (var i:uint=0; i<_timelineMetadata.numMarkers; i++)
-			{
-				var captionElement:CaptionElement = _timelineMetadata.getMarkerAt(i) as CaptionElement;
-				if (captionElement.isActiveAtPosition(time))
-					toShow = captionElement;
-				else if (toShow
-						 &&	time>captionElement.end 
-						 && captionElement.end<toShow.end)
-					toShow = null;
-				
-			}
-			
+			var toShow:CaptionElement = findNearestCaption(time);
 			if (toShow)
 				_timelineMetadata.dispatchEvent(new TimelineMetadataEvent(TimelineMetadataEvent.MARKER_TIME_REACHED, false, false, toShow as TimelineMarker));
 		}
@@ -711,34 +937,36 @@ package org.osmf.smpte.tt.media
 				case MediaTraitType.PLAY:
 				{
 					var pTrait:PlayTrait = proxiedElement.getTrait( MediaTraitType.PLAY) as PlayTrait;
-					pTrait.addEventListener(PlayEvent.PLAY_STATE_CHANGE, onPlayStateChange);
+					pTrait.addEventListener(PlayEvent.PLAY_STATE_CHANGE, onPlayStateChange, false, 0, true);
 					break;
 				}
 				case MediaTraitType.DISPLAY_OBJECT:
 				{
 					var doTrait:DisplayObjectTrait = proxiedElement.getTrait(MediaTraitType.DISPLAY_OBJECT) as DisplayObjectTrait;
-					doTrait.addEventListener(DisplayObjectEvent.DISPLAY_OBJECT_CHANGE, onDisplayObjectChange);
-					doTrait.addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange);
+					doTrait.addEventListener(DisplayObjectEvent.DISPLAY_OBJECT_CHANGE, onDisplayObjectChange, false, 0, true);
+					doTrait.addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange, false, 0, true);
 					
-					doTrait.displayObject.addEventListener(Event.ADDED_TO_STAGE, onDisplayObjectAddedToStage);
+					doTrait.displayObject.addEventListener(Event.ADDED_TO_STAGE, onDisplayObjectAddedToStage, false, 0, true);
 					break;
 				}
 				case MediaTraitType.SEEK:
 				{
 					var seekTrait:SeekTrait = proxiedElement.getTrait(MediaTraitType.SEEK) as SeekTrait;
-					seekTrait.addEventListener(SeekEvent.SEEKING_CHANGE, onSeekingChange);
+					seekTrait.addEventListener(SeekEvent.SEEKING_CHANGE, onSeekingChange, false, 0, true);
 					break;
 				}
 				case MediaTraitType.TIME:
 				{
 					var timeTrait:TimeTrait = proxiedElement.getTrait(MediaTraitType.TIME) as TimeTrait;
-					
+					if (_queueLoad && _timedTextURL)
+					{
+						loadCaptions(_timedTextURL);
+					}
 					if(!_currentPositionTimer)
 					{
 						_currentPositionTimer = new Timer(CURRENT_POSITION_UPDATE_INTERVAL);
-						_currentPositionTimer.addEventListener(TimerEvent.TIMER, onTimerTick);
-					}
-							
+						_currentPositionTimer.addEventListener(TimerEvent.TIMER, onTimerTick, false, 0, true);
+					}	
 					break;
 				}
 			}
@@ -781,6 +1009,7 @@ package org.osmf.smpte.tt.media
 					
 					if (_currentPositionTimer)
 					{
+						_currentPositionTimer.delay = CURRENT_POSITION_UPDATE_INTERVAL;
 						_currentPositionTimer.stop();
 						_currentPositionTimer.removeEventListener(TimerEvent.TIMER, onTimerTick);
 						_currentPositionTimer = null;
@@ -797,7 +1026,7 @@ package org.osmf.smpte.tt.media
 		{
 			event.target.removeEventListener(Event.ADDED_TO_STAGE, onDisplayObjectAddedToStage);
 			
-			CURRENT_POSITION_UPDATE_INTERVAL = Math.round(1000 / DisplayObject(event.target).stage.frameRate);
+			CURRENT_POSITION_UPDATE_INTERVAL = Math.round(4000 / DisplayObject(event.target).stage.frameRate);
 			
 			if (_currentPositionTimer)
 				_currentPositionTimer.delay = CURRENT_POSITION_UPDATE_INTERVAL;
@@ -829,27 +1058,31 @@ package org.osmf.smpte.tt.media
 			if (DEBUG)
 			{
 				trace(msg);
+				if (ExternalInterface.available)
+					ExternalInterface.call("function(msg){ if (console && console.log) console.log(msg); }",msg);
 			}
 		}
 		
-		private var loadTrait:SMPTETTLoadTrait;
+		protected var loadTrait:SMPTETTLoadTrait;
 		private var _continueLoadOnFailure:Boolean;
 		private var _mediaElement:MediaElement;
 		private var captioningMediaElement:CaptioningMediaElement;
 		private var _seeked:Boolean = false;
 		private var _currentPositionTimer:Timer;
 		private var _captioningEnabled:Boolean = true;
-		private var _timelineMetadata:TimelineMetadata; 	
+		private var _timelineMetadata:TimelineMetadata;
 		private var _currentCaption:CaptionElement;	
 		private var _namespaces:Dictionary = new Dictionary();
 		private var _mediaContainer:IMediaContainer;
-		private var _mediaPlayer:MediaPlayer;
+		protected var _mediaPlayer:MediaPlayer;
 		private var _mediaFactory:MediaFactory;
-		private var _wasPlaying:Boolean = false;
-		private var _wasPaused:Boolean = false;
+		protected var _wasPlaying:Boolean = false;
+		protected var _wasPaused:Boolean = false;
+		private var _queueLoad:Boolean = false;
+		private var _timedTextURL:String;
 				
 		private static const ERROR_MISSING_TTML_METADATA:String = "Media Element is missing TTML metadata";
 		private static const ERROR_MISSING_RESOURCE:String = "Media Element is missing a valid resource";
-		private static var CURRENT_POSITION_UPDATE_INTERVAL:int = 100;
+		private static var CURRENT_POSITION_UPDATE_INTERVAL:int = 250;
 	}
 }

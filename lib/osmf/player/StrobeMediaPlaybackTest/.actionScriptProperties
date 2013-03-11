@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties analytics="false" mainApplicationPath="StrobeMediaPlaybackTest.mxml" projectUUID="f6cce1c3-ede5-4bd2-ac02-53bd20ba1bfd" version="10">
-  <compiler additionalCompilerArguments="-define CONFIG::LOGGING false -define CONFIG::FLASH_10_1 true" autoRSLOrdering="true" copyDependentFiles="true" flexSDK="Flex 4.5" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+  <compiler additionalCompilerArguments="-define CONFIG::LOGGING false -define CONFIG::FLASH_10_1 true" autoRSLOrdering="true" copyDependentFiles="true" flexSDK="Flex 4.5.1" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
-      <compilerSourcePathEntry kind="1" linkType="1" path="${DOCUMENTS}/player/StrobeMediaPlayback/src"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="../StrobeMediaPlayback/src"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path="">
@@ -17,7 +17,7 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="1" path="/OSMF/bin/OSMF.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/NetMocker/bin/NetMocker.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/NetMockerLibrary/bin/NetMockerLibrary.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/StrobeMediaPlayback/assets/assets.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
       <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version4libs/Common"/>

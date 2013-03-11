@@ -22,6 +22,7 @@ package
 	import flash.display.*;
 	import flash.events.*;
 	import flash.external.ExternalInterface;
+	import flash.net.drm.DRMManager;
 	import flash.system.Capabilities;
 	import flash.ui.Mouse;
 	import flash.utils.Timer;
@@ -152,6 +153,10 @@ package
 			player.addEventListener(TimeEvent.COMPLETE, onComplete);
 			player.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
 			
+			// Add DRM error handler
+			var drmManager:DRMManager = DRMManager.getDRMManager();
+			drmManager.addEventListener(DRMErrorEvent.DRM_ERROR, onDRMError);
+			
 			// this is used for DVR rolling window
 			// TODO: Add this event only when the resource is DVR rolling window not all the time
 			player.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
@@ -211,6 +216,73 @@ package
 			if (configuration.javascriptCallbackFunction != "" && ExternalInterface.available && mediaPlayerJSBridge == null)
 			{
 				mediaPlayerJSBridge = new JavaScriptBridge(this, player, StrobeMediaPlayer, configuration.javascriptCallbackFunction);			
+			}
+		}
+		
+		private function reportError(message:String):void
+		{
+			// If an alert widget is available, use it. Otherwise, trace the message:
+			if (alert)
+			{
+				if (_media != null && mediaContainer.containsMediaElement(_media))
+				{
+					mediaContainer.removeMediaElement(_media);
+				}
+				if (controlBar != null && controlBarContainer.containsMediaElement(controlBar))
+				{
+					controlBarContainer.removeMediaElement(controlBar);
+				}
+				if (posterImage && mediaContainer.containsMediaElement(posterImage))
+				{
+					mediaContainer.removeMediaElement(posterImage);
+				}
+				if (playOverlay != null && mediaContainer.layoutRenderer.hasTarget(playOverlay))
+				{
+					mediaContainer.layoutRenderer.removeTarget(playOverlay);
+				}
+				if (bufferingOverlay != null && mediaContainer.layoutRenderer.hasTarget(bufferingOverlay))
+				{
+					mediaContainer.layoutRenderer.removeTarget(bufferingOverlay);
+				}
+				
+				mediaContainer.addMediaElement(alert);
+				alert.alert("Error", message);
+			}
+			else
+			{
+				trace("Error:", message); 
+			}
+		}
+		
+		private function onDRMError(event:DRMErrorEvent):void
+		{		
+			switch(event.errorID)
+			{
+				// Use the following link for the error codes
+				// http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/runtimeErrors.html
+				case 3305:
+				case 3328:
+				case 3315:
+					if (configuration.verbose)
+					{
+						reportError("Unable to connect to the authentication server. Error ID " + event.errorID);
+					}
+					else
+					{
+						reportError("We are unable to connect to the authentication server. We apologize for the inconvenience.");
+					}
+					break;
+				
+				default:
+					if (configuration.verbose)
+					{
+						reportError("DRM Error " + event.errorID);
+					}
+					else
+					{
+						reportError("Unexpected DRM error");
+					}
+					break;
 			}
 		}
 		
@@ -1008,37 +1080,7 @@ package
 				}
 			}
 			
-			// If an alert widget is available, use it. Otherwise, trace the message:
-			if (alert)
-			{
-				if (_media != null && mediaContainer.containsMediaElement(_media))
-				{
-					mediaContainer.removeMediaElement(_media);
-				}
-				if (controlBar != null && controlBarContainer.containsMediaElement(controlBar))
-				{
-					controlBarContainer.removeMediaElement(controlBar);
-				}
-				if (posterImage && mediaContainer.containsMediaElement(posterImage))
-				{
-					mediaContainer.removeMediaElement(posterImage);
-				}
-				if (playOverlay != null && mediaContainer.layoutRenderer.hasTarget(playOverlay))
-				{
-					mediaContainer.layoutRenderer.removeTarget(playOverlay);
-				}
-				if (bufferingOverlay != null && mediaContainer.layoutRenderer.hasTarget(bufferingOverlay))
-				{
-					mediaContainer.layoutRenderer.removeTarget(bufferingOverlay);
-				}
-				
-				mediaContainer.addMediaElement(alert);
-				alert.alert("Error", message);
-			}
-			else
-			{
-				trace("Error:", message); 
-			}
+			reportError(message);
 			
 			// Forward the raw error message to JavaScript:
 			if (ExternalInterface.available)

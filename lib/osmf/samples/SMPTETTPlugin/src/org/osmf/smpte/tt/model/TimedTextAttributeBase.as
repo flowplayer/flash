@@ -25,12 +25,8 @@ package org.osmf.smpte.tt.model
 	import org.osmf.smpte.tt.styling.FontSize;
 	import org.osmf.smpte.tt.styling.FontStyleAttributeValue;
 	import org.osmf.smpte.tt.styling.FontWeightAttributeValue;
-	import org.osmf.smpte.tt.styling.LineHeight;
-	import org.osmf.smpte.tt.styling.NormalHeight;
-	import org.osmf.smpte.tt.styling.Origin;
 	import org.osmf.smpte.tt.styling.PaddingThickness;
 	import org.osmf.smpte.tt.styling.TextDecorationAttributeValue;
-	import org.osmf.smpte.tt.styling.TextOutline;
 	import org.osmf.smpte.tt.vocabulary.Namespaces;
 
 	public class TimedTextAttributeBase
@@ -39,141 +35,109 @@ package org.osmf.smpte.tt.model
 		{
 		}
 		
-		private var _parent:TimedTextElementBase;
-		public function get parent():TimedTextElementBase
-		{
-			return _parent;
-		}
-		public function set parent(value:TimedTextElementBase):void
-		{
-			_parent = value;
-		}
+		public var parent:TimedTextElementBase;
 		
-		private var _localName:String;
-		public function get localName():String
-		{
-			return _localName;
-		}
-		public function set localName(value:String):void
-		{
-			_localName = value;
-		}
+		public var localName:String;
 		
-		private var _namespace:Namespace;
-		public function get namespace():Namespace
-		{
-			return _namespace;
-		}
-		public function set namespace(value:Namespace):void
-		{
-			_namespace = value;
-		}
+		public var namespace:Namespace;
 
-		private var _value:String;
-		public function get value():String
-		{
-			return _value;
-		}
-		public function set value(value:String):void
-		{
-			_value = value;
-		}
+		public var value:String;
 		
 		public static function getInitialStyle(property:String):Object
 		{
 			var obj:* = "";
 			switch (property)
 			{
-				case "backgroundColor": 
+				case "backgroundColor":
 					obj = Colors.Transparent;
 					break;
-				case "color": 
+				case "color":
 					obj = Colors.White;  // spec says transparent
 					break;
-				case "direction": 
+				case "direction":
 					obj = "auto";  // this is not what the spec says, but we need it to respect writingMode.
 					break;
-				case "display": 
+				case "display":
 					obj = "auto";
 					break;
-				case "displayAlign": 
+				case "displayAlign":
 					obj = "before";
 					break;
-				case "dynamicFlow": 
+				case "dynamicFlow":
 					obj = "none";
 					break;
-				case "extent": 
-					obj = new AutoExtent();
+				case "extent":
+					obj = AutoExtent.instance;
 					break;
-				case "fontFamily": 
+				case "fontFamily":
 					obj = "default";
 					break;
-				case "fontSize": 
-					obj = new FontSize("1c 1c");
+				case "fontSize":
+					obj = FontSize.getFontSize("1c");
 					break;
-				case "fontStyle": 
+				case "fontStyle":
 					obj = FontStyleAttributeValue.REGULAR;
 					break;
-				case "fontWeight": 
+				case "fontWeight":
 					obj = FontWeightAttributeValue.REGULAR;
 					break;
-				case "lineHeight": 
+				case "lineHeight":
 					obj = null;  // stand in for normal.
 					break;
-				case "opacity": 
+				case "opacity":
 					obj = 1.0;
 					break;
-				case "origin": 
-					obj = new AutoOrigin();
+				case "origin":
+					obj = AutoOrigin.instance;
 					break;
 				case "overflow": 
 					obj = "hidden";
 					break;
-				case "padding": 
-					obj = new PaddingThickness("0px");
+				case "padding":
+					obj = PaddingThickness.getPaddingThickness("0px");
 					break;
-				case "showBackground": 
+				case "showBackground":
 					obj = "always";
 					break;
-				case "textAlign": 
+				case "textAlign":
 					obj = "start";
 					break;
-				case "textDecoration": 
+				case "textDecoration":
 					obj = TextDecorationAttributeValue.NONE;
 					break;
-				case "textOutline": 
+				case "textOutline":
 					obj = null; // new TextOutline("none");
 					break;
-				case "unicodeBidi": 
+				case "unicodeBidi":
 					obj = "undefined";
 					break;
-				case "visibility": 
+				case "visibility":
 					obj = "visible";
 					break;
-				case "wrapOption": 
+				case "wrapOption":
 					obj = "wrap";
 					break;
-				case "writingMode": 
+				case "writingMode":
 					obj = "lrtb";
 					break;
-				case "zIndex": 
+				case "zIndex":
 					obj = "auto";
 					break;
 					
 				// these are defaults for the xml attributes
-				case "space": 
+				case "space":
 					obj = "default";
 					break;
-				case "lang": 
+				case "lang":
 					obj = "en-us";
 					break;
 					
-				case "region": 
+				case "region":
 					obj = "";  // this is not a style per se, but we use the same mechanics.
 					break;
 					
 					// the following cases are for internal styles
-				case "#preserve": 
+				case "#preserve":
 					obj = false;
 					break;
 				default: 

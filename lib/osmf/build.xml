@@ -12,18 +12,14 @@
 
 	<!-- main -->
 	<target name="all">
-		<antcall target="clean.bin" />
-		<antcall target="init" />
 		<antcall target="build" />
 		<antcall target="test" />
-		<antcall target="dist" />
-		<antcall target="source" />
 	</target>
 
 	<!-- build entire project -->
 	<target name="build">
 		<sequential>
-			<antcall target="compile.osmf" />		
+			<antcall target="compile.osmf" />	
 			<antcall target="compile.libs" />
 			<antcall target="compile.smp" />
 			<antcall target="compile.extended" />
@@ -33,26 +29,24 @@
 
 	<!-- compile framework and compile and run framework tests -->
 	<target name="core" depends="compile.osmf">
+		<subant target="build" inheritall="true" antfile="testing/NetMockerLibrary/build.xml" buildpath="."/>
         <subant target="run" inheritall="true" antfile="framework/OSMFTest/build.xml" buildpath="."/>
+		<!-- <subant target="run" inheritall="true" antfile="framework/OSMFIntegrationTest/build.xml" buildpath="."/> -->
 	</target>
 	
 	<!-- compile strobe media player and compile and run coresponding tests -->
 	<target name="player" depends="compile.smp">
+		<subant target="build" inheritall="true" antfile="testing/NetMockerLibrary/build.xml" buildpath="."/>
         <subant target="run" inheritall="true" antfile="player/StrobeMediaPlaybackTest/build.xml" buildpath="."/>
 	</target>
 	
 	<!-- run all project available tests -->
 	<target name="test">
 		<antcall target="run.unittests" />
+		<!-- <antcall target="run.integrationtests" /> -->
 	</target>
 	
 	<!-- ========= subtargets ========= -->
-	
-	<!-- creates output dirs -->
-	<target name="init">
-		<mkdir dir="${dist.dir}" />
-		<mkdir dir="${smp.dist.dir}" />
-	</target>
 	
 	<!-- compiles osmf framework -->
 	<target name="compile.osmf">
@@ -66,11 +60,10 @@
 	</target>	
 	
 	<!-- compiles libraries -->
-	<!-- OBS. when adding a new libarary make sure you solve all the dependencies with other libraries -->
+	<!-- OBS. when adding a new library make sure you solve all the dependencies with other libraries -->
 	<target name="compile.libs">
 		<sequential>
 			<subant target="" inheritall="true">
-				<property name="source.dir" value="${source.dir}"/>
 				<fileset dir="." includes="*/VPAIDLibrary/build.xml" />
 				<fileset dir="." includes="*/*Library/build.xml" excludes="*VPAID*"/>
 				<fileset dir="." includes="testing/*Library/build.xml"/>
@@ -117,52 +110,23 @@
 		<sequential>
 			<subant target="run" inheritall="true" antfile="framework/OSMFTest/build.xml" buildpath="."/>
 			<subant target="run" inheritall="true" antfile="player/StrobeMediaPlaybackTest/build.xml" buildpath="."/>
+			<!--
 			<subant target="run" inheritall="true" antfile="testing/NetMockerTest/build.xml" buildpath="."/>
-			<subant target="run" inheritall="true" antfile="samples/YouTubePluginTest/build.xml" buildpath="."/>	
+			<subant target="run" inheritall="true" antfile="samples/YouTubePluginTest/build.xml" buildpath="."/>
+			<fileset dir="." includes="testing/certification/ZeriCertificationTest/build.xml"/>
+			-->	
 		</sequential>
 	</target>
 	
-	<!-- creates distribuition for the entire porject -->
-	<target name="dist">
-		<antcall target="osmf.dist" />
-		<antcall target="smp.dist" />
+	<!-- runs integration tests -->
+	<!--
+	<target name="run.integrationtests" >
+		<sequential>
+			<subant target="run" inheritall="true" antfile="framework/OSMFIntegrationTest/build.xml" buildpath="."/>
+		</sequential>
 	</target>
+	-->
 	
-	<target name="osmf.dist">
-		<copy todir="${dist.dir}" overwrite="true" failonerror="false">
-			<fileset dir="${basedir}" includes="/framework/OSMF/${output.bin}/**" />
-			<fileset dir="${basedir}" includes="/**/*Sample*/${output.bin}/**" />
-			<fileset dir="${basedir}" includes="/**/*Plugin*/${output.bin}/**" />
-			<regexpmapper from="(.*)/${output.bin}/(.*)" to="\2" handledirsep="true"/>
-			
-		</copy>
-		<copy todir="${dist.dir}/Test" overwrite="true" failonerror="false">
-			<fileset dir="${basedir}" includes="/**/*Test*/${output.bin}/**" />
-			<regexpmapper from="(.*)/${output.bin}/(.*)" to="\2" handledirsep="true"/>
-		</copy>
-		<copy todir="${dist.dir}/Zeri" overwrite="true" failonerror="false">
-			<fileset dir="${basedir}" includes="/**/**/*Zeri*/${output.bin}/**" />
-			<regexpmapper from="(.*)/${output.bin}/(.*)" to="\2" handledirsep="true"/>
-		</copy>
-	</target>
-
-	<target name="smp.dist">
-		<copy todir="${smp.dist.dir}" overwrite="true" failonerror="false">
-			<fileset dir="${basedir}" includes="/player/**/${output.bin}/**" />
-			<fileset dir="${basedir}" includes="/framework/OSMF/${output.bin}/**" />
-			<fileset dir="${basedir}" includes="/**/YouTubePlugin/${output.bin}/**" />
-			<fileset dir="${basedir}" includes="/**/YouTubePluginTest/${output.bin}/**" />
-			<fileset dir="${basedir}" includes="/**/MASTPlugin/${output.bin}/**" />
-			<regexpmapper from="(.*)/${output.bin}/(.*)" to="\2" handledirsep="true"/>
-		</copy>
-	</target>
-	
-	<target name="source">
-		<zip destfile="${dist.dir}/OSMF_src.zip">
-			<zipfileset dir="${basedir}" prefix="OSMF" excludes="dist/**, build/**, **/bin/**, **/bin-*/**, **/generated/**, **/buildtools/**" />
-		</zip>
-	</target>
-  
 	<!-- deletes the output directories -->
 	<target name="clean">
 		<sequential>
@@ -173,34 +137,14 @@
 				   <include name="samples/**/bin/**" />
 				   <include name="testing/**/bin/**" />
 				   <include name="**/bin-*/**" />
-				   <include name="**/generated/**" />
-				   <include name="*version.txt" />
-				   <include name="**/*Test*/test-reports/**" />
+				   <include name="**/*Test/test-reports/**" />
 				   <exclude name="buildtools/**" />
 				</fileset>
 			</delete>
 			<delete includeemptydirs="true" quiet="true">
-				<fileset dir="${dist.dir}" />
-				<fileset dir="${smp.dist.dir}" />
 				<fileset dir="${reports.dir}" />
 			</delete>
 		</sequential>
 	</target>
-	
-	<!-- deletes the content of the output directories -->
-	<target name="clean.bin">
-		<sequential>
-			<delete includeemptydirs="true" quiet="true">
-				<fileset dir="${basedir}"  defaultexcludes="false">
-				   <include name="framework/**/bin/**/*" />
-				   <include name="player/**/bin/**/*" />
-				   <include name="samples/**/bin/**/*" />
-				   <include name="testing/**/bin/**/*" />
-				   <include name="**/bin-*/**/*" />
-				   <include name="**/generated/**" />
-				</fileset>
-			</delete>
-		</sequential>
-	</target>
-	
 </project>
+

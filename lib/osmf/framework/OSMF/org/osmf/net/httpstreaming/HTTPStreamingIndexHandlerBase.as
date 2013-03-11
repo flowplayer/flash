@@ -231,6 +231,19 @@ package org.osmf.net.httpstreaming
 			throw new IllegalOperationError("The dvrGetStreamInfo() method must be overridden by the derived class.");
 		}
 		
+		/**
+		 * @return true if best effort fetch is enabled for the current stream. Only valid after the index handler is ready.
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 2.0
+		 */	
+		public function get isBestEffortFetchEnabled():Boolean
+		{
+			throw new IllegalOperationError("The isBestEffortFetchEnabled method must be overridden by the derived class.");
+		}
+		
 //		/**
 //		 * Returns the duration of the fragment identified thorugh the provided url.
 //		 * 

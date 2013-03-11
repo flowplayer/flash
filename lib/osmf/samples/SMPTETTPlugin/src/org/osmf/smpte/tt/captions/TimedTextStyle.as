@@ -19,8 +19,8 @@
  **********************************************************/
 package org.osmf.smpte.tt.captions
 {
-	import flashx.textLayout.property.Property;
-	import flashx.textLayout.tlf_internal;
+	import flash.utils.getTimer;
+	
 	import flashx.textLayout.formats.BlockProgression;
 	import flashx.textLayout.formats.Category;
 	import flashx.textLayout.formats.Direction;
@@ -28,24 +28,18 @@ package org.osmf.smpte.tt.captions
 	import flashx.textLayout.formats.ITextLayoutFormat;
 	import flashx.textLayout.formats.LineBreak;
 	import flashx.textLayout.formats.TextLayoutFormat;
+	import flashx.textLayout.property.Property;
+	import flashx.textLayout.tlf_internal;
 	
-	import org.osmf.smpte.tt.styling.TextOutline;
-	import org.osmf.smpte.tt.styling.Visibility;
-	import org.osmf.smpte.tt.styling.WritingMode;
-	import org.osmf.smpte.tt.styling.WrapOption;
-	import flashx.textLayout.formats.WhiteSpaceCollapse;
-	import flashx.textLayout.formats.TextAlign;
-	import flash.utils.getTimer;
-	import flashx.textLayout.formats.VerticalAlign;
-	import flashx.textLayout.formats.BackgroundColor;
-	import org.osmf.smpte.tt.enums.Unit;
 	import org.osmf.smpte.tt.styling.Extent;
-	import org.osmf.smpte.tt.styling.Origin;
-	import org.osmf.smpte.tt.styling.PaddingThickness;
-	import flash.text.engine.FontPosture;
-	import flash.text.engine.FontWeight;
 	import org.osmf.smpte.tt.styling.FontSize;
 	import org.osmf.smpte.tt.styling.LineHeight;
+	import org.osmf.smpte.tt.styling.Origin;
+	import org.osmf.smpte.tt.styling.PaddingThickness;
+	import org.osmf.smpte.tt.styling.TextOutline;
+	import org.osmf.smpte.tt.styling.Visibility;
+	import org.osmf.smpte.tt.styling.WrapOption;
+	import org.osmf.smpte.tt.styling.WritingMode;
 	
 	use namespace tlf_internal;
 
@@ -394,25 +388,30 @@ package org.osmf.smpte.tt.captions
 				case "lrtb":
 				case "lr":
 					blockProgression = BlockProgression.TB;
-					direction =Direction.LTR;
+					if (!direction)
+						direction = Direction.LTR;
 					break;
 				case "rltb":
 				case "rl":
 					blockProgression = BlockProgression.TB;
-					direction = Direction.RTL;
+					if (!direction)
+						direction = Direction.RTL;
 					break;
 				case "tbrl":
 				case "tb":
 					blockProgression = BlockProgression.RL;
-					direction = Direction.RTL;
+					if (!direction)
+						direction = Direction.RTL;
 					break;
 				case "tblr":
 					blockProgression = BlockProgression.RL;
-					direction = Direction.LTR;	
+					if (!direction)
+						direction = Direction.LTR;	
 					break;
 				default:
 					blockProgression = BlockProgression.TB;
-					direction =Direction.LTR;
+					if (!direction)
+						direction = Direction.LTR;
 					break;
 			}
 		}
@@ -432,25 +431,28 @@ package org.osmf.smpte.tt.captions
 			super(initialValues);
 			
 			id = flash.utils.getTimer().toString();
-			/**/
-			backgroundColor = 0x000000;
-			backgroundAlpha = 0;
-			color = 0xFFFFFF;
-			textAlpha = TextLayoutFormat.textAlphaProperty.defaultValue;
-			displayAlign = TimedTextStyle.displayAlignProperty.defaultValue;
-			display = TimedTextStyle.displayProperty.defaultValue;
-			extent = new org.osmf.smpte.tt.styling.Extent("80% 10%");
-			fontFamily = TextLayoutFormat.fontFamilyProperty.defaultValue;
-			fontStyle = FontPosture.NORMAL;
-			fontWeight = FontWeight.NORMAL;
-			ttFontSize = new FontSize("1c");
-			opacity = 1;
-			origin = new org.osmf.smpte.tt.styling.Origin("10% 80%");
-			padding = new org.osmf.smpte.tt.styling.PaddingThickness("2px");
-			showBackground = ShowBackground.Always.value;
-			textAlign = TextAlign.CENTER;
-			visibility = Visibility.VISIBLE.value;
-			wrapOption = WrapOption.WRAP.value;			
+			
+			/*
+			if (!initialValues)
+			{
+				displayAlign = TimedTextStyle.displayAlignProperty.defaultValue;
+				display = TimedTextStyle.displayProperty.defaultValue;
+				opacity = TimedTextStyle.opacityProperty.defaultValue;
+				showBackground = TimedTextStyle.showBackgroundProperty.defaultValue;
+				visibility = TimedTextStyle.visibilityProperty.defaultValue;
+				wrapOption = TimedTextStyle.wrapOptionProperty.defaultValue;
+				
+				backgroundColor = TextLayoutFormat.backgroundColorProperty.defaultValue;
+				backgroundAlpha = TextLayoutFormat.backgroundAlphaProperty.defaultValue;
+				color = TextLayoutFormat.colorProperty.defaultValue;
+				textAlpha = TextLayoutFormat.textAlphaProperty.defaultValue;
+				fontFamily = TextLayoutFormat.fontFamilyProperty.defaultValue;
+				fontStyle = TextLayoutFormat.fontStyleProperty.defaultValue;
+				fontWeight = TextLayoutFormat.fontWeightProperty.defaultValue;
+				ttFontSize = new FontSize("1c");
+				textAlign = TextLayoutFormat.textAlignProperty.defaultValue;
+			}
+			*/
 		}
 		
 		public function clone():TimedTextStyle

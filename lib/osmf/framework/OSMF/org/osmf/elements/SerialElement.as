@@ -115,10 +115,9 @@ package org.osmf.elements
 	 * child.
 	 * </li>
 	 * <li>
-	 * TimeTrait - The composite trait represents a timeline that encapsulates
-	 * the timeline of all children.  Its duration is the sum of the durations
-	 * of all children.  Its position is the sum of the positions of the first
-	 * N fully complete children, plus the position of the next child.
+	 * TimeTrait - The reported duration of the TimeTrait of a SerialElement
+	 * is the sum of the current child and any completed children only. The
+	 * reported value does not reflect the sum of the duration of all the children.
 	 * </li>
 	 * </ul>
 	 * 

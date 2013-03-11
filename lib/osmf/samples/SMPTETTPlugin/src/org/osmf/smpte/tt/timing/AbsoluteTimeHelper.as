@@ -59,5 +59,10 @@ package org.osmf.smpte.tt.timing
 		{
 			return _time27Mhz;
 		}
+		
+		public function toString():String
+		{
+			return String(_timeAsFloat);
+		}
 	}
 }

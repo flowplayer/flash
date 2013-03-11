@@ -24,6 +24,8 @@ package org.osmf.elements.f4mClasses
 	import org.osmf.events.ParseEvent;
 	import org.osmf.utils.OSMFStrings;
 	import org.osmf.utils.URL;
+	import org.osmf.elements.f4mClasses.utils.F4MUtils;
+	import org.osmf.utils.Base64Decoder;
 
 	[ExcludeClass]
 
@@ -74,6 +76,10 @@ package org.osmf.elements.f4mClasses
 			if (root.attribute("id").length() > 0)
 			{
 				bootstrapInfo.id = idPrefix + root.@id;
+			}
+			else
+			{
+				bootstrapInfo.id = idPrefix + F4MUtils.GLOBAL_ELEMENT_ID;
 			}
 
 			if (root.attribute("url").length() > 0)

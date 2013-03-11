@@ -200,5 +200,10 @@ package org.osmf.elements.f4mClasses
 		 *  @productversion OSMF 1.0
 		 */ 
 		public var dvrInfo:DVRInfo = null;
+		
+		/**
+		 * @private
+		 */
+		public var bestEffortFetchInfo:BestEffortFetchInfo = null;
 	}
 }

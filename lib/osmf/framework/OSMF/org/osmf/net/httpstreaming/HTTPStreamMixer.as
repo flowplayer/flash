@@ -79,6 +79,11 @@ package org.osmf.net.httpstreaming
 			addEventListener(HTTPStreamingEvent.TRANSITION, 			onHTTPStreamingEvent,	false, HIGH_PRIORITY, true);
 			addEventListener(HTTPStreamingEvent.TRANSITION_COMPLETE, 	onHTTPStreamingEvent,	false, HIGH_PRIORITY, true);
 			addEventListener(HTTPStreamingEvent.DOWNLOAD_ERROR,			onHTTPStreamingEvent,	false, HIGH_PRIORITY, true);
+			addEventListener(HTTPStreamingEvent.FRAGMENT_DURATION, 		onFragmentDuration,		false, HIGH_PRIORITY, true);
+			
+			// FM-1003 (http://bugs.adobe.com/jira/browse/FM-1003)
+			// We need to listen to this type of event as well, so we can redispatch it on the _dispatcher
+			addEventListener(HTTPStreamingEvent.DOWNLOAD_COMPLETE,		onHTTPStreamingEvent,	false, HIGH_PRIORITY, true);
 			
 			setState(HTTPStreamingState.INIT);
 			
@@ -110,6 +115,16 @@ package org.osmf.net.httpstreaming
 		{
 			// we are interested only by the media track which is the one which dictates the timeline
 			return (video != null && video.source.hasErrors);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get isLiveStalled():Boolean
+		{
+			return video != null &&
+				video.source != null &&
+				video.source.isLiveStalled;
 		}
 
 		/**
@@ -242,6 +257,24 @@ package org.osmf.net.httpstreaming
 				_desiredMediaHandler = value;
 				_mediaNeedsInitialization = true;
 			}
+		}
+		
+		/**
+		 * Returns the duration of the current fragment
+		 */
+		public function get fragmentDuration():Number 
+		{
+			return _fragmentDuration;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */	
+		public function get isBestEffortFetchEnabled():Boolean
+		{
+			return _desiredMediaHandler != null &&
+				_desiredMediaHandler.source != null &&
+				_desiredMediaHandler.source.isBestEffortFetchEnabled;
 		}
 
 		///////////////////////////////////////////////////////////////////////
@@ -911,6 +944,19 @@ package org.osmf.net.httpstreaming
 			_dispatcher.dispatchEvent(event);
 		}
 		
+		/**
+		 * @private
+		 * 
+		 * Event listener called when index handler of file handler obtain fragment duration.
+		 */
+		private function onFragmentDuration(event:HTTPStreamingEvent):void
+		{
+			if (_mediaHandler != null && _mediaHandler.streamName == event.url)
+			{
+				_fragmentDuration = event.fragmentDuration;
+			}
+		}
+		
 		/// Internals
 		private static const FILTER_NONE:uint = 0;
 		private static const FILTER_VIDEO:uint = 1;
@@ -946,6 +992,8 @@ package org.osmf.net.httpstreaming
 		private var _alternateIgnored:Boolean = false;
 		
 		private var _state:String = null;
+		
+		private var _fragmentDuration:Number = 0;
 		
 		CONFIG::LOGGING
 		{

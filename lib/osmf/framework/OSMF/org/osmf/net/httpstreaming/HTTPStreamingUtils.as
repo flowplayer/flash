@@ -23,6 +23,7 @@ package org.osmf.net.httpstreaming
 {
 	import flash.utils.ByteArray;
 	
+	import org.osmf.elements.f4mClasses.BestEffortFetchInfo;
 	import org.osmf.elements.f4mClasses.BootstrapInfo;
 	import org.osmf.media.MediaResourceBase;
 	import org.osmf.media.URLResource;
@@ -153,8 +154,51 @@ package org.osmf.net.httpstreaming
 			
 			var httpResource:MediaResourceBase = new StreamingURLResource(streamWholeURL);
 			httpResource.addMetadataValue(MetadataNamespaces.HTTP_STREAMING_METADATA, resourceMetadata);
+
+			// copy the DVR metadata
+			var dvrInfo:DVRInfo = generateDVRInfo(resource.getMetadataValue(MetadataNamespaces.DVR_METADATA) as Metadata);
+			addDVRInfoMetadataToResource(dvrInfo, httpResource);
+			
+			// copy the best effort metadata
+			var bestEffortFetchInfo:BestEffortFetchInfo = generateBestEffortFetchInfo(resource.getMetadataValue(MetadataNamespaces.BEST_EFFORT_FETCH_METADATA) as Metadata);
+			addBestEffortFetchInfoMetadataToResource(bestEffortFetchInfo, httpResource);
+			
 			return httpResource;
 		}
+		
+		public static function addDVRInfoMetadataToResource(dvrInfo:DVRInfo, resource:MediaResourceBase):void
+		{
+			if (dvrInfo == null)
+			{
+				return;
+			}
+			
+			var metadata:Metadata = new Metadata();
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_BEGIN_OFFSET_KEY, dvrInfo.beginOffset);
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_END_OFFSET_KEY, dvrInfo.endOffset);
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_WINDOW_DURATION_KEY, dvrInfo.windowDuration);
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_OFFLINE_KEY, dvrInfo.offline);
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_ID_KEY, dvrInfo.id);
+			
+			resource.addMetadataValue(MetadataNamespaces.DVR_METADATA, metadata);
+		}
+		
+		public static function addBestEffortFetchInfoMetadataToResource(bestEffortFetchInfo:BestEffortFetchInfo, resource:MediaResourceBase):void
+		{
+			if (bestEffortFetchInfo == null)
+			{
+				return;
+			}
+			
+			var metadata:Metadata = new Metadata();
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_FORWARD_FETCHES, bestEffortFetchInfo.maxForwardFetches);
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_BACKWARD_FETCHES, bestEffortFetchInfo.maxBackwardFetches);
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_SEGMENT_DURATION, bestEffortFetchInfo.segmentDuration);
+			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_FRAGMENT_DURATION, bestEffortFetchInfo.fragmentDuration);
+			
+			resource.addMetadataValue(MetadataNamespaces.BEST_EFFORT_FETCH_METADATA, metadata);
+		}
+
 		
 		/**
 		 * @private
@@ -165,12 +209,14 @@ package org.osmf.net.httpstreaming
 			
 			var httpMetadata:Metadata = resource.getMetadataValue(MetadataNamespaces.HTTP_STREAMING_METADATA) as Metadata;
 			var dvrMetadata:Metadata = resource.getMetadataValue(MetadataNamespaces.DVR_METADATA) as Metadata;
+			var befMetadata:Metadata = resource.getMetadataValue(MetadataNamespaces.BEST_EFFORT_FETCH_METADATA) as Metadata;
 			if (httpMetadata != null)
 			{
 				var serverBaseURLs:Vector.<String>
 					= httpMetadata.getValue(MetadataNamespaces.HTTP_STREAMING_SERVER_BASE_URLS_KEY) as Vector.<String>;
 				var streamInfos:Vector.<HTTPStreamingF4FStreamInfo> = generateStreamInfos(resource);
 				var dvrInfo:DVRInfo = generateDVRInfo(dvrMetadata);
+				var befInfo:BestEffortFetchInfo = generateBestEffortFetchInfo(befMetadata);
 				
 				indexInfo =
 					new HTTPStreamingF4FIndexInfo
@@ -178,6 +224,7 @@ package org.osmf.net.httpstreaming
 						serverBaseURLs != null && serverBaseURLs.length > 0 ? serverBaseURLs[0] : null
 						, streamInfos
 						, dvrInfo
+						, befInfo
 						);
 			}
 			
@@ -267,6 +314,35 @@ package org.osmf.net.httpstreaming
 			}
 			
 			return dvrInfo;
+		}
+		
+		private static function generateBestEffortFetchInfo(metadata:Metadata):BestEffortFetchInfo
+		{
+			if (metadata == null)
+			{
+				return null;
+			}
+			
+			var befInfo:BestEffortFetchInfo = new BestEffortFetchInfo();
+
+			if (metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_FORWARD_FETCHES) != null)
+			{
+				befInfo.maxForwardFetches = metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_FORWARD_FETCHES) as uint;
+			}
+			if (metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_BACKWARD_FETCHES) != null)
+			{
+				befInfo.maxBackwardFetches = metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_BACKWARD_FETCHES) as uint;
+			}
+			if (metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_SEGMENT_DURATION) != null)
+			{
+				befInfo.segmentDuration = metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_SEGMENT_DURATION) as uint;
+			}
+			if (metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_FRAGMENT_DURATION) != null)
+			{
+				befInfo.fragmentDuration = metadata.getValue(MetadataNamespaces.HTTP_STREAMING_BEST_EFFORT_FETCH_FRAGMENT_DURATION) as uint;
+			}
+			
+			return befInfo;
 		}
 		
 		private static function generateStreamInfos(resource:URLResource):Vector.<HTTPStreamingF4FStreamInfo>
