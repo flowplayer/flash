@@ -171,12 +171,7 @@ package org.osmf.media.pluginClasses
 
 		[Test]
 		public function testLoadPluginWithDifferentVersions():void
-		{
-			// Note: This test will need updating any time the framework
-			// version number changes.  I've added the following Assert.assertion
-			// to make this explicit.
-			Assert.assertTrue(Version.version == "1.6");
-			
+		{			
 			// First number is minimum supported framework version.
 			// Second number is plugin's framework version.
 			
@@ -185,17 +180,17 @@ package org.osmf.media.pluginClasses
 			assertPluginHasValidVersion("0.9", "0.95", true);
 			
 			// But not newer plugins.
-			assertPluginHasValidVersion("0.9", "1.9", false);
+			assertPluginHasValidVersion("0.9", "99.9", false);
 			
 			// And we can't load older plugins if their version is less
 			// than the minimum.
 			assertPluginHasValidVersion("0.95", "0.9", false);
 			
 			assertPluginHasValidVersion("0.95", "0.95", true);
-			assertPluginHasValidVersion("0.95", "1.9", false);
+			assertPluginHasValidVersion("0.95", "99.9", false);
 			assertPluginHasValidVersion("1.1", "0.9", false);
 			assertPluginHasValidVersion("1.1", "0.95", false);
-			assertPluginHasValidVersion("1.1", "1.9", false);
+			assertPluginHasValidVersion("1.1", "99.9", false);
 			
 			// Verify we take the number of digits in the minor version
 			// into account.

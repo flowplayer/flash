@@ -17,4 +17,5 @@
     <property name="compiler-define" value="CONFIG::skin,'true'  -define=CONFIG::hasSlowMotion,'false'" />
 
     <property name="extra-sources" value="../../lib/common/src/actionscript" />
+
 </project>

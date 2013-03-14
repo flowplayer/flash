@@ -124,7 +124,6 @@ package org.osmf.net
 				
 				var playbackOptimizationMetrics:PlaybackOptimizationMetrics = new PlaybackOptimizationMetrics(netStream);
 				playbackOptimizationMetrics.averagePlaybackBytesPerSecond = 500;
-				netStream.qosInfo = new MockHTTPStreamQoSInfo(2);
 				netStream.infoFactory.videoBufferByteLength = 2000;
 				netStream.infoFactory.videoBufferLength = 1;
 				

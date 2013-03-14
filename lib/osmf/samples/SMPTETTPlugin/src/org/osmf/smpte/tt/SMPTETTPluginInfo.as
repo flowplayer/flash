@@ -28,6 +28,7 @@ package org.osmf.smpte.tt
 	import org.osmf.media.URLResource;
 	import org.osmf.metadata.Metadata;
 	import org.osmf.net.NetLoader;
+	import org.osmf.smpte.tt.architecture.creation.SMPTETTFactoryFacade;
 	import org.osmf.smpte.tt.media.SMPTETTProxyElement;
 	
 	/**
@@ -96,7 +97,8 @@ package org.osmf.smpte.tt
 		
 		private function createSMPTETTProxyElement():MediaElement
 		{
-			return new SMPTETTProxyElement();
+			//return new SMPTETTProxyElement();
+			return SMPTETTFactoryFacade.getSMPTETTProxyElement();
 		}
 		
 		// OSMF will invoke this function for any MediaElement returned by
@@ -106,7 +108,6 @@ package org.osmf.smpte.tt
 		// dependencies.
 		private function creationNotificationFunction(media:MediaElement):void
 		{
-			trace("creationNotificationFunction( "+media+" )");
 			if (media is VideoElement)
 			{
 				VideoElement( media ).smoothing = true;

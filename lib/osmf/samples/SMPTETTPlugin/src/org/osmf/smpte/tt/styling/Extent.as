@@ -19,11 +19,28 @@
  **********************************************************/
 package org.osmf.smpte.tt.styling
 {
+	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
+	
 	import org.osmf.smpte.tt.enums.Unit;
 	
 	public class Extent extends NumberPair
 	{
+		private static var _cache:Dictionary = new Dictionary();
+		public static function getExtent(value:*):Extent
+		{
+			if (_cache[value] !== undefined)
+			{
+				return _cache[value];
+			}
+			else
+			{
+				var extent:Extent = new Extent(value);
+				_cache[value] = extent;
+				return extent;
+			}
+		}
+		
 		public function get width():Number
 		{
 			return first;

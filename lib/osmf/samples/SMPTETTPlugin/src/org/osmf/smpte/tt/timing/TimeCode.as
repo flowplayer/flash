@@ -31,15 +31,13 @@ package org.osmf.smpte.tt.timing
 	public class TimeCode
 	{
 		/**
-		 * Regular expression string used for parsing out the timecode.
-		 */
-		public static const SMPTEREGEXSTRING:String = "^(?:(?P<Days>\d+):)?(?P<Hours>2[1-3]|[0-1]\d):(?P<Minutes>[0-5]\d]):(?P<Seconds>[0-5]\d)(?::|;)(?P<Frames>[0-2]\d)$";
-		
-		/**
 		 *  Regular expression object used for validating timecode.
 		 */
-		public static const _validateTimecode:RegExp = /^(?:(?P<Days>\d+):)?(?P<Hours>2[1-3]|[0-1]\d):(?P<Minutes>[0-5]\d):(?P<Seconds>[0-5]\d)(?::|;)(?P<Frames>[0-2]\d)$/;
+		public static const SMPTEREGEXP:RegExp = /^(?:(?P<Days>\d+):)?(?P<Hours>2[0-3]|[0-1]\d):(?P<Minutes>[0-5]\d):(?P<Seconds>[0-5]\d)(?::|;)(?P<Frames>[0-2]\d)$/;	
 		
+		/**
+		 * The absolute time for this instance.
+		 */
 		private var _absoluteTime:AbsoluteTimeHelper;
 		
 		/**
@@ -61,35 +59,33 @@ package org.osmf.smpte.tt.timing
 		 * @param rate:SmpteFrameRate - The SMPTE frame rate. 
 		 * 
 		 * <p>With 3 parameters, initializes a new instance of the TimeCode structure using 
-		 * either an absolute time value or a value of a 27 Mhz clock, and the SMPTE framerate.</p>
+		 *  a value of a 27 Mhz clock, and the SMPTE framerate, the third parameter is a 
+		 *  Boolean to indicate that the first numeric parameter represents a value of 27 Mhz clock ticks.</p>
 		 * 
-		 * @param absoluteTime:Number - The double that represents the absolute time value.
-		 *   or
-		 * @param ticks27Mhz:Number - The long value in 27 Mhz clock ticks.
-         * @param rate:SmpteFrameRate - The SMPTE framerate that this instance should use.
-		 * @param numberType:NumberType - The datatype of the first parameter NumberType.DOUBLE for absoluteTime or NumberType.Long for ticks27Mhz.
+		 * @param ticks27Mhz:Number - The value in 27 Mhz clock ticks.
+		 * @param rate:SmpteFrameRate - The SMPTE framerate that this instance should use.
+		 * @param isTicks27Mhz:Boolean - Boolean to indicate ticks of 27Mhz clock.
 		 * 
 		 * <p>With 2 parameters, initializes a new instance of the TimeCode structure using 
-		 * either the totalSeconds of a TimeSpan object or an SMPTE 12m time code string, 
+		 * either an absolute time value, the totalSeconds of a TimeSpan object,
+		 * or an SMPTE 12m time code string, 
 		 * and either an SMPTE framerate or a decimal rate.</p>
 		 * 
 		 * @param timeSpan:TimeSpan - The TimeSpan to be used for the new timecode..
 		 *   or
 		 * @param timeCode:String - The SMPTE 12m time code string.
 		 *  and
-         * @param rate:SmpteFrameRate - The SMPTE framerate that this instance should use.
-		 *  or
-		 * @param rate:Number - The Smpte frame rate.
+		 * @param rate:SmpteFrameRate - The SMPTE framerate that this instance should use.
 		 * 
 		 * <p>With 1 parameter, initializes a new instance of the TimeCode structure 
 		 * using a time code string that contains the framerate at the end of the string.</p>
 		 * 
-		 * <p>Pass in a timecode in the format "timecode@framrate". 
+		 * <p>Pass in a timecode in the format "timecode@framerate". 
 		 * Supported rates include @23.98, @24, @25, @29.97, @30</p>
-         * 
+		 * 
 		 * <p>For example: <br/>
-         * "00:01:00:00@29.97" is equivalent to 29.97 non drop frame.<br/>
-         * "00:01:00;00@29.97" is equivalent to 29.97 drop frame.</p>
+		 * "00:01:00:00@29.97" is equivalent to 29.97 non drop frame.<br/>
+		 * "00:01:00;00@29.97" is equivalent to 29.97 drop frame.</p>
 		 * 
 		 * @param timeCodeAndRate:String - The SMPTE 12m time code string.
 		 */
@@ -106,171 +102,228 @@ package org.osmf.smpte.tt.timing
 			switch(len){
 				case 6:
 				case 5:
-					var actualRate:Number;
-					if(args[(len-1)] is SmpteFrameRate){
-						this.frameRate = args[(len-1)];
-						for(i=0; i<(len-1); i++){
-							if(args[i] is int){
-								timeCode += (i==0 && len==6) ? args[i] : TimeCode.twoDigits(args[i]);
-								if(i<len-2){
-									timeCode += ":";
-								}
-							} else 
-							{
-								throw new Error("Invalid TimeCode input. Parameter "+i+" ( "+ args[i] + " ) must be an integer.");
-							}
-						}
-						this._absoluteTime = TimeCode.smpte12mToAbsoluteTime(timeCode, this.frameRate);	
-					} else if(len == 6 && args[5] is Number)
-					{
-						actualRate = args[5];
-						this.frameRate = TimeCode.parseFramerate(actualRate);
-						if (args[1] > 23) throw new Error("hours cannot be greater than 23");
-						if (args[2] > 59) throw new Error("minutes cannot be greater than 59");
-						if (args[3] > 59) throw new Error("seconds cannot be greater than 59");
-						if (args[4] >= actualRate) throw new Error("frames cannot be greater than rate");
-						days = args[0];
-						hours = args[1];
-						minutes = args[2];
-						seconds = args[3];
-						frames = args[4];
-						if(this.frameRate!=SmpteFrameRate.UNKNOWN)
-						{
-							for(i=0; i<(len-1); i++){
-								if(args[i] is int){
-									timeCode += (i==0 && len==6) ? args[i] : TimeCode.twoDigits(args[i]);
-									if(i<len-2){
-										timeCode += ":";
-									}
-								} else 
-								{
-									throw new Error("Invalid TimeCode input. Parameter "+i+" ( "+ args[i] + " ) must be an integer.");
-								}
-							}
-							this._absoluteTime = TimeCode.smpte12mToAbsoluteTime(timeCode, this.frameRate);
-						} else
-						{
-							this._absoluteTime = new AbsoluteTimeHelper((1 / actualRate) * frames + seconds + (60 * minutes) + (3600 * hours) + (86400 * days),NumberType.DOUBLE);
-						}
-					} else if(len == 5 && args[4] is Number)
-					{
-						actualRate = args[4];
-						this.frameRate = TimeCode.parseFramerate(actualRate);
-						if (args[0] > 23) throw new Error("hours cannot be greater than 23"); 
-						if (args[1] > 59)throw new Error("minutes cannot be greater than 59");
-						if (args[2] > 59) throw new Error("seconds cannot be greater than 59");
-						if (args[3] >= actualRate) throw new Error("frames cannot be greater than rate");
-						hours = args[0];
-						minutes = args[1];
-						seconds = args[2];
-						frames = args[3];
-						if(this.frameRate!=SmpteFrameRate.UNKNOWN)
-						{
-							for(i=0; i<(len-1); i++){
-								if(args[i] is int){
-									timeCode += (i==0 && len==6) ? args[i] : TimeCode.twoDigits(args[i]);
-									if(i<len-2){
-										timeCode += ":";
-									}
-								} else 
-								{
-									throw new Error("Invalid TimeCode input. Parameter "+i+" ( "+ args[i] + " ) must be an integer.");
-								}
-							}
-							this._absoluteTime = TimeCode.smpte12mToAbsoluteTime(timeCode, this.frameRate);
-						} else
-						{	
-							this._absoluteTime = new AbsoluteTimeHelper((1 / actualRate) * frames + seconds + (60 * minutes) + (3600 * hours),NumberType.DOUBLE);
-						}
-					} else {
-						throw new Error("Parameters do not seem to combine to form a valid TimeCode: ["+args.toString()+"]");
-					}
+					initDaysHoursMinutesSecondsFramesRate.apply(null, args);
 					break;
 				case 3:
 					if(args[0] is Number 
 						&& args[1] is SmpteFrameRate 
-						&& args[2] is NumberType){
-						this.frameRate =  args[1];
-						this._absoluteTime = new AbsoluteTimeHelper(args[0],args[2]);
+						&& args[2] is NumberType)
+					{
+						initTicks27Mhz.apply(null, args);	
 					} else {
 						throw new Error("Parameters do not seem to combine to form a valid TimeCode: ["+args.toString()+"]");
 					}
 					break;
 				case 2:
-					if(args[1] is SmpteFrameRate){
-						this.frameRate =  args[1];
-						if(args[0] is TimeSpan){
-							this._absoluteTime = TimeCode.fromTimeSpan(args[0], this.frameRate).absoluteTime;
-						} else if(args[0] is String){
-							this._absoluteTime = TimeCode.smpte12mToAbsoluteTime(args[0], this.frameRate);
-						}
-					} else if(args[0] is TimeSpan 
-						&& args[1] is Number) {
-						this.frameRate = TimeCode.parseFramerate(args[1]);
-						this._absoluteTime = new AbsoluteTimeHelper((args[0] as TimeSpan).totalSeconds, NumberType.DOUBLE);
-					} else {
+					if(args[0] is TimeSpan)
+					{
+						initTimeSpan.apply(null, args);
+					} else if(args[0] is String 
+						&& args[1] is SmpteFrameRate)
+					{
+						initTimeCode.apply(null, args);
+					} else if(args[0] is Number 
+						&& args[1] is SmpteFrameRate)
+					{
+						initAbsoluteTime.apply(null, args);
+					} else
+					{
 						throw new Error("Parameters do not seem to combine to form a valid TimeCode: ["+args.toString()+"]");
 					}
 					break;
 				case 1:
-					var timeAndRate:Array = args[0].split("@");
-					
-					var time:String = '';
-					var rate:String = '';
-					
-					if (timeAndRate.length == 1)
+					if(args[0] is String)
 					{
-						time = timeAndRate[0];
-						rate = "29.97";
-					}
-					else if (timeAndRate.length == 2)
+						initTimeAndRate(args[0]);
+					} else
 					{
-						time = timeAndRate[0];
-						rate = timeAndRate[1];
+						throw new Error("Parameter does not seem to represent a valid TimeCode: ["+args.toString()+"]");
 					}
-					
-					this.frameRate = SmpteFrameRate.SMPTE_2997_NONDROP;
-					
-					if (rate == "29.97" && time.indexOf(';') > -1)
-					{
-						this.frameRate = SmpteFrameRate.SMPTE_2997_DROP;
-					}
-					else if (rate == "29.97" && time.indexOf(';') == -1)
-					{
-						this.frameRate = SmpteFrameRate.SMPTE_2997_NONDROP;
-					}
-					else if (rate == "25")
-					{
-						this.frameRate = SmpteFrameRate.SMPTE_25;
-					}
-					else if (rate == "23.98")
-					{
-						this.frameRate = SmpteFrameRate.SMPTE_2398;
-					}
-					else if (rate == "24")
-					{
-						this.frameRate = SmpteFrameRate.SMPTE_24;
-					}
-					else if (rate == "30")
-					{
-						this.frameRate = SmpteFrameRate.SMPTE_30;
-					}
-					
-					this._absoluteTime = TimeCode.smpte12mToAbsoluteTime(time, this.frameRate);
 					break;
 			}
 			// trace("new TimeCode("+args.toString()+") \n\t{ time27Mhz: "+absoluteTime.time27Mhz+", timeAsFloat: "+absoluteTime.timeAsFloat+", pcrTime: "+absoluteTime.pcrTime+" }\n");
 		}
 		
 		/**
-		 *  Convert an integer value into two digits.
+		 * Initializes a the TimeCode to a specified number of days, hours, minutes, and seconds.
+		 * 
+		 * @param days:int - Number of days. (optional)  
+		 * @param hours:int - Number of hours. 
+		 * @param minutes:int - Number of minutes. 
+		 * @param seconds:int - Number of seconds. 
+		 * @param frames:int - Number of frames. 
+		 * @param rate:SmpteFrameRate - The SMPTE frame rate. 
 		 */
-		private static function twoDigits(p_value:int):String
+		private function initDaysHoursMinutesSecondsFramesRate(...args:*):void
+		{			
+			var len:uint = args.length;
+			var	lastIndex:uint = (len-1);
+			var	days:Number = (len == 6) ? args[0] : 0;
+			var	hours:Number = args[(lastIndex-4)];
+			var	minutes:Number = args[(lastIndex-3)];
+			var	seconds:Number = args[(lastIndex-2)];
+			var	frames:Number = args[(lastIndex-1)];
+			
+			if (hours > 23) throw new Error("hours cannot be greater than 23");
+			if (minutes > 59) throw new Error("minutes cannot be greater than 59");
+			if (seconds > 59) throw new Error("seconds cannot be greater than 59");
+			
+			_frameRate = (args[lastIndex] is SmpteFrameRate) ? args[lastIndex] : parseFramerate(args[lastIndex]);
+			
+			if(_frameRate != SmpteFrameRate.UNKNOWN)
+			{
+				var	smpte12m:String = "";
+				for(var i:uint=0; i<lastIndex; i++)
+				{
+					if(args[i] is int)
+					{
+						smpte12m += (i==0 && len==6) ? args[i] : twoDigits(args[i]);
+						if(i<(len-2))
+						{
+							smpte12m += ":";
+						}
+					} else 
+					{
+						throw new Error("Invalid TimeCode input. Parameter "+i+" ( "+ args[i] + " ) must be an integer.");
+					}
+				}
+				_absoluteTime = smpte12mToAbsoluteTime(smpte12m, _frameRate);
+			} else if (args[lastIndex] is Number)
+			{
+				var actualRate:Number = args[lastIndex];
+				if (frames >= actualRate) throw new Error("frames cannot be greater than rate");
+				_absoluteTime = new AbsoluteTimeHelper((1 / actualRate) * frames + seconds + (60 * minutes) + (3600 * hours),NumberType.DOUBLE);
+			} else
+			{
+				throw new Error("Parameters do not seem to combine to form a valid TimeCode: ["+args.toString()+"]");
+			}	
+		}
+		
+		/**
+		 * Initializes a new instance of the TimeCode with a value of a 27 Mhz clock and the SMPTE frame rate.
+		 * 
+		 * @param value The value in 27 Mhz clock ticks.
+		 * @param rate The SMPTE framerate to use for this instance.
+		 * @param numberType
+		 */ 
+		private function initTicks27Mhz(value:Number, rate:SmpteFrameRate, numberType:NumberType):void
 		{
-			var result:Array = [];
-			result[0] = ((p_value / 10) + int('0')).toString(16);
-			result[1] = ((p_value % 10) + int('0')).toString(16);
-			return result.join('');
+			_frameRate = rate;
+			_absoluteTime = new AbsoluteTimeHelper(value, numberType);
+		}
+		
+		/**
+		 * Initializes a new instance of the TimeCode struct using the TotalSeconds in the supplied TimeSpan.
+		 * 
+		 * @param timeSpan The TimeSpan to be used for the new timecode.
+		 * @param rate The SMPTE frame rate.
+		 */ 
+		private function initTimeSpan(timeSpan:TimeSpan, rate:Object):void
+		{	
+			if (rate is SmpteFrameRate)
+			{
+				_frameRate = SmpteFrameRate(rate);
+				_absoluteTime = TimeCode.fromTimeSpan(timeSpan, _frameRate).absoluteTime;
+			} else if (rate is Number)
+			{
+				_frameRate = parseFramerate(Number(rate));
+				_absoluteTime = new AbsoluteTimeHelper(timeSpan.totalSeconds, NumberType.DOUBLE);
+			} else
+			{
+				throw new Error("Parameters do not seem to combine to form a valid TimeCode: ["+arguments.toString()+"]");
+			}
+		}
+		
+		/**
+		 * Initializes a new instance of the TimeCode using a time code string and a SMPTE framerate.
+		 * 
+		 * @param timeCode The SMPTE 12m time code string.
+		 * @param rate The SMPTE framerate to use for this instance.
+		 */
+		private function initTimeCode(smpte12M:String, rate:SmpteFrameRate):void
+		{
+			_frameRate = rate;
+			_absoluteTime = TimeCode.smpte12mToAbsoluteTime(smpte12M, _frameRate);
+		}
+		
+		/**
+		 * Initializes a new instance of the TimeCode struct using an absolute time value, and the SMPTE framerate.
+		 * 
+		 * @param value The absolute time value.
+		 * @param rate The SMPTE framerate to use for this instance.
+		 */
+		private function initAbsoluteTime(value:Number, rate:SmpteFrameRate):void
+		{
+			_frameRate = rate;
+			_absoluteTime = new AbsoluteTimeHelper(value, NumberType.DOUBLE);
+		}
+		
+		/**
+		 * Initializes a new instance of the TimeCode using a time code string that contains the framerate at the end of the string.
+		 * <p>
+		 * Pass in a timecode in the format "timecode@framerate". 
+		 * Supported rates include @23.98, @24, @25, @29.97, @30
+		 * </p>
+		 * 
+		 * <p>For example: <br/>
+		 * "00:01:00:00@29.97" is equivalent to 29.97 non drop frame.<br/>
+		 * "00:01:00;00@29.97" is equivalent to 29.97 drop frame.
+		 * </p>
+		 * 
+		 * @param timeCodeAndRate The SMPTE 12m time code string.
+		 */ 
+		private function initTimeAndRate(timeCodeAndRate:String):void
+		{
+			var timeAndRate:Array = timeCodeAndRate.split("@");
+			
+			var time:String = "";
+			var rate:String = "";
+			
+			if (timeAndRate.length == 1)
+			{
+				time = timeAndRate[0];
+				rate = "29.97";
+			}
+			else if (timeAndRate.length == 2)
+			{
+				time = timeAndRate[0];
+				rate = timeAndRate[1];
+			}
+			
+			switch (rate)
+			{
+				case "29.97":
+					_frameRate = (time.indexOf(';') != -1) ? SmpteFrameRate.SMPTE_2997_DROP : SmpteFrameRate.SMPTE_2997_NONDROP;
+					break;
+				case "25":
+					_frameRate = SmpteFrameRate.SMPTE_25;
+					break;
+				case "23.98":
+					_frameRate = SmpteFrameRate.SMPTE_2398;
+					break;
+				case "24":
+					_frameRate = SmpteFrameRate.SMPTE_24;
+					break;
+				case "30":
+					_frameRate = SmpteFrameRate.SMPTE_30;
+					break;
+				default:
+					_frameRate = SmpteFrameRate.SMPTE_2997_NONDROP;
+					break;
+			}
+			
+			_absoluteTime = TimeCode.smpte12mToAbsoluteTime(time, _frameRate);
+		}
+		
+		/**
+		 *  Convert an integer value into two digits.
+		 * 
+		 *  @param value An integer.
+		 *  @return a string with a leading zero for integers less than 10
+		 */
+		private static function twoDigits(value:int):String
+		{
+			return (value / 10).toString(16) + (value % 10).toString(16);
 		}
 		
 		
@@ -354,7 +407,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function get duration():Number
 		{
-			return this.absoluteTime.timeAsDouble;
+			return _absoluteTime.timeAsDouble;
 		}
 		
 		/**
@@ -364,9 +417,9 @@ package org.osmf.smpte.tt.timing
 		{
 			return _frameRate;
 		}
-		public function set frameRate(p_frameRate:SmpteFrameRate):void
+		public function set frameRate(value:SmpteFrameRate):void
 		{
-			_frameRate = p_frameRate;
+			_frameRate = value;
 		}
 		
 		/**
@@ -376,7 +429,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function get hoursSegment():int
 		{
-			var timeCode:String = TimeCode.absoluteTimeToSmpte12M(this.absoluteTime, this.frameRate);
+			var timeCode:String = TimeCode.absoluteTimeToSmpte12M(_absoluteTime, _frameRate);
 			var hours:String = timeCode.substring(0, 2);
 			return parseInt(hours);
 		}
@@ -400,7 +453,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function get secondsSegment():int
 		{
-			var timeCode:String = TimeCode.absoluteTimeToSmpte12M(this.absoluteTime, this.frameRate);
+			var timeCode:String = TimeCode.absoluteTimeToSmpte12M(_absoluteTime, _frameRate);
 			var seconds:String = timeCode.substring(6, 2);
 			return parseInt(seconds);
 		}
@@ -412,7 +465,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function get framesSegment():int
 		{
-			var timeCode:String = TimeCode.absoluteTimeToSmpte12M(this.absoluteTime, this.frameRate);
+			var timeCode:String = TimeCode.absoluteTimeToSmpte12M(_absoluteTime, _frameRate);
 			var frames:String = timeCode.substring(9, 2);
 			return parseInt(frames);
 		}
@@ -424,7 +477,7 @@ package org.osmf.smpte.tt.timing
 		 */  
 		public function get totalDays():Number
 		{
-			var framecount:Number = TimeCode.absoluteTimeToFrames(this.absoluteTime, this.frameRate);
+			var framecount:Number = TimeCode.absoluteTimeToFrames(_absoluteTime, _frameRate);
 			return (framecount / 108000) / 24;
 		}
 		
@@ -436,11 +489,11 @@ package org.osmf.smpte.tt.timing
 		 */ 
 		public function get totalHours():Number
 		{
-			var framecount:Number = TimeCode.absoluteTimeToFrames(this.absoluteTime, this.frameRate);
+			var framecount:Number = TimeCode.absoluteTimeToFrames(_absoluteTime, _frameRate);
 			
 			var hours:Number;
 			
-			switch (this.frameRate)
+			switch (_frameRate)
 			{
 				case SmpteFrameRate.SMPTE_2398:
 				case SmpteFrameRate.SMPTE_24:
@@ -472,12 +525,11 @@ package org.osmf.smpte.tt.timing
 		 */  
 		public function get totalMinutes():Number
 		{
-			
-			var framecount:Number = TimeCode.absoluteTimeToFrames(this.absoluteTime, this.frameRate);
+			var framecount:Number = TimeCode.absoluteTimeToFrames(_absoluteTime, _frameRate);
 			
 			var minutes:Number;
 			
-			switch (this.frameRate)
+			switch (_frameRate)
 			{
 				case SmpteFrameRate.SMPTE_2398:
 				case SmpteFrameRate.SMPTE_24:
@@ -496,8 +548,7 @@ package org.osmf.smpte.tt.timing
 					break;
 			}
 			
-			return minutes;
-			
+			return minutes;	
 		}
 		
 		/**
@@ -505,10 +556,10 @@ package org.osmf.smpte.tt.timing
 		 *  and fractional seconds. Not as Precise as the TotalSecondsPrecision.
 		 *
 		 * @returns The total number of seconds represented by this instance.
-		 */  
+		 */
 		public function get totalSeconds():Number
 		{
-			return this.absoluteTime.timeAsDouble;
+			return _absoluteTime.timeAsDouble;
 		}
 		
 		/**
@@ -516,10 +567,10 @@ package org.osmf.smpte.tt.timing
 		 *  and fractional seconds. This is returned as a <see cref="decimal"/> for greater precision.
 		 *
 		 * @returns The total number of seconds represented by this instance.
-		 */  
+		 */
 		public function get totalSecondsPrecision():Number
 		{
-			return this.absoluteTime.timeAsFloat;
+			return _absoluteTime.timeAsFloat;
 		}
 		
 		/**
@@ -529,7 +580,43 @@ package org.osmf.smpte.tt.timing
 		 */  
 		public function get totalFrames():Number
 		{
-			return TimeCode.absoluteTimeToFrames(this.absoluteTime, this.frameRate);
+			return TimeCode.absoluteTimeToFrames(_absoluteTime, _frameRate);
+		}
+		
+		/**
+		 * Gets the maximum TimeCode value of a known frame rate. The Max value for Timecode.
+		 *
+		 * @param frameRate The frame rate to get the max value.
+		 * @return The maximum TimeCode value for the given frame rate.
+		 */
+		public static function maxValue(frameRate:SmpteFrameRate):Number
+		{
+			var value:Number = 86399;
+			switch (frameRate)
+			{
+				case SmpteFrameRate.SMPTE_2398:
+					value = 86486.35829166667;
+					break;
+				case SmpteFrameRate.SMPTE_24:
+					value = 86399.95833333333;
+					break;
+				case SmpteFrameRate.SMPTE_25:
+					value = 86399.96;
+					break;
+				case SmpteFrameRate.SMPTE_2997_DROP:
+					value = 86399.88023333333;
+					break;
+				case SmpteFrameRate.SMPTE_2997_NONDROP:
+					value = 86486.36663333333;
+					break;
+				case SmpteFrameRate.SMPTE_30:
+					value = 86399.96666666667;
+					break;
+				default:
+					value = 86399;
+					break;
+			}
+			return value;
 		}
 	
 		/**
@@ -537,16 +624,14 @@ package org.osmf.smpte.tt.timing
 		 */
 		private function get absoluteTime():AbsoluteTimeHelper
 		{
-			if (_absoluteTime == null)
-			{
+			if (!_absoluteTime)
 				_absoluteTime = new AbsoluteTimeHelper(0);
-			}
 			
 			return _absoluteTime;
 		}
-		private function set absoluteTime(p_absoluteTime:AbsoluteTimeHelper):void
+		private function set absoluteTime(value:AbsoluteTimeHelper):void
 		{	
-			_absoluteTime = p_absoluteTime;
+			_absoluteTime = value;
 		}
 		
 		/**
@@ -559,6 +644,7 @@ package org.osmf.smpte.tt.timing
 		public static function ticks27MhzToSmpte12M(ticks27Mhz:Number, rate:SmpteFrameRate):String
 		{
 			var s:String = TimeCode.ticks27MhzToSmpte12M_30fps(ticks27Mhz);
+			
 			switch (rate)
 			{
 				case SmpteFrameRate.SMPTE_2398:
@@ -579,10 +665,8 @@ package org.osmf.smpte.tt.timing
 				case SmpteFrameRate.SMPTE_30:
 					s = TimeCode.ticks27MhzToSmpte12M_30fps(ticks27Mhz);
 					break;
-				default:
-					s = TimeCode.ticks27MhzToSmpte12M_30fps(ticks27Mhz);
-					break;
 			}
+			
 			return s;
 		}
 		
@@ -596,8 +680,8 @@ package org.osmf.smpte.tt.timing
 		public function minus(t2:TimeCode):TimeCode
 		{
 			
-			var frames:Number = this.totalFrames - t2.totalFrames;
-			var t3:TimeCode = TimeCode.fromFrames(frames, this.frameRate);
+			var frames:Number = totalFrames - t2.totalFrames;
+			var t3:TimeCode = TimeCode.fromFrames(frames, _frameRate);
 			
 			if (t3.totalSecondsPrecision < TimeCode.MIN_VALUE)
 			{
@@ -616,8 +700,8 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function plus(t2:TimeCode):TimeCode
 		{
-			var frames:Number = this.totalFrames + t2.totalFrames;
-			var t3:TimeCode = TimeCode.fromFrames(frames, this.frameRate);
+			var frames:Number = totalFrames + t2.totalFrames;
+			var t3:TimeCode = TimeCode.fromFrames(frames, _frameRate);
 			
 			return t3;
 		}
@@ -779,8 +863,8 @@ package org.osmf.smpte.tt.timing
 		 */
 		public static function fromDays(value:Number, rate:SmpteFrameRate):TimeCode
 		{
-			var absoluteTime:Number = value * TimeCode.TICKS_PER_DAY_ABSOLUTE_TIME;
-			return new TimeCode(absoluteTime, rate, NumberType.DOUBLE);
+			var ticks:Number = value * TimeCode.TICKS_PER_DAY_ABSOLUTE_TIME;
+			return new TimeCode(ticks, rate, NumberType.DOUBLE);
 		}
 		
 		/**
@@ -792,8 +876,8 @@ package org.osmf.smpte.tt.timing
 		 */
 		public static function fromHours(value:Number, rate:SmpteFrameRate):TimeCode
 		{
-			var absoluteTime:Number = value * TimeCode.TICKS_PER_HOUR_ABSOLUTE_TIME;
-			return new TimeCode(absoluteTime, rate, NumberType.DOUBLE);
+			var ticks:Number = value * TimeCode.TICKS_PER_HOUR_ABSOLUTE_TIME;
+			return new TimeCode(ticks, rate, NumberType.DOUBLE);
 		}
 		
 		/**
@@ -805,8 +889,8 @@ package org.osmf.smpte.tt.timing
 		 */
 		public static function fromMinutes(value:Number, rate:SmpteFrameRate):TimeCode
 		{
-			var absoluteTime:Number = value * TimeCode.TICKS_PER_MINUTE_ABSOLUTE_TIME;
-			return new TimeCode(absoluteTime, rate, NumberType.DOUBLE);
+			var ticks:Number = value * TimeCode.TICKS_PER_MINUTE_ABSOLUTE_TIME;
+			return new TimeCode(ticks, rate, NumberType.DOUBLE);
 		}
 		
 		/**
@@ -818,8 +902,8 @@ package org.osmf.smpte.tt.timing
 		 */
 		public static function fromSeconds(value:Number, rate:SmpteFrameRate):TimeCode
 		{
-			var absoluteTime:Number = value * TimeCode.TICKS_PER_SECOND_ABSOLUTE_TIME;
-			return new TimeCode(absoluteTime, rate, NumberType.DOUBLE);
+			var ticks:Number = value * TimeCode.TICKS_PER_SECOND_ABSOLUTE_TIME;
+			return new TimeCode(ticks, rate, NumberType.DOUBLE);
 		}
 		
 		/**
@@ -844,8 +928,8 @@ package org.osmf.smpte.tt.timing
 		 */
 		public static function fromTicks(ticks:Number, rate:SmpteFrameRate):TimeCode
 		{
-			var absoluteTime:Number = Math.pow(10, -7) * ticks;
-			return new TimeCode(absoluteTime, rate, NumberType.DOUBLE);
+			var value:Number = 1e-7 * ticks;
+			return new TimeCode(value, rate, NumberType.DOUBLE);
 		}
 		
 		/**
@@ -892,7 +976,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public static function validateSmpte12MTimecode(timeCode:String):Boolean
 		{
-			return TimeCode._validateTimecode.test(timeCode);
+			return TimeCode.SMPTEREGEXP.test(timeCode);
 		}
 		
 		/**
@@ -905,6 +989,7 @@ package org.osmf.smpte.tt.timing
 		public static function smpte12MToTicks27Mhz(timeCode:String, rate:SmpteFrameRate):Number
 		{
 			var t:Number = TimeCode.smpte12M_30fpsToTicks27Mhz(timeCode);
+			
 			switch (rate)
 			{
 				case SmpteFrameRate.SMPTE_2398:
@@ -929,6 +1014,7 @@ package org.osmf.smpte.tt.timing
 					t = TimeCode.smpte12M_30fpsToTicks27Mhz(timeCode);
 					break;
 			}
+			
 			return t;
 		}
 		
@@ -940,25 +1026,34 @@ package org.osmf.smpte.tt.timing
 		 */
 		public static function parseFramerate(rate:Number):SmpteFrameRate
 		{
-			var rateRounded:int = Math.floor(rate);
-			var s:SmpteFrameRate = SmpteFrameRate.UNKNOWN
-			switch (rateRounded)
+			var rateFloored:int = Math.floor(rate);
+			var s:SmpteFrameRate = SmpteFrameRate.UNKNOWN;
+			
+			switch (rateFloored)
 			{
-				case 23: s = SmpteFrameRate.SMPTE_2398;
+				case 23: 
+					s = SmpteFrameRate.SMPTE_2398;
 					break;
-				case 24: s = SmpteFrameRate.SMPTE_24;
+				case 24: 
+					s = SmpteFrameRate.SMPTE_24;
 					break;
-				case 25: s = SmpteFrameRate.SMPTE_25;
+				case 25: 
+					s = SmpteFrameRate.SMPTE_25;
 					break;
-				case 29: s = SmpteFrameRate.SMPTE_2997_NONDROP;
+				case 29: 
+					s = SmpteFrameRate.SMPTE_2997_NONDROP;
 					break;
-				case 30: s = SmpteFrameRate.SMPTE_30;
+				case 30: 
+					s = SmpteFrameRate.SMPTE_30;
 					break;
-				case 50: s = SmpteFrameRate.SMPTE_25;
+				case 50: 
+					s = SmpteFrameRate.SMPTE_25;
 					break;
-				case 60: s = SmpteFrameRate.SMPTE_30;
+				case 60: 
+					s = SmpteFrameRate.SMPTE_30;
 					break;
-				case 59: s = SmpteFrameRate.SMPTE_2997_NONDROP;
+				case 59: 
+					s = SmpteFrameRate.SMPTE_2997_NONDROP;
 					break;
 			}
 			
@@ -1008,15 +1103,16 @@ package org.osmf.smpte.tt.timing
 		/**
 		 * Returns the SMPTE 12M string representation of the value of this instance.
 		 * 
-		 *  @returns A string that represents the value of this instance. The return value is
+		 * @return A string that represents the value of this instance. The return value is
 		 *      of the form: hh:mm:ss:ff for non-drop frame and hh:mm:ss;ff for drop frame code
 		 *      with "hh" hours, ranging from 0 to 23, "mm" minutes
 		 *      ranging from 0 to 59, "ss" seconds ranging from 0 to 59, and  "ff"  based on the 
 		 *      chosen framerate to be used by the time code instance.
-		 */
+		 * 
+		 */		
 		public function toString():String
 		{
-			return TimeCode.absoluteTimeToSmpte12M(this.absoluteTime, this.frameRate);
+			return TimeCode.absoluteTimeToSmpte12M(_absoluteTime, _frameRate);
 		}
 		
 		/**
@@ -1030,7 +1126,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function toStringAtFramerate(rate:SmpteFrameRate=null):String
 		{
-			return TimeCode.absoluteTimeToSmpte12M(this.absoluteTime, ((rate!=null) ? rate : this.frameRate));
+			return TimeCode.absoluteTimeToSmpte12M(_absoluteTime, ((rate!=null) ? rate : _frameRate));
 		}
 		
 		/**
@@ -1040,7 +1136,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function toTicks27Mhz():Number
 		{
-			return TimeCode.absoluteTimeToTicks27Mhz(this.absoluteTime);
+			return TimeCode.absoluteTimeToTicks27Mhz(_absoluteTime);
 		}
 		
 		/**
@@ -1050,7 +1146,7 @@ package org.osmf.smpte.tt.timing
 		 */
 		public function toTicksPcrTb():Number
 		{
-			return TimeCode.absoluteTimeToTicksPcrTb(this.absoluteTime);
+			return TimeCode.absoluteTimeToTicksPcrTb(_absoluteTime);
 		}
 		
 		/**
@@ -1062,31 +1158,30 @@ package org.osmf.smpte.tt.timing
 		 */
 		private static function smpte12mToAbsoluteTime(timeCode:String, rate:SmpteFrameRate):AbsoluteTimeHelper
 		{
-			var ath:AbsoluteTimeHelper = new AbsoluteTimeHelper(0);
+			var absoluteTimeHelper:AbsoluteTimeHelper = new AbsoluteTimeHelper(0);
 			
 			switch (rate)
 			{
 				case SmpteFrameRate.SMPTE_2398:
-					ath = TimeCode.smpte12M_23_98_ToAbsoluteTime(timeCode);
+					absoluteTimeHelper = TimeCode.smpte12M_23_98_ToAbsoluteTime(timeCode);
 					break;
 				case SmpteFrameRate.SMPTE_24:
-					ath = TimeCode.smpte12M_24_ToAbsoluteTime(timeCode);
+					absoluteTimeHelper = TimeCode.smpte12M_24_ToAbsoluteTime(timeCode);
 					break;
 				case SmpteFrameRate.SMPTE_25:
-					ath = TimeCode.smpte12M_25_ToAbsoluteTime(timeCode);
+					absoluteTimeHelper = TimeCode.smpte12M_25_ToAbsoluteTime(timeCode);
 					break;
 				case SmpteFrameRate.SMPTE_2997_DROP:
-					ath = TimeCode.smpte12M_29_97_Drop_ToAbsoluteTime(timeCode);
+					absoluteTimeHelper = TimeCode.smpte12M_29_97_Drop_ToAbsoluteTime(timeCode);
 					break;
 				case SmpteFrameRate.SMPTE_2997_NONDROP:
-					ath = TimeCode.smpte12M_29_97_NonDrop_ToAbsoluteTime(timeCode);
+					absoluteTimeHelper = TimeCode.smpte12M_29_97_NonDrop_ToAbsoluteTime(timeCode);
 					break;
 				case SmpteFrameRate.SMPTE_30:
-					ath = TimeCode.smpte12M_30_ToAbsoluteTime(timeCode);
+					absoluteTimeHelper = TimeCode.smpte12M_30_ToAbsoluteTime(timeCode);
 					break;
 			}
-			
-			return ath;
+			return absoluteTimeHelper;
 		}
 		
 		/**
@@ -1095,15 +1190,16 @@ package org.osmf.smpte.tt.timing
 		 * 	@param timeCode The source timecode to parse.
 		 */
 		private static function parseTimecodeString(timeCode:String):TimeCodeComponents
-		{
-			if (!TimeCode.validateSmpte12MTimecode(timeCode))
+		{	
+			var times:Array = timeCode.match(TimeCode.SMPTEREGEXP);
+			
+			if (!times || times.length==0)
 			{
 				throw new Error(timeCode+" is not a valid SMPTE 12M timecode");
 			}
-			var out:TimeCodeComponents = new TimeCodeComponents();
-			out.days = 0;
 			
-			var times:Array = timeCode.match(TimeCode._validateTimecode);
+			var out:TimeCodeComponents = new TimeCodeComponents();
+			out.days = 0;			
 			
 			if (times.Days!=null)
 			{
@@ -1165,7 +1261,7 @@ package org.osmf.smpte.tt.timing
 				throw new Error("Timecode frame value is not in the expected range for SMPTE 23.98 IVTC.");
 			}
 			
-			var framesHertz:Number = Math.ceil(1001 * (15 / 4) * frames);
+			var framesHertz:Number = Math.ceil(3753.75 * frames);
 			var secondsHertz:int = 90090 * seconds;
 			var minutesHertz:int = 5405400 * minutes;
 			var hoursHertz:Number = 324324000 * hours;
@@ -1197,12 +1293,13 @@ package org.osmf.smpte.tt.timing
 			{
 				throw new Error("Timecode frame value is not in the expected range for SMPTE 24fps Film Sync.");
 			}
-			;
-			var ticks27Mhz:Number = ((3750 * frames) + (90000 * seconds) + (5400000 * minutes) + (324000000 * hours) + (7776000000 * days)) * 300;
 			
-			var ath:AbsoluteTimeHelper = new AbsoluteTimeHelper(ticks27Mhz,NumberType.ULONG);
-			
-			return ath;
+			var ticks27Mhz:Number = ( (3750 * frames) 
+									+ (90000 * seconds) 
+									+ (5400000 * minutes) 
+									+ (324000000 * hours) 
+									+ (7776000000 * days) ) * 300;
+			return new AbsoluteTimeHelper(ticks27Mhz,NumberType.ULONG);
 		}
 		
 		/**
@@ -1225,7 +1322,11 @@ package org.osmf.smpte.tt.timing
 				throw new Error("Timecode frame value is not in the expected range for SMPTE 25fps PAL.");
 			}
 			
-			var ticks27Mhz:Number = ((3600 * frames) + (90000 * seconds) + (5400000 * minutes) + (324000000 * hours) + (7776000000 * days)) * 300;
+			var ticks27Mhz:Number = ( (3600 * frames) 
+									+ (90000 * seconds) 
+									+ (5400000 * minutes) 
+									+ (324000000 * hours) 
+									+ (7776000000 * days) ) * 300;
 			return new AbsoluteTimeHelper(ticks27Mhz,NumberType.ULONG);
 		}
 		
@@ -1273,10 +1374,13 @@ package org.osmf.smpte.tt.timing
 				throw new Error("Timecode frame value is not in the expected range for SMPTE 29.97 NonDrop.");
 			}
 			
-			var ticks27Mhz:Number = ((3003 * frames) + (90090 * seconds) + (5405400 * minutes) + (324324000 * hours) + (7783776000 * days)) * 300;
+			var ticks27Mhz:Number = ( (3003 * frames) 
+									+ (90090 * seconds) 
+									+ (5405400 * minutes) 
+									+ (324324000 * hours) 
+									+ (7783776000 * days) ) * 300;
 			return new AbsoluteTimeHelper(ticks27Mhz,NumberType.ULONG);			
 		}
-		
 		
 		/**
 		 * Converts to Absolute time from SMPTE 12M 30.
@@ -1298,7 +1402,11 @@ package org.osmf.smpte.tt.timing
 				throw new Error("Timecode frame value is not in the expected range for SMPTE 30fps.");
 			}
 			
-			var ticks27Mhz:Number = ((3000 * frames) + (90000 * seconds) + (5400000 * minutes) + (324000000 * hours) + (7776000000 * days)) * 300;
+			var ticks27Mhz:Number = ( (3000 * frames) 
+									+ (90000 * seconds) 
+									+ (5400000 * minutes) 
+									+ (324000000 * hours) 
+									+ (7776000000 * days) ) * 300;
 			return new AbsoluteTimeHelper(ticks27Mhz,NumberType.ULONG);			
 		}
 		
@@ -1369,29 +1477,27 @@ package org.osmf.smpte.tt.timing
 		{
 			var timeCode:String = "";
 			
-			if (rate == SmpteFrameRate.SMPTE_2398)
+			switch(rate)
 			{
-				timeCode = TimeCode.absoluteTimeToSmpte12M_23_98fps(time);
-			}
-			else if (rate == SmpteFrameRate.SMPTE_24)
-			{
-				timeCode = TimeCode.absoluteTimeToSmpte12M_24fps(time);
-			}
-			else if (rate == SmpteFrameRate.SMPTE_25)
-			{
-				timeCode = TimeCode.absoluteTimeToSmpte12M_25fps(time);
-			}
-			else if (rate == SmpteFrameRate.SMPTE_2997_DROP)
-			{
-				timeCode = TimeCode.absoluteTimeToSmpte12M_29_97_Drop(time);
-			}
-			else if (rate == SmpteFrameRate.SMPTE_2997_NONDROP)
-			{
-				timeCode = TimeCode.absoluteTimeToSmpte12M_29_97_NonDrop(time);
-			}
-			else if (rate == SmpteFrameRate.SMPTE_30)
-			{
-				timeCode = TimeCode.absoluteTimeToSmpte12M_30fps(time);
+				case SmpteFrameRate.SMPTE_2398:
+					timeCode = TimeCode.absoluteTimeToSmpte12M_23_98fps(time);
+					break;
+				case SmpteFrameRate.SMPTE_24:
+					timeCode = TimeCode.absoluteTimeToSmpte12M_24fps(time);
+					break;
+				case SmpteFrameRate.SMPTE_25:
+					timeCode = TimeCode.absoluteTimeToSmpte12M_25fps(time);
+					break;
+				case SmpteFrameRate.SMPTE_2997_DROP:
+					timeCode = TimeCode.absoluteTimeToSmpte12M_29_97_Drop(time);
+					break;
+				case SmpteFrameRate.SMPTE_2997_NONDROP:
+					timeCode = TimeCode.absoluteTimeToSmpte12M_29_97_NonDrop(time);
+					break;
+				case SmpteFrameRate.SMPTE_30:
+				default:
+					timeCode = TimeCode.absoluteTimeToSmpte12M_30fps(time);
+					break;
 			}
 			
 			return timeCode;
@@ -1402,35 +1508,31 @@ package org.osmf.smpte.tt.timing
 		 * 
 		 * @param frames  The number of frames.
 		 * @param rate The SMPTE frame rate to use for the conversion.
-		 * @returns The absolute time.
+		 * @returns The absolute time. 
 		 */
 		private static function framesToAbsoluteTime(frames:Number, rate:SmpteFrameRate):Number
 		{
 			var absoluteTimeInDecimal:Number;
 			
-			if (rate == SmpteFrameRate.SMPTE_2398)
+			switch(rate)
 			{
-				absoluteTimeInDecimal = frames / 24 / (1000 / 1001);
-			}
-			else if (rate == SmpteFrameRate.SMPTE_24)
-			{
-				absoluteTimeInDecimal = frames / 24;
-			}
-			else if (rate == SmpteFrameRate.SMPTE_25)
-			{
-				absoluteTimeInDecimal = frames / 25;
-			}
-			else if (rate == SmpteFrameRate.SMPTE_2997_DROP || rate == SmpteFrameRate.SMPTE_2997_NONDROP)
-			{
-				absoluteTimeInDecimal = frames / 30 / (1000 / 1001);
-			}
-			else if (rate == SmpteFrameRate.SMPTE_30)
-			{
-				absoluteTimeInDecimal = frames / 30;
-			}
-			else
-			{
-				absoluteTimeInDecimal = frames / 30;
+				case SmpteFrameRate.SMPTE_2398:
+					absoluteTimeInDecimal = frames / 24 / (1000 / 1001);
+					break;
+				case SmpteFrameRate.SMPTE_24:
+					absoluteTimeInDecimal = frames / 24;
+					break;
+				case SmpteFrameRate.SMPTE_25:
+					absoluteTimeInDecimal = frames / 25;
+					break;
+				case SmpteFrameRate.SMPTE_2997_DROP:
+				case SmpteFrameRate.SMPTE_2997_NONDROP:
+					absoluteTimeInDecimal = frames / 30 / (1000 / 1001);
+					break;
+				case SmpteFrameRate.SMPTE_30:
+				default:
+					absoluteTimeInDecimal = frames / 30;
+					break;
 			}
 			
 			return absoluteTimeInDecimal;
@@ -1447,29 +1549,25 @@ package org.osmf.smpte.tt.timing
 		{
 			var ticks27Mhz:Number;
 			
-			if (rate == SmpteFrameRate.SMPTE_2398)
+			switch(rate)
 			{
-				ticks27Mhz = Math.ceil(1001 * (15 / 4) * frames) * 300;
-			}
-			else if (rate == SmpteFrameRate.SMPTE_24)
-			{
-				ticks27Mhz = (3750 * frames) * 300;
-			}
-			else if (rate == SmpteFrameRate.SMPTE_25)
-			{
-				ticks27Mhz = (3600 * frames) * 300;
-			}
-			else if (rate == SmpteFrameRate.SMPTE_2997_DROP || rate == SmpteFrameRate.SMPTE_2997_NONDROP)
-			{
-				ticks27Mhz = (3003 * frames) * 300;
-			}
-			else if (rate == SmpteFrameRate.SMPTE_30)
-			{
-				ticks27Mhz = (3000 * frames) * 300;
-			}
-			else
-			{
-				ticks27Mhz = (3000 * frames) * 300;
+				case SmpteFrameRate.SMPTE_2398:
+					ticks27Mhz = frames * 3753.75 * 300;
+					break;
+				case SmpteFrameRate.SMPTE_24:
+					ticks27Mhz = frames * 3750 * 300;
+					break;
+				case SmpteFrameRate.SMPTE_25:
+					ticks27Mhz = frames * 3600 * 300;
+					break;
+				case SmpteFrameRate.SMPTE_2997_DROP:
+				case SmpteFrameRate.SMPTE_2997_NONDROP:
+					ticks27Mhz = frames * 3003 * 300;
+					break;
+				case SmpteFrameRate.SMPTE_30:
+				default:
+					ticks27Mhz = frames * 3000 * 300;
+					break;
 			}
 			
 			return ticks27Mhz;
@@ -1486,37 +1584,28 @@ package org.osmf.smpte.tt.timing
 		{
 			var frames:Number;
 			
-			if (rate == SmpteFrameRate.SMPTE_2398)
+			switch(rate)
 			{
-				frames = ((4 / 15) * (absoluteTime.pcrTime / 1001));
-				return frames;
+				case SmpteFrameRate.SMPTE_2398:
+					frames = absoluteTime.pcrTime / 3753.75;
+					break;
+				case SmpteFrameRate.SMPTE_24:
+					frames = absoluteTime.pcrTime / 3750;
+					break;
+				case SmpteFrameRate.SMPTE_25:
+					frames = absoluteTime.pcrTime / 3600;
+					break;
+				case SmpteFrameRate.SMPTE_30:
+					frames = absoluteTime.pcrTime / 3000;
+					break;
+				case SmpteFrameRate.SMPTE_2997_DROP:
+				case SmpteFrameRate.SMPTE_2997_NONDROP:
+				default:
+					frames = absoluteTime.pcrTime / 3003;
+					break;
 			}
 			
-			if (rate == SmpteFrameRate.SMPTE_24)
-			{
-				frames = (absoluteTime.pcrTime / 3750);
-				return frames;
-			}
-			
-			if (rate == SmpteFrameRate.SMPTE_25)
-			{
-				frames = (absoluteTime.pcrTime / 3600);
-				return frames;
-			}
-			
-			if (rate == SmpteFrameRate.SMPTE_2997_DROP || rate == SmpteFrameRate.SMPTE_2997_NONDROP)
-			{
-				frames = (absoluteTime.pcrTime / 3003);
-				return frames;
-			}
-			
-			if (rate == SmpteFrameRate.SMPTE_30)
-			{
-				frames = (absoluteTime.pcrTime / 3000);
-				return frames;
-			}
-			
-			return (absoluteTime.pcrTime / 3003);
+			return frames;
 		}
 		
 		/**
@@ -1586,67 +1675,84 @@ package org.osmf.smpte.tt.timing
 		}
 		
 		/**
-		 *  Converts to Ticks 27Mhz.
+		 * Converts to Ticks 27Mhz.
 		 * 
-		 *  @param timeCode The timecode to convert from.
-		 *  @returns The number of 27Mhz ticks.
-		 */
+		 * @param timeCode The timecode to convert from.
+		 * @return The number of 27Mhz ticks.
+		 * 
+		 */		
 		private static function smpte12M_30fpsToTicks27Mhz(timeCode:String):Number
 		{
 			var t:TimeCode = new TimeCode(timeCode, SmpteFrameRate.SMPTE_30);
-			var ticksPcrTb:Number = Math.ceil((t.framesSegment * 3000) + (90000 * t.secondsSegment) + (5400000 * t.minutesSegment) + (324000000 * t.hoursSegment));
+			var ticksPcrTb:Number = Math.round((t.framesSegment * 3000) 
+												+ (90000 * t.secondsSegment) 
+												+ (5400000 * t.minutesSegment) 
+												+ (324000000 * t.hoursSegment));
 			return ticksPcrTb * 300;
 		}
-		
+
 		/**
-		 *  Converts to Ticks 27Mhz.
+		 * Converts to Ticks 27Mhz.
 		 * 
-		 *  @param timeCode The timecode to convert from.
-		 *  @returns The number of 27Mhz ticks.
-		 */
+		 * @param timeCode
+		 * @return The number of 27Mhz ticks.
+		 * 
+		 */		
 		private static function smpte12M_23_98fpsToTicks27Mhz(timeCode:String):Number
 		{
-			var t:TimeCode = new TimeCode(timeCode, SmpteFrameRate.SMPTE_2398);
-			var ticksPcrTb:Number = Math.ceil((Math.ceil(1001 * (15 / 4) * t.framesSegment) + (90090 * t.secondsSegment) + (5405400 * t.minutesSegment) + (324324000 * t.hoursSegment)));
+			var t:TimeCode = new TimeCode(timeCode, SmpteFrameRate.SMPTE_2398);			
+			var ticksPcrTb:Number = Math.round(Math.ceil(t.framesSegment * 3753.75) 
+												+ (90090 * t.secondsSegment) 
+												+ (5405400 * t.minutesSegment) 
+												+ (324324000 * t.hoursSegment));
 			return ticksPcrTb * 300;
 		}
 		
 		/**
-		 *  Converts to Ticks 27Mhz.
+		 * Converts to Ticks 27Mhz.
 		 * 
-		 *  @param timeCode The timecode to convert from.
-		 *  @returns The number of 27Mhz ticks.
-		 */
+		 * @param timeCode The timecode to convert from.
+		 * @return The number of 27Mhz ticks.
+		 */		
 		private static function smpte12M_24fpsToTicks27Mhz(timeCode:String):Number
 		{
 			var t:TimeCode = new TimeCode(timeCode, SmpteFrameRate.SMPTE_24);
-			var ticksPcrTb:Number = Math.ceil((t.framesSegment * 3750) + (90000 * t.secondsSegment) + (5400000 * t.minutesSegment) + (324000000 * t.hoursSegment));
+			var ticksPcrTb:Number = Math.round((t.framesSegment * 3750) 
+												+ (90000 * t.secondsSegment) 
+												+ (5400000 * t.minutesSegment) 
+												+ (324000000 * t.hoursSegment));
 			return ticksPcrTb * 300;
 		}
 		
 		/**
-		 *  Converts to Ticks 27Mhz.
+		 * Converts to Ticks 27Mhz.
 		 * 
-		 *  @param timeCode The timecode to convert from.
-		 *  @returns The number of 27Mhz ticks.
+		 * @param timeCode The timecode to convert from.
+		 * @return The number of 27Mhz ticks. 
 		 */
 		private static function smpte12M_25fpsToTicks27Mhz(timeCode:String):Number
 		{
 			var t:TimeCode = new TimeCode(timeCode, SmpteFrameRate.SMPTE_25);
-			var ticksPcrTb:Number = Math.ceil((t.framesSegment * 3600) + (90000 * t.secondsSegment) + (5400000 * t.minutesSegment) + (324000000 * t.hoursSegment));
+			var ticksPcrTb:Number = Math.round((t.framesSegment * 3600) 
+												+ (90000 * t.secondsSegment) 
+												+ (5400000 * t.minutesSegment) 
+												+ (324000000 * t.hoursSegment));
 			return ticksPcrTb * 300;
 		}
 		
 		/**
-		 *  Converts to Ticks 27Mhz.
+		 * Converts to Ticks 27Mhz.
 		 * 
-		 *  @param timeCode The timecode to convert from.
-		 *  @returns The number of 27Mhz ticks.
+		 * @param timeCode The timecode to convert from.
+		 * @returns The number of 27Mhz ticks.
 		 */
 		private static function smpte12M_29_27_NonDropToTicks27Mhz(timeCode:String):Number
 		{
 			var t:TimeCode = new TimeCode(timeCode, SmpteFrameRate.SMPTE_2997_DROP);
-			var ticksPcrTb:Number = Math.ceil((t.framesSegment * 3003) + (90090 * t.secondsSegment) + (5405400 * t.minutesSegment) + (324324000 * t.hoursSegment));
+			var ticksPcrTb:Number = Math.round((t.framesSegment * 3003) 
+												+ (90090 * t.secondsSegment) 
+												+ (5405400 * t.minutesSegment) 
+												+ (324324000 * t.hoursSegment));
 			return ticksPcrTb * 300;
 		}
 		
@@ -1659,15 +1765,19 @@ package org.osmf.smpte.tt.timing
 		private static function smpte12M_29_27_DropToTicks27Mhz(timeCode:String):Number
 		{
 			var t:TimeCode = new TimeCode(timeCode, SmpteFrameRate.SMPTE_2997_NONDROP);
-			var ticksPcrTb:Number = Math.ceil((3003 * t.framesSegment) + (90090 * t.secondsSegment) + (5399394 * t.minutesSegment) + (6006 * int(t.minutesSegment / 10)) + (323999676 * t.hoursSegment));
+			var ticksPcrTb:Number = Math.round((t.framesSegment * 3003) 
+												+ (90090 * t.secondsSegment) 
+												+ (5399394 * t.minutesSegment) 
+												+ (6006 * int(t.minutesSegment / 10)) 
+												+ (323999676 * t.hoursSegment));
 			return ticksPcrTb * 300;
 		}
 		
 		/**
-		 *  Converts to SMPTE 12M 29.27fps Non Drop.
+		 * Converts to SMPTE 12M 29.27fps Non Drop.
 		 * 
-		 *  @param ticks27Mhz The number of 27Mhz ticks to convert from.
-		 *  @returns A string that contains the correct format.
+		 * @param ticks27Mhz The number of 27Mhz ticks to convert from.
+		 * @returns A string that contains the correct format.
 		 */
 		private static function ticks27MhzToSmpte12M_29_27_NonDrop(ticks27Mhz:Number):String
 		{
@@ -1714,7 +1824,7 @@ package org.osmf.smpte.tt.timing
 		private static function ticks27MhzToSmpte12M_23_98fps(ticks27Mhz:Number):String
 		{
 			var pcrTb:Number = TimeCode.ticks27MhzToPcrTb(ticks27Mhz);
-			var framecount:int =int((4 / 15) * (pcrTb / 1001));
+			var framecount:int = int(pcrTb / 3753.75);
 			var days:int = int((framecount / 86400) / 24);
 			var hours:int = int((framecount / 86400) % 24);
 			var minutes:int = int((framecount - (86400 * hours)) / 1440) % 60;

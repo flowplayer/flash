@@ -19,11 +19,28 @@
  **********************************************************/
 package org.osmf.smpte.tt.styling
 {
+	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
+	
 	import org.osmf.smpte.tt.enums.Unit;
 
 	public class Origin extends NumberPair
 	{
+		private static var _cache:Dictionary = new Dictionary();
+		public static function getOrigin(value:*):Origin
+		{
+			if (_cache[value] !== undefined)
+			{
+				return _cache[value];
+			}
+			else
+			{
+				var origin:Origin = new Origin(value);
+				_cache[value] = origin;
+				return origin;
+			}
+		}
+		
 		public function get x():Number
 		{
 			return first;

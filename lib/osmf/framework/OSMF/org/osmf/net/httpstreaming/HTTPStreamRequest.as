@@ -21,6 +21,7 @@
 *****************************************************/
 package org.osmf.net.httpstreaming
 {
+	import flash.events.IEventDispatcher;
 	import flash.net.URLRequest;
 	
 	[ExcludeClass]
@@ -32,18 +33,21 @@ package org.osmf.net.httpstreaming
 	{
 		/**
 		 * Constructor.
-		 * 
-		 * quality of -1 means "same as was requested"
-		 * truncateAt of -1 means "don't truncate" 
 		 *  
 		 *  @langversion 3.0
 		 *  @playerversion Flash 10
 		 *  @playerversion AIR 1.5
 		 *  @productversion OSMF 1.0
 		 */
-		public function HTTPStreamRequest(url:String = null, quality:int = -1, truncateAt:Number = -1, retryAfter:Number = -1, unpublishNotify:Boolean = false)
+		public function HTTPStreamRequest(
+			kind:String,
+			url:String = null,
+			retryAfter:Number = -1,
+			bestEffortDownloaderMonitor:IEventDispatcher = null)
 		{
 			super();
+			
+			_kind = kind;
 			
 			if (url)
 			{
@@ -54,41 +58,110 @@ package org.osmf.net.httpstreaming
 				_urlRequest = null;
 			}
 			
-			_quality = quality;
-			_truncateAt = truncateAt;
 			_retryAfter = retryAfter;
-			_unpublishNotify = unpublishNotify;
+			_bestEffortDownloaderMonitor = bestEffortDownloaderMonitor;
 		}
 		
+		/**
+		 * @private
+		 * 
+		 * The type of event. Must be one of the values in HTTPStreamRequestKind
+		 **/ 
+		public function get kind():String
+		{
+			return _kind;
+		}
+		
+		/**
+		 * @private
+		 * 
+		 * Valid when kind is HTTPStreamRequestKind.RETRY or HTTPStreamRequestKind.LIVE_STALL
+		 * The amount of time to wait before trying again.
+		 * 
+		 **/ 
+		public function get retryAfter():int
+		{
+			return _retryAfter;
+		}
+		
+		/**
+		 * @private
+		 * 
+		 * Valid when kind is HTTPStreamRequestKind.BEST_EFFORT_DOWNLOAD
+		 * 
+		 * HTTPStreamDownloader events will be dispatched to bestEffortDownloaderMonitor instead of the
+		 * normal dispatcher. The index handler should be monitored for DOWNLOAD_CONTINUE and DOWNLOAD
+		 * SKIP events.
+		 * 
+		 **/ 
+		public function get bestEffortDownloaderMonitor():IEventDispatcher
+		{
+			return _bestEffortDownloaderMonitor;
+		}
+		
+		/**
+		 * @private
+		 * 
+		 * Valid when kind is HTTPStreamRequestKind.DOWNLOAD or 
+		 * HTTPStreamRequestKind.BEST_EFFORT_DOWNLOAD 
+		 * 
+		 * The urlRequest for the url to download
+		 **/ 
 		public function get urlRequest():URLRequest
 		{
 			return _urlRequest;
 		}
 		
-		public function get retryAfter():Number
+		
+		/**
+		 * @private
+		 * 
+		 * Valid when kind is HTTPStreamRequestKind.DOWNLOAD or 
+		 * HTTPStreamRequestKind.BEST_EFFORT_DOWNLOAD 
+		 * 
+		 * The url to download
+		 **/
+		public function get url():String
 		{
-			return _retryAfter;
+			if(_urlRequest == null)
+			{
+				return null;
+			}
+			else
+			{
+				return _urlRequest.url;
+			}
 		}
 		
-		public function get unpublishNotify():Boolean
-		{
-			return _unpublishNotify;
-		}
-
+		/**
+		 * @private
+		 * 
+		 * returns a string version of this.
+		 **/
 		public function toString():String
 		{
-			return  "[url=" + (urlRequest != null ? urlRequest.url : "null") +
-				    ", quality = " + _quality +
-				    ", truncateAt = " + _truncateAt.toString() + 
-					", retryAfter = " + _retryAfter.toString() + 
-					", unpublishNotify = " + unpublishNotify +
-					"]";
-					
+			var s:String = "[HTTPStreamRequest kind="+kind;
+			switch(kind)
+			{
+				case HTTPStreamRequestKind.BEST_EFFORT_DOWNLOAD:
+				case HTTPStreamRequestKind.DOWNLOAD:
+					s += ", url="+url;
+					break;
+				case HTTPStreamRequestKind.LIVE_STALL:
+				case HTTPStreamRequestKind.RETRY:
+					s += ", retryAfter="+retryAfter;
+					break;
+				case HTTPStreamRequestKind.DONE:
+				default:
+					break;
+			}
+			s += "]";
+			return s;
 		}
-		private var _urlRequest:URLRequest;
-		private var _quality:int;
-		private var _truncateAt:Number;
-		private var _retryAfter:Number;
-		private var _unpublishNotify:Boolean;
+		
+		private var _kind:String = null;
+		private var _retryAfter:int = -1;
+		private var _bestEffortDownloaderMonitor:IEventDispatcher = null;
+		private var _urlRequest:URLRequest = null;
 	}
 }

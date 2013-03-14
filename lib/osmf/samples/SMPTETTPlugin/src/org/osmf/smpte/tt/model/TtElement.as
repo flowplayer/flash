@@ -50,25 +50,7 @@ package org.osmf.smpte.tt.model
 			_regions = new Dictionary();
 		}
 		
-		private var _head:HeadElement;
-		public function get head():HeadElement
-		{
-			return _head;
-		}
-		public function set head(value:HeadElement):void
-		{
-			_head = value;
-		}
-		
-		private var _body:BodyElement;
-		public override function get body():BodyElement
-		{
-			return _body;
-		}
-		public override function set body(value:BodyElement):void
-		{
-			_body = value;
-		}
+		public var head:HeadElement;
 		
 		private var _regions:Dictionary;
 		public function get regions():Dictionary
@@ -120,7 +102,6 @@ package org.osmf.smpte.tt.model
 			_totalNodeCount = value;
 		}
 		
-		
 		/**
 		 * return the root formatting object
 		 * @param regionId
@@ -142,7 +123,7 @@ package org.osmf.smpte.tt.model
 			//endregion
 			
 			//region add a block container to the flow for each temporally active region
-			for each (var region:RegionElement in DictionaryUtils.getValues(regions))
+			for each (var region:RegionElement in regions)
 			{
 				if (region.temporallyActive(tick))
 				{
@@ -151,7 +132,7 @@ package org.osmf.smpte.tt.model
 					for each (var child:TimedTextElementBase in region.children)
 					{
 						{
-							var fo:FormattingObject = (child as SetElement).getFormattingObject(tick);
+							var fo:FormattingObject = SetElement(child).getFormattingObject(tick);
 							if (fo is Animation)
 							{
 								blockContainer.animations.push(fo as Animation);
@@ -216,9 +197,7 @@ package org.osmf.smpte.tt.model
 		 * Check tt element validity
 		 */
 		protected override function validElements():void
-		{
-			
-			
+		{			
 			var isValid:Boolean = true;
 			// we need an extra check to validate the root attributes in order
 			// to ensure parameters are parsed.
@@ -230,20 +209,20 @@ package org.osmf.smpte.tt.model
 					return;
 					break;
 				case 1:
-				
+					
 					//{ region test if child element is head or body
 					if (children[0] is HeadElement)
 					{
-						_head = children[0] as HeadElement;
+						head = children[0] as HeadElement;
 						isValid = true;
 					}
 					else if (children[0] is BodyElement)
 					{
-						_body = children[0] as BodyElement;
-						_head = new HeadElement();
+						body = children[0] as BodyElement;
+						head = new HeadElement();
 						children.length = 0;
-						children.push(_head);
-						children.push(_body);
+						children.push(head);
+						children.push(body);
 						isValid = true;
 					}
 					else
@@ -254,20 +233,18 @@ package org.osmf.smpte.tt.model
 				
 					break;
 				case 2:
-				
-					
-					
+
 					//{ region Check first child is head, and second is body
 					if (children[0] is HeadElement)
 					{
-						_head = children[0] as HeadElement;
+						head = children[0] as HeadElement;
 					}
 					if (children[1] is BodyElement)
 					{
-						_body = children[1] as BodyElement;
+						body = children[1] as BodyElement;
 					}
 					
-					isValid = (_body != null && _head != null);
+					isValid = (body != null && head != null);
 					//} endregion
 				
 					break;
@@ -284,7 +261,6 @@ package org.osmf.smpte.tt.model
 				error("erroneous child in " + this);
 			}
 			
-
 			//{ region now check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
@@ -298,19 +274,19 @@ package org.osmf.smpte.tt.model
 				
 				var defaultLayout:LayoutElement = new LayoutElement();
 				defaultLayout.localName = "layout";
-				defaultLayout.namespace = _head.namespace;
+				defaultLayout.namespace = head.namespace;
 				
-				_head.children.push(defaultLayout);
-				defaultLayout.parent = _head;
+				head.children.push(defaultLayout);
+				defaultLayout.parent = head;
 				var defaultRegion:RegionElement = new RegionElement();
 				defaultRegion.id = RegionElement.DEFAULT_REGION_NAME;
 				defaultRegion.setLocalStyle("backgroundColor",new ColorExpression(0,0.75));
 				defaultRegion.setLocalStyle("color", Colors.White);
 				defaultRegion.setLocalStyle("textAlign",TextAlign.CENTER);
 				defaultRegion.setLocalStyle("fontFamily","_sans");
-				defaultRegion.setLocalStyle("fontSize", new FontSize("1c 1c"));
-				defaultRegion.setLocalStyle("extent",new Extent("100% 10%"));
-				defaultRegion.setLocalStyle("origin",new Origin("0% 90%"));
+				defaultRegion.setLocalStyle("fontSize", FontSize.getFontSize("1c"));
+				defaultRegion.setLocalStyle("extent", Extent.getExtent("100% 10%"));
+				defaultRegion.setLocalStyle("origin", Origin.getOrigin("0% 90%"));
 				defaultRegion.setLocalStyle("padding",new PaddingThickness("2px 10%"));
 				defaultLayout.children.push(defaultRegion);
 				defaultRegion.parent = defaultLayout;

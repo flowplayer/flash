@@ -19,13 +19,29 @@
  **********************************************************/
 package org.osmf.smpte.tt.styling
 {
+	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
-	import org.osmf.smpte.tt.errors.SMPTETTException;
 	import org.osmf.smpte.tt.enums.Unit;
+	import org.osmf.smpte.tt.errors.SMPTETTException;
 
 	public class PaddingThickness
 	{
+		private static var _cache:Dictionary = new Dictionary();
+		public static function getPaddingThickness(value:*):PaddingThickness
+		{
+			if (_cache[value] !== undefined)
+			{
+				return _cache[value];
+			}
+			else
+			{
+				var paddingThickness:PaddingThickness = new PaddingThickness(value);
+				_cache[value] = paddingThickness;
+				return paddingThickness;
+			}
+		}
+		
 		/* MORE GROUPS
 		/(?P<sign>[\+|\-]?)(?P<value>[0-9]+(?:\.[0-9]*)?)(?P<units>%|px|em|c)?\s*?/gi;
 		*/

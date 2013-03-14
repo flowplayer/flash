@@ -78,15 +78,17 @@ package org.flowplayer.ui.tooltips {
 			}
 			this._stage = p.stage;
 			this._parentObject = p;
-			
-			this.addCopy(title, content);
+
+            //#58 setup the parent global position early to configure the alignment of the tooltip.
+            var parentCoords:Point = new Point( _parentObject.x, _parentObject.y );
+            var globalPoint:Point = p.localToGlobal(parentCoords);
+
+			this.addCopy(title, content, globalPoint.x);
 			this.setOffset();
 			this.drawBG();
 			this.bgGlow();
 			
 			//initialize coordinates
-			var parentCoords:Point = new Point( _parentObject.x, _parentObject.y );
-			var globalPoint:Point = p.localToGlobal(parentCoords);
 			this.x = globalPoint.x + this._offSet;
 			this.y = globalPoint.y - this.height - 5;
 			
@@ -158,7 +160,7 @@ package org.flowplayer.ui.tooltips {
 			return new Point(x, 0);
 		}
 
-		private function addCopy( title:String, content:String ):void {
+		private function addCopy( title:String, content:String, parentPos:Number ):void {
 			if (_tf) {
                 removeChild(_tf);
             }
@@ -170,17 +172,18 @@ package org.flowplayer.ui.tooltips {
 			this._tf.alpha = _config.tooltipTextAlpha;
 			if( this._autoSize ){
 				setDefaultWidth();
-				if (_parentObject.x + _parentObject.width / 2 + _defaultWidth / 2 > _parentObject.stage.stageWidth) {
-					_align = "left";
-				} else if (_parentObject.x + _parentObject.width / 2 - _defaultWidth / 2 < 0) {
-					_align = "right";
+                //#58 use the corrdinates from the parent global position
+				if (parentPos + (_parentObject.width / 2) + (_defaultWidth / 2) > _parentObject.stage.stageWidth) {
+                    _align = "right";
+				} else if (parentPos + _parentObject.width / 2 - _defaultWidth / 2 < 0) {
+                    _align = "left";
 				} else {
 					_align = "center";
 				}
 			}else{
 				this._tf.width = this._defaultWidth - ( _buffer * 2 );
 			}
-			
+
 			this._tf.x = this._tf.y = this._buffer;
 			this.textGlow( this._tf );
 			addChild( this._tf );
@@ -359,7 +362,7 @@ package org.flowplayer.ui.tooltips {
 				
 				default:
 					this._offSet = - ( _defaultWidth / 2 );
-					this._hookOffSet =  ( _defaultWidth / 2 );;
+					this._hookOffSet =  ( _defaultWidth / 2 );
 				break;
 			}
 		}

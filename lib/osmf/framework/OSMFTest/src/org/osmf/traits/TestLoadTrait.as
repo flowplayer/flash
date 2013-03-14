@@ -176,15 +176,6 @@ package org.osmf.traits
 			loadTrait.load();
 		}
 		
-		[Ignore]
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function testUnloadWithInvalidResource():void
-		{
-			var loadTrait:LoadTrait = createLoadTrait(unhandledResource);
-			
-			loadTrait.unload();
-		}
-		
 		protected final function createLoadTrait(resource:MediaResourceBase=null):LoadTrait
 		{
 			return createInterfaceObject(createLoader(), resource) as LoadTrait; 

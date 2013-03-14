@@ -11,8 +11,8 @@
 package org.flowplayer.f4m {
 
         import flash.events.NetStatusEvent;
-import flash.events.TimerEvent;
-import flash.utils.Timer;
+        import flash.events.TimerEvent;
+        import flash.utils.Timer;
 
         import org.flowplayer.model.Plugin;
         import org.flowplayer.model.PluginModel;

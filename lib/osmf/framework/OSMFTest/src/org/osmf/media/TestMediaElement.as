@@ -53,41 +53,6 @@ package org.osmf.media
 		{		
 			_eventDispatcher = null;
 		}
-		
-		[Ignore]
-		[Test]
-		public function testGetTraitTypes():void
-		{
-			var mediaElement:MediaElement = createMediaElement();
-			
-			verifyGetTraitTypes(mediaElement, existentTraitTypesOnInitialization);
-		}		
-				
-		[Ignore]
-		[Test]
-		public function testHasTrait():void
-		{
-			var mediaElement:MediaElement = createMediaElement();
-			
-			verifyHasTrait(mediaElement, existentTraitTypesOnInitialization);
-		}
-
-		[Ignore]
-		[Test(expects="ArgumentError")]
-		public function testHasTraitWhenParamIsNull():void
-		{
-			var mediaElement:MediaElement = createMediaElement();	
-			mediaElement.hasTrait(null);
-		}
-		
-		[Ignore]
-		[Test]
-		public function testGetTrait():void
-		{
-			var mediaElement:MediaElement = createMediaElement();
-			
-			verifyGetTrait(mediaElement, existentTraitTypesOnInitialization);
-		}
 
 		[Test(expects="ArgumentError")]
 		public function testGetTraitWhenParamIsNull():void

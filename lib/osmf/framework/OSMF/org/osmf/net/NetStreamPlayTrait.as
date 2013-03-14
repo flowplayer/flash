@@ -30,6 +30,7 @@ package org.osmf.net
 	import org.osmf.events.MediaError;
 	import org.osmf.events.MediaErrorCodes;
 	import org.osmf.events.MediaErrorEvent;
+	import org.osmf.events.PlayEvent;
 	import org.osmf.media.MediaResourceBase;
 	import org.osmf.media.URLResource;
 	import org.osmf.traits.PlayState;
@@ -192,6 +193,14 @@ package org.osmf.net
 						// Explicitly stop to prevent the stream from restarting on seek();
 						stop();
 					}
+					break;
+				case NetStreamCodes.NETSTREAM_PLAY_LIVE_STALL:
+					// expose NetStream.Play.LiveStall as a PlayEvent.LIVE_STALL
+					dispatchEvent(new PlayEvent(PlayEvent.LIVE_STALL));
+					break;
+				case NetStreamCodes.NETSTREAM_PLAY_LIVE_RESUME:
+					// expose NetStream.Play.LiveStall as a PlayEvent.LIVE_RESUME
+					dispatchEvent(new PlayEvent(PlayEvent.LIVE_RESUME));
 					break;
 			}
 		}

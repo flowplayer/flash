@@ -31,9 +31,12 @@ package org.osmf.net.httpstreaming
 	import org.osmf.events.HTTPStreamingEvent;
 	import org.osmf.events.HTTPStreamingIndexHandlerEvent;
 	import org.osmf.media.MediaResourceBase;
+	import org.osmf.net.qos.FragmentDetails;
+	import org.osmf.net.qos.QualityLevel;
 	import org.osmf.net.httpstreaming.dvr.DVRInfo;
 	import org.osmf.utils.OSMFSettings;
 	import org.osmf.utils.OSMFStrings;
+
 	
 	CONFIG::LOGGING
 	{
@@ -109,6 +112,13 @@ package org.osmf.net.httpstreaming
 			_indexHandler.addEventListener(HTTPStreamingEvent.SCRIPT_DATA, onScriptData);
 			_indexHandler.addEventListener(HTTPStreamingEvent.INDEX_ERROR, onError);
 			
+			// when best effort fetch is enabled, the index handler will handle fragment download events
+			// itself and fire DOWNLOAD_CONTINUE, DOWNLOAD_SKIP, DOWNLOAD_COMPLETE, DOWNLOAD_ERROR
+			_indexHandler.addEventListener(HTTPStreamingEvent.DOWNLOAD_CONTINUE, onBestEffortDownloadEvent);
+			_indexHandler.addEventListener(HTTPStreamingEvent.DOWNLOAD_SKIP, onBestEffortDownloadEvent);
+			_indexHandler.addEventListener(HTTPStreamingEvent.DOWNLOAD_COMPLETE, onBestEffortDownloadEvent);
+			_indexHandler.addEventListener(HTTPStreamingEvent.DOWNLOAD_ERROR, onBestEffortDownloadEvent);
+			
 			_indexDownloaderMonitor.addEventListener(HTTPStreamingEvent.DOWNLOAD_COMPLETE, 	onIndexComplete);
 			_indexDownloaderMonitor.addEventListener(HTTPStreamingEvent.DOWNLOAD_ERROR, 	onIndexError);
 				
@@ -153,6 +163,14 @@ package org.osmf.net.httpstreaming
 		}
 		
 		/**
+		 * @inheritDoc
+		 */
+		public function get isLiveStalled():Boolean
+		{
+			return _isLiveStalled;
+		}
+		
+		/**
 		 * The current stream name opened by this stream provider.
 		 */ 
 		public function get streamName():String
@@ -160,7 +178,7 @@ package org.osmf.net.httpstreaming
 			return _streamName;
 		}
 		
-		public function get qosInfo():HTTPStreamQoSInfo
+		public function get qosInfo():HTTPStreamHandlerQoSInfo
 		{
 			return _qosInfo;
 		}
@@ -230,8 +248,11 @@ package org.osmf.net.httpstreaming
 		{
 			_endOfStream = false;
 			_hasErrors = false;
+			_isLiveStalled = false;
 			
 			_seekTarget = offset;
+			_didBeginSeek = false;
+			_didCompleteSeek = false;
 			if (_seekTarget < 0 )
 			{
 				if (_dvrInfo != null)
@@ -315,7 +336,23 @@ package org.osmf.net.httpstreaming
 					beginQualityLevelChange(level);
 				}
 			}
-
+		}
+		
+		/**
+		 * @inheritDoc
+		 */	
+		public function get isBestEffortFetchEnabled():Boolean
+		{
+			return _indexHandler != null && 
+				_indexHandler.isBestEffortFetchEnabled;
+		}
+		
+		/**
+		 * Returns the duration of the current fragment
+		 */
+		public function get fragmentDuration():Number 
+		{
+			return _fragmentDuration;
 		}
 		
 		///////////////////////////////////////////////////////////////////////
@@ -367,64 +404,133 @@ package org.osmf.net.httpstreaming
 					
 					// Ask the index handler to provide the url for 
 					// the next chunk of data we need to load.
-					if (_seekTarget != -1) // we are in seeking mode
+					var wasSeek:Boolean = false;
+					if(!_didBeginSeek) // we are in seeking mode
 					{
 						_request = _indexHandler.getFileForTime(_seekTarget, _qualityLevel);
+						wasSeek = true;
 					}
 					else
 					{
 						_request = _indexHandler.getNextFile(_qualityLevel);
 					}
 					
-					if (_request != null && _request.urlRequest != null)
+					// update _isLiveStalled so HTTPNetStream can access it.
+					// request.kind will always be LIVE_STALL as long as we are live stalled. 
+					_isLiveStalled = (_request.kind == HTTPStreamRequestKind.LIVE_STALL);
+					
+					switch(_request.kind)
 					{
-						// If we obtained some valid url we can use for loading data
-						// then we use internal source to actually download the chunk
-						if (_downloader == null)
-						{
-							_downloader = new HTTPStreamDownloader();
-						}
-						_downloader.open(_request.urlRequest, _dispatcher, OSMFSettings.hdsFragmentDownloadTimeout);
-						setState(HTTPStreamingState.BEGIN_FRAGMENT);
-					}
-					else if (_request != null && _request.retryAfter >= 0)
-					{
-						// If we finished processing current fragments and we don't know 
-						// if we have any additional data, we are waiting a little for 
-						//things to update
-						date = new Date();
-						_retryAfterTime = date.getTime() + (1000.0 * _request.retryAfter);
-						setState(HTTPStreamingState.WAIT);
-					}
-					else
-					{
-						// If we finished processing current fragments and we know for
-						// sure that we don't have any additional data, we are stopping
-						// the provider
-						_endFragment = true;
-						_endOfStream = true;
+						case HTTPStreamRequestKind.DOWNLOAD:
+						case HTTPStreamRequestKind.BEST_EFFORT_DOWNLOAD:
 						
-						if (_downloader != null)
-						{
-							bytes = _fileHandler.flushFileSegment(_downloader.getBytes()); 
-						}
-						setState(HTTPStreamingState.STOP);	
+							if(wasSeek)
+							{	
+								// mark that we already tried the seek so we don't try again later
+								_didBeginSeek = true;
+							}
+
+							// If we obtained some valid url we can use for loading data
+							// then we use internal source to actually download the chunk
+							if (_downloader == null)
+							{
+								_downloader = new HTTPStreamDownloader();
+							}
+							
+							var downloaderMonitor:IEventDispatcher = _dispatcher;
+							if (_request.kind == HTTPStreamRequestKind.BEST_EFFORT_DOWNLOAD)
+							{
+								// special case: best effort download.
+								// indexHandler will intercept download events, then
+								// fire DOWNLOAD_ERROR, DOWNLOAD_SKIP, or DOWNLOAD_CONTINUE to indicate
+								// that we should proceed
+								downloaderMonitor =  _request.bestEffortDownloaderMonitor
+								_bestEffortDownloadResult = null;
+							}
+							
+							CONFIG::LOGGING
+							{			
+								logger.debug("downloader.open "+_request.url);
+							}
+							_downloader.open(_request.urlRequest, downloaderMonitor, OSMFSettings.hdsFragmentDownloadTimeout);
+							setState(HTTPStreamingState.BEGIN_FRAGMENT);
+							break;
+						case HTTPStreamRequestKind.RETRY:
+						case HTTPStreamRequestKind.LIVE_STALL:
+							// If we finished processing current fragments and we don't know 
+							// if we have any additional data, we are waiting a little for 
+							//things to update
+							date = new Date();
+							_retryAfterTime = date.getTime() + (1000.0 * _request.retryAfter);
+							setState(HTTPStreamingState.WAIT);
+							break;
+						case HTTPStreamRequestKind.DONE:
+							// If we finished processing current fragments and we know for
+							// sure that we don't have any additional data, we are stopping
+							// the provider
+							_endFragment = true;
+							_endOfStream = true;
+							
+							if (_downloader != null)
+							{
+								bytes = _fileHandler.flushFileSegment(_downloader.getBytes()); 
+							}
+							setState(HTTPStreamingState.STOP);	
+							break;
 					}
 					break;
 				
 				case HTTPStreamingState.BEGIN_FRAGMENT:
+					if(_request.kind == HTTPStreamRequestKind.BEST_EFFORT_DOWNLOAD)
+					{
+						CONFIG::LOGGING
+						{
+							logger.debug("_bestEffortDownloadResult = " + _bestEffortDownloadResult);
+						}
+						if(_bestEffortDownloadResult == null)
+						{
+							// we're waiting for the index handler to tell us what to do
+							break;
+						} 
+						else if(_bestEffortDownloadResult == HTTPStreamingEvent.DOWNLOAD_ERROR)
+						{
+							// a timeout occured.
+							// code elsewhere will eventually trigger a stream stop.
+							break;
+						} 
+						else if(_bestEffortDownloadResult == HTTPStreamingEvent.DOWNLOAD_SKIP)
+						{
+							// index handler wants us to ignore this fragment.
+							// go back to load state to trigger another request.
+							setState(HTTPStreamingState.LOAD);
+							break;
+						}
+						else if(_bestEffortDownloadResult == HTTPStreamingEvent.DOWNLOAD_CONTINUE)
+						{
+							// index handler wants us to process this fragment.
+							// fall through
+						}
+						else
+						{
+							// unknown state
+							break;
+						}
+						
+						// once we accept a fragment the continue state, mark _isLiveStalled as false
+						_isLiveStalled = false;
+					}
+					
 					_endFragment = false;
 					_hasErrors = false;
-					if (_seekTarget != -1)
+					if (!_didCompleteSeek)
 					{
 						_fileHandler.beginProcessFile(true, _seekTarget);
-						_seekTarget = -1;	
+						_didCompleteSeek = true;
 					}
 					else
 					{
 						_fileHandler.beginProcessFile(false, 0);
 					}
-					_seekTarget = -1;
 					
 					_dispatcher.dispatchEvent( 
 						new HTTPStreamingEvent(
@@ -462,7 +568,7 @@ package org.osmf.net.httpstreaming
 						{
 							if (_downloader != null)
 							{
-								_downloader.saveBytes();
+								_downloader.saveRemainingBytes();
 							}
 							setState(HTTPStreamingState.END_FRAGMENT);
 						}
@@ -479,19 +585,32 @@ package org.osmf.net.httpstreaming
 						}
 					}
 					
-					_qosInfo = new HTTPStreamQoSInfo(_fragmentDuration, _downloader.downloadBytesCount, _downloader.downloadDuration);
+					var availableQualityLevels:Vector.<QualityLevel> = new Vector.<QualityLevel>;
+					for (var i:uint = 0; i < _qualityRates.length; i++)
+					{
+						availableQualityLevels.push(new QualityLevel(i, _qualityRates[i], _streamNames[i]));
+					}
+					
+					var requestURL:String = _request.urlRequest.url;
+					var fragmentIdentifier:String = requestURL.substr(requestURL.lastIndexOf("Seg"));
+					
+					var lastFragmentDetails:FragmentDetails = new FragmentDetails(_downloader.downloadBytesCount, _fragmentDuration, _downloader.downloadDuration, _qualityLevel, fragmentIdentifier);
+					
+					_qosInfo = new HTTPStreamHandlerQoSInfo(availableQualityLevels, _qualityLevel, lastFragmentDetails)
+					
 					
 					_dispatcher.dispatchEvent( 
-							new HTTPStreamingEvent(
-									HTTPStreamingEvent.END_FRAGMENT,
-									false,
-									true,
-									NaN,
-									null,
-									null,
-									_streamName
-								)
-							);
+						new HTTPStreamingEvent(
+							HTTPStreamingEvent.END_FRAGMENT,
+							false,
+							true,
+							NaN,
+							null,
+							null,
+							_streamName
+						)
+					);
+					
 					
 					setState(HTTPStreamingState.LOAD);
 					break;
@@ -602,8 +721,12 @@ package org.osmf.net.httpstreaming
 		 * Event listener for completion of index file download. We can close the
 		 * loader object and send data for further processing.
 		 */ 
-		private function onIndexComplete(event:Event):void
+		private function onIndexComplete(event:HTTPStreamingEvent):void
 		{
+			// FM-1003 (http://bugs.adobe.com/jira/browse/FM-1003) 
+			// Re-dispatch this event on the _dispatcher
+			_dispatcher.dispatchEvent(event);
+			
 			var input:IDataInput = _indexDownloader.getBytes(_indexDownloader.downloadBytesCount);
 			var bytes:ByteArray = new ByteArray();
 			input.readBytes(bytes, 0, input.bytesAvailable);
@@ -781,12 +904,50 @@ package org.osmf.net.httpstreaming
 			}
 		}
 		
+		/**
+		 * @private
+		 * 
+		 * Called on _indexHandler DOWNLOAD_SKIP, DOWNLOAD_CONTINUE, and DOWNLOAD_ERROR events.
+		 */
+		private function onBestEffortDownloadEvent(event:HTTPStreamingEvent):void
+		{
+			if(event.type == HTTPStreamingEvent.DOWNLOAD_COMPLETE)
+			{
+				// DOWNLOAD_COMPLETE events are just passed through
+				// they do not tell us whether or not to proceed with processing
+				forwardEventToDispatcher(event);
+			}
+			else
+			{
+				if(_bestEffortDownloadResult != null)
+				{
+					return;
+				}
+				_bestEffortDownloadResult = event.type; // see handling of BEGIN_FRAGMENT state
+				forwardEventToDispatcher(event);
+			}
+		}
+		
+		/**
+		 * @private
+		 * 
+		 * Forwards an event to _dispatcher.
+		 */
+		private function forwardEventToDispatcher(event:Event):void
+		{
+			if(_dispatcher != null)
+			{
+				_dispatcher.dispatchEvent(event);
+			}
+		}
+		
 		/// Internals
 		private var _dispatcher:IEventDispatcher = null;
 		
 		private var _resource:MediaResourceBase = null;
 		
-		private var _qosInfo:HTTPStreamQoSInfo = null;
+		private var _qosInfo:HTTPStreamHandlerQoSInfo;
+		
 		private var _downloader:HTTPStreamDownloader = null;
 		private var _request:HTTPStreamRequest = null;
 		
@@ -796,6 +957,8 @@ package org.osmf.net.httpstreaming
 		
 		private var _streamName:String = null;
 		private var _seekTarget:Number = -1;
+		private var _didBeginSeek:Boolean = false;
+		private var _didCompleteSeek:Boolean = false;
 		
 		private var _streamNames:Array = null;
 		private var _qualityRates:Array = null; 	
@@ -827,6 +990,10 @@ package org.osmf.net.httpstreaming
 		
 		private var _state:String = null;
 		private var _retryAfterTime:Number = -1;
+		
+		private var _bestEffortDownloadResult:String = null;
+		
+		private var _isLiveStalled:Boolean = false;
 		
 		CONFIG::LOGGING
 		{

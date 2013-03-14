@@ -175,7 +175,11 @@
 </echo>
     </target>
 
-    <target name="generate-release-yaml" description="Generates a YAML formatted file containing URLs to all released/uploaded plugins" depends="jsplugins">
+    <target name="generate-release-yaml" description="Generates a YAML formatted file containing of all distribution files">
+        <length property="flowplayer.filesize" file="${dist-dir}/${dist-name}" />
+        <length property="flowplayer-commercial.filesize" file="${dist-dir}/${commercial-dist-name}" />
+        <length property="devkit.filesize" file="${dist-dir}/${devkit-dist-name}" />
+
         <property name="yaml-file" value="${basedir}/dist/releases.yaml" />
         <property name="urlbase" value="http://releases.flowplayer.org/" />
         <delete file="${yaml-file}" />
@@ -225,11 +229,51 @@
 <echo file="${yaml-file}" append="true" message="        flowplayer: ${version-info}">
 </echo>
 
-<echo file="${yaml-file}" append="true" message="    filesizes:">
+<echo file="${yaml-file}" append="true" message="filesizes:">
+</echo>
+<echo file="${yaml-file}" append="true" message="    flowplayer.devkit.zip: ${devkit.filesize}">
+</echo>
+<echo file="${yaml-file}" append="true" message="    flowplayer.zip: ${flowplayer.filesize}">
+</echo>
+<echo file="${yaml-file}" append="true" message="    flowplayer.commercial.zip: ${flowplayer-commercial.filesize}">
 </echo>
 <iterate-plugins target="write-filesize" buildfiles="${allplugins.buildfiles}" />
-<iterate-plugins target="write-filesize" buildfiles="${jsplugins.buildfiles}" basedirectory="../js-plugins"/>
+<iterate-plugins target="write-filesize" buildfiles="${alljsplugins.buildfiles}" basedirectory="../js-plugins"/>
 
     </target>
 
+    <macrodef name="dist-yaml">
+        <attribute name="plugins.buildfiles" default="${plugins.buildfiles}"/>
+        <attribute name="jsplugins.buildfiles" default="${jsplugins.buildfiles}"/>
+
+        <sequential>
+            <property name="dist-file" value="${basedir}/dist/dist.yaml" />
+            <delete file="${dist-file}" />
+
+            <echo file="${dist-file}" append="true" message="flowplayer:${line.separator}" />
+            <echo file="${dist-file}" append="true" message="    folder: flowplayer${line.separator}" />
+            <echo file="${dist-file}" append="true" message="    files:${line.separator}" />
+            <echo file="${dist-file}" append="true" message="        - ${player-binary}${line.separator}" />
+            <echo file="${dist-file}" append="true" message="        - ${player-binary-versioned}${line.separator}" />
+            <echo file="${dist-file}" append="true" message="        - ${commercial-player-binary}${line.separator}" />
+            <echo file="${dist-file}" append="true" message="        - ${commercial-player-binary-versioned}${line.separator}" />
+            <echo file="${dist-file}" append="true" message="        - ${dist-name}${line.separator}" />
+            <echo file="${dist-file}" append="true" message="        - ${commercial-dist-name}${line.separator}" />
+            <echo file="${dist-file}" append="true" message="flowplayer.devkit:${line.separator}" />
+            <echo file="${dist-file}" append="true" message="    folder: flowplayer.devkit${line.separator}" />
+            <echo file="${dist-file}" append="true" message="    files:${line.separator}" />
+            <echo file="${dist-file}" append="true" message="        - ${devkit-dist-name}${line.separator}" />
+
+            <iterate-plugins target="write-dist-info" buildfiles="@{plugins.buildfiles}"/>
+            <iterate-plugins target="write-dist-info" buildfiles="@{jsplugins.buildfiles}" basedirectory="../js-plugins"/>
+        </sequential>
+    </macrodef>
+
+    <target name="generate-dist-yaml" description="Generates a YAML file containing release info of all plugins that are part of this release">
+        <dist-yaml plugins.buildfiles="${plugins.buildfiles}" jsplugins.buildfiles="${jsplugins.buildfiles}" />
+    </target>
+
+    <target name="generate-all-dist-yaml" description="Generates a YAML file containing release info of all plugins">
+        <dist-yaml plugins.buildfiles="${allplugins.buildfiles}" jsplugins.buildfiles="${alljsplugins.buildfiles}" />
+    </target>
 </project>

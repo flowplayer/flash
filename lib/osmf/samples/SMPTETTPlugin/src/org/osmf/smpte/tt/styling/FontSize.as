@@ -19,8 +19,25 @@
  **********************************************************/
 package org.osmf.smpte.tt.styling
 {
+	import flash.utils.Dictionary;
+
 	public class FontSize extends NumberPair
 	{
+		private static var _cache:Dictionary = new Dictionary();
+		public static function getFontSize(value:*):FontSize
+		{
+			if (_cache[value])
+			{
+				return _cache[value];
+			}
+			else
+			{
+				var fontSize:FontSize = new FontSize(value);
+				_cache[value] = fontSize;
+				return fontSize;
+			}
+		}
+		
 		public function get fontWidth():Number
 		{
 			return first;

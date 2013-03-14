@@ -23,7 +23,6 @@ package org.osmf.smpte.tt.model.parameter
 	import org.osmf.smpte.tt.model.TimedTextAttributeBase;
 	import org.osmf.smpte.tt.model.TimedTextElementBase;
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
-	import org.osmf.smpte.tt.timing.TimeTree;
 	import org.osmf.smpte.tt.utilities.DictionaryUtils;
 
 	public class ProfileElement extends ParameterElement
@@ -64,7 +63,8 @@ package org.osmf.smpte.tt.model.parameter
 			var noExtensions:Boolean = true;
 			var sb:String = "The following features are not supported:\n";
 			var feature:String;
-			for each (feature in DictionaryUtils.getKeys(extensions))
+			var keys:Array = DictionaryUtils.getKeys(extensions);
+			for each (feature in keys)
 			{
 				if (extensions[feature])
 				{
@@ -73,7 +73,8 @@ package org.osmf.smpte.tt.model.parameter
 					noExtensions = false;
 				}
 			}
-			for (feature in DictionaryUtils.getKeys(features))
+			keys = DictionaryUtils.getKeys(features);
+			for (feature in keys)
 			{
 				if (features[feature] && nonFeatures.indexOf(feature)>=0)
 				{
@@ -90,25 +91,21 @@ package org.osmf.smpte.tt.model.parameter
 		protected override function validElements():void
 		{
 			var child:uint = 0;
-			
-			while (child < children.length
-					&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement) 
-						|| (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)
-						|| (children[child] is FeaturesElement)
-						|| (children[child] is ExtensionsElement)))
-			{
-				child++;
-			}
-			
-			if (children.length != child)
-			{
-				error(children[child] + " is not allowed in " + this+ " at position " + child);
-			}
-			
 			// now check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
-				element.valid();
+				if (element is org.osmf.smpte.tt.model.MetadataElement
+					|| element is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| element is FeaturesElement
+					|| element is ExtensionsElement)
+				{
+					child++;
+					element.valid();
+				} 
+				else
+				{
+					error(element + " is not allowed in " + this+ " at position " + (children.length-child));
+				}
 			}
 		}
 	}

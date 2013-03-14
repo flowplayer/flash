@@ -82,7 +82,7 @@ package org.osmf.elements.f4mClasses
 			{
 				baseURL = root.nmsp::baseURL.text();
 			}
-			baseURL = URL.normalizeRootURL(baseURL);
+			baseURL = URL.normalizePathForURL(baseURL, false);
 			
 			baseURLs[root] = baseURL;
 

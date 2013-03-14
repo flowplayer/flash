@@ -479,6 +479,38 @@ package org.osmf.utils
 			}
 		}
 		
+		/**
+		 * Normalizes the path for the specified URL.
+		 * Removes any query parameters or file.
+		 */
+		public static function normalizePathForURL(url:String, removeFilePart:Boolean):String
+		{
+			var result:String = url; 	
+				
+			var rawURL:URL = new URL(url);
+			if (rawURL.absolute)
+			{
+				result = rawURL.protocol + "://" + rawURL.host;
+				if (rawURL.port != null && rawURL.port.length > 0)
+				{
+					result += ":" + rawURL.port;
+				}
+				
+				var path:String = rawURL.path;
+				if (path != null && path.length > 0)
+				{
+					if (removeFilePart)
+					{
+						var index:int = path.lastIndexOf("/");
+						path = path.substr(0, index+1);
+					}
+					result += "/" + path;
+				}
+			}
+			
+			return URL.normalizeRootURL(result);
+		}
+		
 		private var _rawUrl:String;		// The raw URL string as it was supplied
 		private var _protocol:String;	// The scheme or protocol, i.e., "http", "ftp", etc.
 		private var _userInfo:String;	// User name : password. For example "http://user:password@host.com:80/foo.php"

@@ -187,7 +187,7 @@ package org.osmf.elements
 					parserTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onParserTimerComplete);
 					parserTimer.start();
 
-					parser.parse(resourceData, URL.getRootUrl(URLResource(loadTrait.resource).url));
+					parser.parse(resourceData, URL.normalizePathForURL(URLResource(loadTrait.resource).url, true));
 				}
 				catch (parseError:Error)
 				{

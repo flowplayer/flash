@@ -25,7 +25,7 @@ package org.osmf.smpte.tt.model
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
 	import org.osmf.smpte.tt.timing.TimeCode;
 	import org.osmf.smpte.tt.timing.TimeContainer;
-	import org.osmf.smpte.tt.timing.TimeTree;
+	import org.osmf.smpte.tt.timing.TreeType;
 	
 	public class DivElement extends TimedTextElementBase
 	{
@@ -47,11 +47,11 @@ package org.osmf.smpte.tt.model
 			{
 				var block:Block = new Block(this);
 				var fo:FormattingObject;
-				for each (var child:* in children)
+				for each (var child:TreeType in children)
 				{
 					if (child is DivElement || child is PElement)
 					{
-						fo = (child as TimedTextElementBase).getFormattingObject(tick);
+						fo = TimedTextElementBase(child).getFormattingObject(tick);
 						if (fo != null)
 						{
 							fo.parent = block;
@@ -60,7 +60,7 @@ package org.osmf.smpte.tt.model
 					}
 					if (child is SetElement)
 					{
-						fo = ((child as SetElement).getFormattingObject(tick)) as Animation;
+						fo = SetElement(child).getFormattingObject(tick) as Animation;
 						if (fo != null)
 						{
 							block.animations.push(fo);
@@ -108,45 +108,23 @@ package org.osmf.smpte.tt.model
 		protected override function validElements():void
 		{
 			var child:uint = 0;
-			
-			//{ region Allow arbitrary metadata
-			while ((child < children.length)
-				&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement) || (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary set elements (Animation class)
-			while ((child < children.length)
-				&& ((children[child] is SetElement)
-				))
-			{
-				child++;
-			}
-			//} endregion
-				
-			//{ region allow arbitrary div, p elements (Block class)
-			while ((child < children.length)
-				&& ((children[child] is DivElement)
-					|| (children[child] is PElement)
-				))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Ensure no other elements present
-			if (children.length != child)
-			{
-				error(children[child] + " is not allowed in " + this + " at position " + child);
-			}
-			//} endregion
-					
 			//{ region Check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
-				element.valid();
+				if (element is org.osmf.smpte.tt.model.MetadataElement 
+					|| element is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| element is SetElement
+					|| element is DivElement
+					|| element is PElement)
+				{
+					child++;
+					element.valid();
+				}
+				else
+				{
+					error(element + " is not allowed in " + this + " at position " + (children.length-child));
+					continue;
+				}
 			}
 			//} endregion
 		}

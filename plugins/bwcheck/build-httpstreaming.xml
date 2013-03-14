@@ -6,8 +6,8 @@
 	
     <property name="plugin-libs" value=""/>
     <property name="extra-sources" value="../cluster/src/actionscript ../../lib/common/src/actionscript ${osmf-dir}"/>
-	<property name="library-path" value="src/flash ../../lib/common/src/flash"/>
-	<property name="compiler-defines" value="-define+=CONFIG::LOGGING,true -define+=CONFIG::FLASH_10_1,'true' -define+=CONFIG::enableRtmpMetrics,'false' -define+=CONFIG::enableHttpMetrics,'true'"/>
+	<property name="library-path" value=""/>
+	<property name="compiler-defines" value="-define+=CONFIG::LOGGING,'false' -define+=CONFIG::FLASH_10_1,'true' -define+=CONFIG::enableRtmpMetrics,'false' -define+=CONFIG::enableHttpMetrics,'true'"/>
 
 	<property file="${devkit-dir}/plugin-build.properties" />
 	<import file="${devkit-dir}/plugin-build.xml"/>

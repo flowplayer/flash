@@ -35,25 +35,6 @@ package org.osmf.media
 			return null;	
 		}
 		
-		[Ignore]
-		[Test(expects="ArgumentError")]
-		public function testConstructor():void
-		{
-			var resolver:MediaTraitResolver;
-			resolver = constructResolver(null, null);
-			Assert.assertNull(resolver);
-		}
-		
-		[Ignore]
-		[Test]
-		public function testType():void
-		{
-			var resolver:MediaTraitResolver;
-			resolver = constructResolver(MediaTraitType.BUFFER, new BufferTrait());
-			Assert.assertNotNull(resolver);
-			Assert.assertEquals(MediaTraitType.BUFFER, resolver.type);
-		}
-		
 		[Test(expects="Error")]
 		public function testAddTraitNull():void
 		{
@@ -70,32 +51,6 @@ package org.osmf.media
 			var resolver:MediaTraitResolver = constructResolver(type, new TimeTrait());	
 		
 			resolver.addTrait(new DisplayObjectTrait(null));
-		}
-		
-		[Ignore]
-		[Test(expects="Error")]
-		public function testRemoveTraitNull():void
-		{
-			var type:String = MediaTraitType.TIME;
-			var resolver:MediaTraitResolver = constructResolver(type, new TimeTrait());
-			
-			resolver.removeTrait(null);
-					
-		}
-		
-		[Ignore]
-		[Test(expects="Error")]
-		public function testRemoveNonAddedTrait():void
-		{
-			var type:String = MediaTraitType.TIME;
-			var resolver:MediaTraitResolver = constructResolver(type, new TimeTrait());
-			var tt:TimeTrait = new TimeTrait();
-				
-			resolver.removeTrait(tt);
-				
-			//How to test this ...
-			//resolver.addTrait(tt);
-			//resolver.removeTrait(tt);
 		}
 	}
 }

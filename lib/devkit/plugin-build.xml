@@ -11,7 +11,7 @@
 	<property name="example-dir" value="example" />
 	<property name="dist-dir" value="dist" />
 	<property name="lib-dir" value="lib" />
-	<property name="flex-libs-path" value="${flexlibsdir}" />
+	<property name="flex-libs-path" value="${flexlibsdir}/advancedgrids.swc ${flexlibsdir}/charts.swc ${flexlibsdir}/flash-integration.swc ${flexlibsdir}/spark.swc ${flexlibsdir}/sparkskins.swc ${flexlibsdir}/authoringsupport.swc ${flexlibsdir}/core.swc ${flexlibsdir}/framework.swc ${flexlibsdir}/rpc.swc ${flexlibsdir}/spark_dmv.swc ${flexlibsdir}/textLayout.swc" />
 	<property name="flowplayer-js-version-info" value="3.1.4" />
 	<property name="src-flowplayer" value="../../core" />
     <property name="plugin-swc" value="${basename}.swc" />
@@ -314,9 +314,17 @@
 
     <target name="write-filesize">
         <length property="filesize" file="${build-dir}/${plugin-binary}" />
-        <echo file="${yaml-file}" append="true" message="        ${plugin-binary}: ${filesize}${line.separator}" />
+        <echo file="${yaml-file}" append="true" message="    ${plugin-binary}: ${filesize}${line.separator}" />
         <length property="zip.filesize" file="${dist-dir}/${basename}-${version}.zip" />
-        <echo file="${yaml-file}" append="true" message="        ${basename}.zip: ${zip.filesize}${line.separator}" />
+        <echo file="${yaml-file}" append="true" message="    ${basename}.zip: ${zip.filesize}${line.separator}" />
+    </target>
+
+    <target name="write-dist-info">
+        <echo file="${dist-file}" append="true" message="${basename}:${line.separator}" />
+        <echo file="${dist-file}" append="true" message="    folder: ${releasedir}${line.separator}" />
+        <echo file="${dist-file}" append="true" message="    files:${line.separator}" />
+        <echo file="${dist-file}" append="true" message="        - ${basename}-${version}.zip${line.separator}" />
+        <echo file="${dist-file}" append="true" message="        - ${basename}-${version}.swf${line.separator}" />
     </target>
 
 	<target name="source-zip" depends="prepare" unless="pluginproxy">
