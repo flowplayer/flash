@@ -270,7 +270,7 @@
     </macrodef>
 
     <target name="generate-dist-yaml" description="Generates a YAML file containing release info of all plugins that are part of this release">
-        <dist-yaml plugins.buildfiles="${plugins.buildfiles}" jsplugins.buildfiles="${jsplugins.buildfiles}" />
+        <dist-yaml plugins.buildfiles="${plugin.buildfiles}" jsplugins.buildfiles="${jsplugins.buildfiles}" />
     </target>
 
     <target name="generate-all-dist-yaml" description="Generates a YAML file containing release info of all plugins">
