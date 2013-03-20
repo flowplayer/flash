@@ -8,7 +8,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 package org.flowplayer.viralvideos {
-    import com.adobe.serialization.json.JSON;
+    import com.adobe.serialization.json.JSONforFP;
 
     import flash.display.Sprite;
     import flash.events.Event;
@@ -353,7 +353,7 @@ package org.flowplayer.viralvideos {
             var data:Object = null;
 
             try {
-                data = JSON.decode(loader.data.toString());
+                data = JSONforFP.decode(loader.data.toString());
             } catch(e:Error) {
 
             }
