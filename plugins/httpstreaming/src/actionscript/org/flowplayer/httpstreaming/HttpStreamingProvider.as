@@ -98,7 +98,8 @@ package org.flowplayer.httpstreaming {
             _dvrIsRecording = false;
 
             //netStream.client = new NetStreamClient(clip, _player.config, streamCallbacks);
-            netStream.play(clip.url, clip.start);
+            //#70 fixes for live streams.
+            netStream.play(clip.url, clip.live ? -1 : clip.start);
         }
 
         private function onPlayStatus(event:ClipEvent) : void {
@@ -122,6 +123,15 @@ package org.flowplayer.httpstreaming {
                    //#27 regression caused by #550, only stop the player for live streams. caused issues when stopping between playlist items.
                    if (clip.live && !_player.playlist.hasNext()) _player.stop();
                     break;
+                case "NetStream.Buffer.Empty":
+                    //#70 implement playback optimisations from strobe media playback.
+                    if (netStream.bufferTime >= 2.0) {
+                        netStream.bufferTime += 1.0;
+                    }
+                    else {
+                        netStream.bufferTime = 2.0;
+                    }
+                break;
             }
             return;
         }
@@ -165,6 +175,9 @@ package org.flowplayer.httpstreaming {
         override protected function onMetaData(event:ClipEvent):void {
             log.debug("in NetStreamControllingStremProvider.onMetaData: " + event.target);
 
+            //#70 remove clip duration for live streams and when not dvr recording
+            if (clip.live && !_dvrIsRecording) clip.metaData.duration = null;
+
             //if we are not dvr recording dispatch start
             if (! clip.startDispatched && !_dvrIsRecording) {
                 clip.dispatch(ClipEventType.START, pauseAfterStart);
@@ -174,6 +187,7 @@ package org.flowplayer.httpstreaming {
             if (pauseAfterStart) {
                 pauseToFrame();
             }
+
             switching = false;
         }
 
