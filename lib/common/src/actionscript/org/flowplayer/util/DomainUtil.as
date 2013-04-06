@@ -71,7 +71,7 @@ package org.flowplayer.util {
              'net.tw','ac.uk','uk.com','uk.net','gb.com','gb.net','com.hk','org.hk','net.hk','edu.hk','eu.lv','co.nz',
              'org.nz','net.nz','maori.nz','iwi.nz','com.pt','edu.pt','com.ve','net.ve','org.ve','web.ve','info.ve',
              'co.ve','net.ru','org.ru','com.hr','tv.tr','com.qa','edu.qa','gov.qa','gov.au','com.my','edu.my','gov.my',
-             'co.za'
+             'co.za','com.ar'
           ];
           host = host.toLowerCase();
           var bits:Array = host.split(".");

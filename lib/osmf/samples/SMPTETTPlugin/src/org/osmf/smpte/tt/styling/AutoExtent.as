@@ -21,9 +21,33 @@ package org.osmf.smpte.tt.styling
 {
 	public class AutoExtent extends Extent
 	{
-		public function AutoExtent()
+		private static var _instance:AutoExtent;
+		
+		public static function get instance():AutoExtent
 		{
-			super(-1,-1);
+			if( _instance == null ) _instance = new AutoExtent( new SingletonLock() );
+			return _instance;
+		}
+		
+		public function AutoExtent( lock:SingletonLock )
+		{
+			// Verify that the lock is the correct class reference.
+			if ( lock is SingletonLock )
+			{
+				super(-1,-1);
+			} else 
+			{	
+				throw new Error( "Invalid Singleton access.  Use AutoExtent.instance." );
+			}
 		}
 	}
 }
+
+/**
+ * This is a private class declared outside of the package
+ * that is only accessible to classes inside of the AutoExtent.as
+ * file.  Because of that, no outside code is able to get a
+ * reference to this class to pass to the constructor, which
+ * enables us to prevent outside instantiation.
+ */
+internal class SingletonLock{};

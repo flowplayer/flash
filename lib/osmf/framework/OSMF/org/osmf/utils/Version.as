@@ -36,7 +36,7 @@ package org.osmf.utils
 		 * 
 		 * <p>The version comparison rules are as follows, assuming there are v1 and v2:
 	 	 * <listing>
-	 	 * v1 &#62; v2, if ((v1.major &#62; v2.major) || 
+	 	 * v1 &#62; v2, if ((v1.major &#62; v2.major) ||
 	 	 *              (v1.major == v2.major &#38;&#38; v1.minor &#62; v2.minor)
 	 	 * 
 	 	 * v1 == v2, if (v1.major == v2.major &#38;&#38; 
@@ -133,8 +133,8 @@ package org.osmf.utils
 		private static const FIELD_SEPARATOR:String = ".";
 		
 		/** Use single quotes, to facilitate build system updates **/
-		private static const _major:String = '1';
-		private static const _minor:String = '6.1';		
-		private static const _build_number:String = '0';
+		private static const _major:String = '2';
+		private static const _minor:String = '0';		
+		private static const _build_number:String = '2494';
 	}
 }

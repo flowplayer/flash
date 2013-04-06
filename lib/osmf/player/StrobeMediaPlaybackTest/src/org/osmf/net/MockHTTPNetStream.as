@@ -27,7 +27,6 @@ package org.osmf.net
 	import org.osmf.net.*;
 	import org.osmf.net.httpstreaming.HTTPNetStream;
 	import org.osmf.net.httpstreaming.HTTPStreamingFactory;
-	import org.osmf.net.httpstreaming.HTTPStreamQoSInfo;
 	import org.osmf.net.httpstreaming.dvr.*;
 	import org.osmf.net.httpstreaming.f4f.*;
 	
@@ -51,21 +50,6 @@ package org.osmf.net
 		public function set dvrInfo(info:DVRInfo):void
 		{
 			_dvrInfo = info;
-		}
-		
-		public function set qosInfo(value:HTTPStreamQoSInfo):void
-		{
-			_qosInfo = value;
-		}
-		
-		override public function get qosInfo():HTTPStreamQoSInfo
-		{
-			return _qosInfo;
-		} 
-		
-		override public function DVRGetStreamInfo(streamName:Object):void
-		{
-			this.dispatchEvent(new DVRStreamInfoEvent(DVRStreamInfoEvent.DVRSTREAMINFO, false, false, _dvrInfo));
 		}
 		
 		public function unpublish():void
@@ -93,6 +77,5 @@ package org.osmf.net
 		private var _infoFactory:MockNetStreamInfoFactory = new MockNetStreamInfoFactory();
 		private var _time:Number;
 		private var _dvrInfo:DVRInfo;
-		private var _qosInfo:HTTPStreamQoSInfo;
 	}
 }

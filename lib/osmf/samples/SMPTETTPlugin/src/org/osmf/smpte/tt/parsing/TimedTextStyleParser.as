@@ -23,22 +23,16 @@ package org.osmf.smpte.tt.parsing
 	import flash.text.engine.FontWeight;
 	import flash.utils.Dictionary;
 	
-	import flashx.textLayout.formats.FormatValue;
+	import flashx.textLayout.formats.TextDecoration;
 	import flashx.textLayout.formats.WhiteSpaceCollapse;
 	
 	import org.osmf.smpte.tt.captions.DisplayAlign;
-	import org.osmf.smpte.tt.captions.Length;
 	import org.osmf.smpte.tt.captions.Overflow;
 	import org.osmf.smpte.tt.captions.ShowBackground;
 	import org.osmf.smpte.tt.captions.TextAlignment;
 	import org.osmf.smpte.tt.captions.TimedTextStyle;
-	import org.osmf.smpte.tt.enums.Unit;
-	import org.osmf.smpte.tt.errors.SMPTETTException;
-	import org.osmf.smpte.tt.logging.SMPTETTLogging;
 	import org.osmf.smpte.tt.model.RegionElement;
 	import org.osmf.smpte.tt.model.TimedTextElementBase;
-	import org.osmf.smpte.tt.styling.AutoExtent;
-	import org.osmf.smpte.tt.styling.AutoOrigin;
 	import org.osmf.smpte.tt.styling.ColorExpression;
 	import org.osmf.smpte.tt.styling.Extent;
 	import org.osmf.smpte.tt.styling.FontSize;
@@ -54,7 +48,6 @@ package org.osmf.smpte.tt.parsing
 	import org.osmf.smpte.tt.styling.Visibility;
 	import org.osmf.smpte.tt.styling.WrapOption;
 	import org.osmf.smpte.tt.styling.WritingMode;
-	import org.osmf.smpte.tt.utilities.DictionaryUtils;
 	import org.osmf.smpte.tt.vocabulary.Styling;
 	
 	/**
@@ -107,6 +100,9 @@ package org.osmf.smpte.tt.parsing
 				case "lineHeight":
 					ret = true;
 					break;
+				case "lineThrough":
+					ret = true;
+					break;
 				case "opacity":
 					ret = true;
 					break;
@@ -125,6 +121,12 @@ package org.osmf.smpte.tt.parsing
 				case "textAlign":
 					ret = true;
 					break;
+				case "textDecoration":
+					ret = true;
+					break;
+				case "textOutline":
+					ret = true;
+					break;
 				case "visibility":
 					ret = true;
 					break;
@@ -141,7 +143,7 @@ package org.osmf.smpte.tt.parsing
 		private static var _numberPairXref:Dictionary = new Dictionary();
 		public static function getNumberPair(value:String):NumberPair
 		{
-			if (DictionaryUtils.containsKey(_numberPairXref, value))
+			if (_numberPairXref[value] !== undefined)
 			{
 				return new NumberPair(_numberPairXref[value]);
 			}
@@ -157,7 +159,7 @@ package org.osmf.smpte.tt.parsing
 		private static var _cachedBrushes:Dictionary = new Dictionary();
 		public static function getCachedBrush(src:ColorExpression):ColorExpression
 		{
-			if (DictionaryUtils.containsKey(_cachedBrushes,src.argb))
+			if (_cachedBrushes[src.argb] !== undefined)
 			{
 				return _cachedBrushes[src.argb];
 			}
@@ -172,9 +174,7 @@ package org.osmf.smpte.tt.parsing
 		{
 			var style:TimedTextStyle = new TimedTextStyle();
 			
-			if(styleElement.id){
-				style.styleName = styleElement.id;
-			}
+			if(styleElement.id)	style.styleName = styleElement.id;
 			
 			//  backgroundColor
 			var backgroundColor:ColorExpression = 
@@ -308,6 +308,7 @@ package org.osmf.smpte.tt.parsing
 				style.padding = defaultStyle.padding;
 			}
 			
+			// showBackground
 			var showBackground:String =
 				styleElement.getComputedStyle(Styling.TTML_STYLING_SHOWBACKGROUND.localName, region) as String;
 			var parsedShowBackground:ShowBackground = ShowBackground.parseConstant(showBackground);
@@ -315,6 +316,7 @@ package org.osmf.smpte.tt.parsing
 				? parsedShowBackground.value
 				: defaultStyle.showBackground;
 			
+			// textAlign
 			var textAlign:String =
 				styleElement.getComputedStyle(Styling.TTML_STYLING_TEXTALIGN.localName, region) as String;			
 			var parsedTextAlign:TextAlignment = TextAlignment.parseConstant(textAlign);
@@ -322,54 +324,66 @@ package org.osmf.smpte.tt.parsing
 				? parsedTextAlign.value
 				: defaultStyle.textAlign;
 			
+			// textDecoration			
 			var textDecoration:TextDecorationAttributeValue = 
 				styleElement.getComputedStyle(Styling.TTML_STYLING_TEXTDECORATION.localName, region) as TextDecorationAttributeValue;
-			if(textDecoration!=null)
+			if(textDecoration)
 			{
-				switch(textDecoration.value){
-					case "underline":
-						style.textDecoration = flashx.textLayout.formats.TextDecoration.UNDERLINE;
+				switch(textDecoration)
+				{
+					case TextDecorationAttributeValue.UNDERLINE:
+						style.textDecoration = TextDecoration.UNDERLINE;
 						break;
-					case "noUnderline":
-						style.textDecoration = flashx.textLayout.formats.TextDecoration.NONE;
+					case TextDecorationAttributeValue.NO_UNDERLINE:
+						style.textDecoration = TextDecoration.NONE;
 						break;
-					case "throughline":
+				}
+			}
+			
+			var lineThrough:TextDecorationAttributeValue = 
+				styleElement.getComputedStyle("lineThrough", region) as TextDecorationAttributeValue;
+			if(lineThrough)
+			{
+				switch(lineThrough)
+				{
+					case TextDecorationAttributeValue.LINE_THROUGH:
 						style.lineThrough = true;
 						break;
-					case "noLinethrough":
-						style.lineThrough = false;
-						break;
-					case "none" :
-						style.textDecoration = flashx.textLayout.formats.TextDecoration.NONE;
+					case TextDecorationAttributeValue.NO_LINE_THROUGH:
 						style.lineThrough = false;
 						break;
 				}
 			}
 			
+			// textOutline
 			var textOutline:TextOutline =
 				styleElement.getComputedStyle(Styling.TTML_STYLING_TEXTOUTLINE.localName, region) as TextOutline;
 			style.textOutline = (textOutline!=null)
 				? textOutline
 				: defaultStyle.textOutline;
 			
-			
-			
+			// unicodeBidi
 			var unicodeBidi:String = 
 				styleElement.getComputedStyle(Styling.TTML_STYLING_UNICODEBIDI.localName, region) as String;
 			style.unicodeBidi = (unicodeBidi!=null 
 				&& (unicodeBidi=="embed" || unicodeBidi=="bidiOverride"))
 				? unicodeBidi
 				: defaultStyle.unicodeBidi;
+			
+			// visiblility
 			var visibility:String =
 				styleElement.getComputedStyle(Styling.TTML_STYLING_VISIBILITY.localName, region) as String;
-			style.visibility = (visibility!=null && visibility==Visibility.HIDDEN.value)
+			style.visibility = (visibility && visibility==Visibility.HIDDEN.value)
 				? visibility
 				: defaultStyle.visibility;
+			
+			// whiteSpaceCollapse
 			style.whiteSpaceCollapse = 
 				((styleElement.getComputedStyle("space", region) as String)=="preserve")
 				? WhiteSpaceCollapse.PRESERVE
 				: WhiteSpaceCollapse.COLLAPSE;
 			
+			// wrapOption
 			var wrapOption:String =
 				styleElement.getComputedStyle(Styling.TTML_STYLING_WRAPOPTION.localName, region) as String;
 			var parsedWrapOption:WrapOption = WrapOption.parseConstant(wrapOption);
@@ -377,12 +391,15 @@ package org.osmf.smpte.tt.parsing
 				? parsedWrapOption.value
 				: defaultStyle.wrapOption;
 			
+			// writingMode
 			var writingMode:String =
 				styleElement.getComputedStyle(Styling.TTML_STYLING_WRITINGMODE.localName, region) as String;
 			var parsedWritingMode:WritingMode = WritingMode.parseConstant(writingMode);
 			style.writingMode = (parsedWritingMode!=null)
 				? parsedWritingMode.value
 				: defaultStyle.writingMode;
+			
+			// zIndex
 			var zIndex:* = styleElement.getComputedStyle(Styling.TTML_STYLING_ZINDEX.localName, region);
 			try
 			{

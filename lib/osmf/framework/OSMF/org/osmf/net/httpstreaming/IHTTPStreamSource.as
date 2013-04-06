@@ -51,6 +51,13 @@ package org.osmf.net.httpstreaming
 		function get endOfStream():Boolean;
 		
 		/**
+		 * After calling getBytes(), isStalled will indicate that there are
+		 * no additional bytes available due to reaching the end of available
+		 * content.
+		 */
+		function get isLiveStalled():Boolean;
+		
+		/**
 		 * Flag indicating that the source has encountered errors and it has no 
 		 * more data to process.
 		 */ 
@@ -65,5 +72,16 @@ package org.osmf.net.httpstreaming
 		 * Gets a chunk of bytes from source for further processing.
 		 */
 		function getBytes():ByteArray;
+		
+		
+		/**
+		 * The duration of the current fragment
+		 */ 
+		function get fragmentDuration():Number;
+		
+		/**
+		 * @return true if best effort fetch is enabled.
+		 */	
+		function get isBestEffortFetchEnabled():Boolean;
 	}
 }

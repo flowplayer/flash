@@ -67,6 +67,11 @@ package org.osmf.elements.f4mClasses
 			{
 				dvrInfo.id = root.@id;
 			}
+			else
+			{
+				dvrInfo.id = F4MUtils.GLOBAL_ELEMENT_ID;
+			}
+			
 			if (root.attribute("url").length() > 0)
 			{
 				var url:String = root.@url;

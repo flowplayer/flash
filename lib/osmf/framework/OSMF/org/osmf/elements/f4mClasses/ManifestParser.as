@@ -23,7 +23,6 @@ package org.osmf.elements.f4mClasses
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.net.URLLoader;
 	import flash.utils.ByteArray;
 	
 	import org.osmf.events.ParseEvent;
@@ -41,9 +40,18 @@ package org.osmf.elements.f4mClasses
 	import org.osmf.net.StreamingItemType;
 	import org.osmf.net.StreamingURLResource;
 	import org.osmf.net.StreamingXMLResource;
+	import org.osmf.net.httpstreaming.HTTPStreamingUtils;
 	import org.osmf.net.httpstreaming.dvr.DVRInfo;
 	import org.osmf.utils.OSMFStrings;
 	import org.osmf.utils.URL;
+	import org.osmf.utils.Base64Decoder;
+	import org.osmf.utils.DateUtil;
+	
+	CONFIG::LOGGING 
+	{	
+		import org.osmf.logging.Log;
+		import org.osmf.logging.Logger;
+	}
 
 	[ExcludeClass]
 
@@ -75,6 +83,10 @@ package org.osmf.elements.f4mClasses
 			bootstrapInfoParser = buildBootstrapInfoParser();
 			bootstrapInfoParser.addEventListener(ParseEvent.PARSE_COMPLETE, onBootstrapInfoLoadComplete, false, 0, true);
 			bootstrapInfoParser.addEventListener(ParseEvent.PARSE_ERROR, onAdditionalLoadError, false, 0, true);
+			
+			bestEffortFetchInfoParser = buildBestEffortFetchInfoParser();
+			bestEffortFetchInfoParser.addEventListener(ParseEvent.PARSE_COMPLETE, onBestEffortFetchLoadComplete, false, 0, true);
+			bestEffortFetchInfoParser.addEventListener(ParseEvent.PARSE_ERROR, onAdditionalLoadError, false, 0, true);
 		}
 
 		/**
@@ -160,9 +172,12 @@ package org.osmf.elements.f4mClasses
 				manifest.urlIncludesFMSApplicationInstance = (root.nmsp::urlIncludesFMSApplicationInstance.text() == "true");
 			}
 
-			var baseURL:String = (manifest.baseURL != null) ? manifest.baseURL : rootURL;
-			baseURL = URL.normalizeRootURL(baseURL);
-			
+			var baseURL:String = rootURL;
+			if (manifest.baseURL != null)
+			{
+				baseURL = manifest.baseURL;						
+			}
+			baseURL = URL.normalizePathForURL(baseURL, false);
 			
 			// DVRInfo
 			for each (var dvrInfo:XML in root.nmsp::dvrInfo)
@@ -192,6 +207,14 @@ package org.osmf.elements.f4mClasses
 			{
 				unfinishedLoads++;
 				parseBootstrapInfo(info, baseURL, idPrefix);
+			}
+			
+			// Best Effort Fetch Info
+			for each(var befInfo:XML in root.nmsp::bestEffortFetchInfo)
+			{
+				unfinishedLoads++;
+				parseBestEffortFetchInfo(befInfo, baseURL);
+				break;
 			}
 
 			// Required if base URL is omitted from Manifest
@@ -294,17 +317,19 @@ package org.osmf.elements.f4mClasses
 
 				resource.urlIncludesFMSApplicationInstance = value.urlIncludesFMSApplicationInstance;
 
-				if (media.bootstrapInfo != null)
+				if (media.bootstrapInfo != null && (media.bootstrapInfo.data != null || media.bootstrapInfo.url != null))
 				{
 					serverBaseURLs = new Vector.<String>();
 					serverBaseURLs.push(baseURLString);
-
+					
 					bootstrapInfoURLString = media.bootstrapInfo.url;
+					
 					if (media.bootstrapInfo.url != null && URL.isAbsoluteURL(media.bootstrapInfo.url) == false)
 					{
 						bootstrapInfoURLString = URL.normalizeRootURL(manifestFolder) + URL.normalizeRelativeURL(bootstrapInfoURLString);
 						media.bootstrapInfo.url = bootstrapInfoURLString;
 					}
+					
 					httpMetadata = new Metadata();
 					httpMetadata.addValue(MetadataNamespaces.HTTP_STREAMING_BOOTSTRAP_KEY, media.bootstrapInfo);
 					if (serverBaseURLs.length > 0)
@@ -404,7 +429,7 @@ package org.osmf.elements.f4mClasses
 						}
 					}
 
-					if (media.bootstrapInfo != null)
+					if (media.bootstrapInfo != null && (media.bootstrapInfo.url != null || media.bootstrapInfo.data != null))
 					{
 						bootstrapInfoURLString = media.bootstrapInfo.url ? media.bootstrapInfo.url : null;
 						if (media.bootstrapInfo.url != null && URL.isAbsoluteURL(media.bootstrapInfo.url) == false)
@@ -436,6 +461,31 @@ package org.osmf.elements.f4mClasses
 				}
 
 				dynResource.streamItems = streamItems;
+				 
+				if (manifestResource.getMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX) != null)
+				{
+					var initialIndex:int = manifestResource.getMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX) as int;
+					if ( initialIndex < 0 )
+					{
+						dynResource.initialIndex = 0;
+						CONFIG::LOGGING
+						{
+							logger.warn("The specified resource initial index was adjusted to 0 from " + initialIndex);
+						}
+					}
+					else if ( initialIndex >= dynResource.streamItems.length )
+					{
+						dynResource.initialIndex = dynResource.streamItems.length - 1;
+						CONFIG::LOGGING
+						{
+							logger.warn("The specified resource initial index was adjusted to " + dynResource.initialIndex + " from " + initialIndex);
+						}
+					}
+					else
+					{
+						dynResource.initialIndex = initialIndex;
+					}
+				}
 
 				resource = dynResource;
 			}
@@ -481,7 +531,9 @@ package org.osmf.elements.f4mClasses
 			// the origins of the resource.
 			resource.addMetadataValue(MetadataNamespaces.DERIVED_RESOURCE_METADATA, manifestResource);
 
-			addDVRInfo(value, resource);
+			HTTPStreamingUtils.addDVRInfoMetadataToResource(value.dvrInfo, resource);
+			
+			HTTPStreamingUtils.addBestEffortFetchInfoMetadataToResource(value.bestEffortFetchInfo, resource);
 
 			// we add alternative media only for HTTP Streaming
 			if (NetStreamUtils.isRTMPStream(baseURL) == false)
@@ -545,6 +597,19 @@ package org.osmf.elements.f4mClasses
 		protected function buildBootstrapInfoParser():BaseParser
 		{
 			return new BootstrapInfoParser();
+		}
+		
+		/**
+		 * Builds a parser to use for BestEffortFetch nodes.
+		 *
+		 * @return
+		 *
+		 * @private
+		 * In protected scope so that subclasses can change the parser.
+		 */
+		protected function buildBestEffortFetchInfoParser():BaseParser
+		{
+			return new BestEffortFetchInfoParser();
 		}
 
 		/**
@@ -616,6 +681,11 @@ package org.osmf.elements.f4mClasses
 		private function parseBootstrapInfo(value:XML, baseURL:String, idPrefix:String = ""):void
 		{
 			bootstrapInfoParser.parse(value.toXMLString(), baseURL, idPrefix);
+		}
+		
+		private function parseBestEffortFetchInfo(value:XML, baseURL:String, idPrefix:String = ""):void
+		{
+			bestEffortFetchInfoParser.parse(value.toXMLString(), baseURL, idPrefix);
 		}
 
 		/**
@@ -741,7 +811,7 @@ package org.osmf.elements.f4mClasses
 					}
 				}
 
-				if (media.bootstrapInfo != null)
+				if (media.bootstrapInfo != null && (media.bootstrapInfo.url != null || media.bootstrapInfo.data != null))
 				{
 					var bootstrapInfoURLString:String = media.bootstrapInfo.url ? media.bootstrapInfo.url : null;
 					if (media.bootstrapInfo.url != null && URL.isAbsoluteURL(media.bootstrapInfo.url) == false)
@@ -749,9 +819,10 @@ package org.osmf.elements.f4mClasses
 						bootstrapInfoURLString = URL.normalizeRootURL(manifestFolder) + URL.normalizeRelativeURL(bootstrapInfoURLString);
 						media.bootstrapInfo.url = bootstrapInfoURLString;
 					}
+					
 					httpMetadata.addValue(MetadataNamespaces.HTTP_STREAMING_BOOTSTRAP_KEY + item.streamName, media.bootstrapInfo);
 				}
-
+				
 				if (media.metadata != null)
 				{
 					httpMetadata.addValue(MetadataNamespaces.HTTP_STREAMING_STREAM_METADATA_KEY + item.streamName, media.metadata);
@@ -765,24 +836,7 @@ package org.osmf.elements.f4mClasses
 
 			resource.alternativeAudioStreamItems = alternativeMediaItems;
 		}
-
-		private function addDVRInfo(manifest:Manifest, resource:StreamingURLResource):void
-		{
-			if (manifest.dvrInfo == null)
-			{
-				return;
-			}
-
-			var metadata:Metadata = new Metadata();
-			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_BEGIN_OFFSET_KEY, manifest.dvrInfo.beginOffset);
-			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_END_OFFSET_KEY, manifest.dvrInfo.endOffset);
-			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_WINDOW_DURATION_KEY, manifest.dvrInfo.windowDuration);
-			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_OFFLINE_KEY, manifest.dvrInfo.offline);
-			metadata.addValue(MetadataNamespaces.HTTP_STREAMING_DVR_ID_KEY, manifest.dvrInfo.id);
-
-			resource.addMetadataValue(MetadataNamespaces.DVR_METADATA, metadata);
-		}
-
+		
 		private function streamType(value:Manifest):String
 		{
 			return (value.streamType == StreamType.LIVE && value.dvrInfo != null) ? StreamType.DVR : value.streamType;
@@ -899,6 +953,13 @@ package org.osmf.elements.f4mClasses
 
 			onAdditionalLoadComplete(event);
 		}
+		
+		private function onBestEffortFetchLoadComplete(event:ParseEvent):void
+		{
+			manifest.bestEffortFetchInfo = event.data as BestEffortFetchInfo;
+			
+			onAdditionalLoadComplete(event);
+		}
 
 		private function onAdditionalLoadComplete(event:Event):void
 		{
@@ -932,7 +993,14 @@ package org.osmf.elements.f4mClasses
 		private var bootstrapInfoParser:BaseParser;
 
 		private var bootstraps:Vector.<BootstrapInfo>;
+		
+		private var bestEffortFetchInfoParser:BaseParser;
 
 		private var manifest:Manifest;
+		
+		CONFIG::LOGGING
+		{
+			private static const logger:Logger = Log.getLogger("org.osmf.elements.f4mClasses.ManifestParser");
+		}
 	}
 }

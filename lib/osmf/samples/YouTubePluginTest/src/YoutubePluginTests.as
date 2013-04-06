@@ -15,28 +15,41 @@
  * The Initial Developer of the Original Code is Adobe Systems Incorporated.
  * Portions created by Adobe Systems Incorporated are Copyright (C) 2010 Adobe Systems
  * Incorporated. All Rights Reserved.
- * 
  **********************************************************/
 
 package
 {
-	import org.osmf.youtube.*;
-	import org.osmf.youtube.media.*;
-	import org.osmf.youtube.net.*;
-	import org.osmf.youtube.traits.*;
-
-	[Suite]
-	[RunWith("org.flexunit.runners.Suite")]
-	public class YoutubePluginTests
-	{
-		public var testYoutubeTimeTrait:TestYoutubeTimeTrait;
-		public var testYoutubeSeekTrait:TestYoutubeSeekTrait;
-		public var testYoutubeAudioTrait:TestYoutubeAudioTrait;
-		public var testYoutubePlayTrait:TestYoutubePlayTrait;
-		public var testYoutubeDynamicStreamTrait:TestYoutubeDynamicStreamTrait;
-		public var testYoutubePluginInfo:TestYoutubePluginInfo;
-		public var testYoutubePlugin:TestYouTubePlugin;
-		public var testYoutubeLoader:TestYoutubeLoader;
-		public var testYoutubeElement:TestYoutubeElement;
-	}
+	
+			import flexunit.framework.Test;			
+						
+			import org.osmf.youtube.traits.TestYoutubeTimeTrait;
+			import org.osmf.youtube.traits.TestYoutubeSeekTrait;
+			import org.osmf.youtube.traits.TestYoutubePlayTrait;
+			import org.osmf.youtube.traits.TestYoutubeDynamicStreamTrait;
+			import org.osmf.youtube.traits.TestYoutubeAudioTrait;
+			import org.osmf.youtube.net.TestYoutubeLoader;
+			import org.osmf.youtube.media.TestYoutubeElement;
+			import org.osmf.youtube.TestYoutubePluginInfo;
+			
+			public class YoutubePluginTests
+			{
+				public static var testsToRun:Array = new Array();
+				
+				public static function currentRunTestSuite():Array
+				{
+					
+				testsToRun.push(org.osmf.youtube.TestYoutubePluginInfo);
+				testsToRun.push(org.osmf.youtube.media.TestYoutubeElement);
+				testsToRun.push(org.osmf.youtube.net.TestYoutubeLoader);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeAudioTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeDynamicStreamTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubePlayTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeSeekTrait);
+				testsToRun.push(org.osmf.youtube.traits.TestYoutubeTimeTrait);
+				return testsToRun;
+					
+					return testsToRun;
+					
+				}
+			}
 }

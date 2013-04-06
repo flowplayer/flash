@@ -174,5 +174,35 @@ package org.osmf.metadata
 		 * @private
 		 **/
 		public static const HTTP_STREAMING_DVR_ID_KEY:String 					= "dvrId";
+		
+		/**
+		 * @private
+		 **/
+		public static const RESOURCE_INITIAL_INDEX:String 					= "resourceInitialIndex";
+		
+		/**
+		 * @private
+		 **/
+		public static const BEST_EFFORT_FETCH_METADATA:String = "http://www.osmf.org/bestEffortFetch/1.0";
+		
+		/**
+		 * @private
+		 **/
+		public static const HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_FORWARD_FETCHES:String = "bestEffortFetchMaxForwardFetches";
+		
+		/**
+		 * @private
+		 **/
+		public static const HTTP_STREAMING_BEST_EFFORT_FETCH_MAX_BACKWARD_FETCHES:String = "bestEffortFetchMaxBackwardFetches";
+		
+		/**
+		 * @private
+		 **/
+		public static const HTTP_STREAMING_BEST_EFFORT_FETCH_SEGMENT_DURATION:String = "bestEffortFetchSegmentDuration";
+		
+		/**
+		 * @private
+		 **/
+		public static const HTTP_STREAMING_BEST_EFFORT_FETCH_FRAGMENT_DURATION:String = "bestEffortFetchFragmentDuration";
 	}
 }

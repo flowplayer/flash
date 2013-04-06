@@ -795,9 +795,9 @@ package org.flowplayer.view {
                         }
 
                         CONFIG::commercialVersion {
-                            addChildAt(_screenMask, 1);
+                             //#75 set the child display list different when a gradient is set.
+                             addChildAt(_screenMask, style.backgroundGradient ? 1 : 0);
                         }
-                        //addChildAt(_screenMask, _canvasLogo ? 1 : 0);
                         log.debug("adding mask");
                     }
                 } else {

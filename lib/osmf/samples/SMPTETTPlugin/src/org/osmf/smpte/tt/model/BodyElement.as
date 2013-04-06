@@ -25,7 +25,6 @@ package org.osmf.smpte.tt.model
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
 	import org.osmf.smpte.tt.timing.TimeCode;
 	import org.osmf.smpte.tt.timing.TimeContainer;
-	import org.osmf.smpte.tt.timing.TimeTree;
 	
 	public class BodyElement extends TimedTextElementBase
 	{
@@ -55,7 +54,7 @@ package org.osmf.smpte.tt.model
 					var fo:FormattingObject;
 					if (child is DivElement)
 					{
-						fo = (child as DivElement).getFormattingObject(tick);
+						fo = DivElement(child).getFormattingObject(tick);
 						if (fo != null)
 						{
 							fo.parent = block;
@@ -65,7 +64,7 @@ package org.osmf.smpte.tt.model
 					
 					if (child is SetElement)
 					{
-						fo = (child as SetElement).getFormattingObject(tick) as Animation;
+						fo = SetElement(child).getFormattingObject(tick) as Animation;
 						if (fo != null)
 						{
 							block.animations.push(fo);
@@ -110,43 +109,22 @@ package org.osmf.smpte.tt.model
 		protected override function validElements():void
 		{
 			var child:uint = 0;
-			
-			//{ region Allow arbitrary metadata
-			while ((child < children.length)
-				&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement) 
-					|| (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary set elements (Animation class)
-			while ((child < children.length)
-				&& ((children[child] is SetElement)))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary number of div elements
-			while ((child < children.length)
-				&& ((children[child] is DivElement)))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Ensure no other children
-			if (children.length != child)
-			{
-				error(children[child] + " is not allowed in " + this + " at position " + child);
-			}
-			//} endregion
-			
 			//{ region Check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
-				element.valid();
+				if (element is org.osmf.smpte.tt.model.MetadataElement 
+					|| element is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| element is SetElement
+					|| element is DivElement)
+				{
+					child++;
+					element.valid();
+				}
+				else
+				{
+					error(element + " is not allowed in " + this + " at position " + (children.length-child));
+					continue;
+				}
 			}
 			//} endregion
 		}

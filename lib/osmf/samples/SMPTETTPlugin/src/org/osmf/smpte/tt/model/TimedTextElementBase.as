@@ -25,14 +25,7 @@ package org.osmf.smpte.tt.model
 	
 	import org.osmf.smpte.tt.errors.SMPTETTException;
 	import org.osmf.smpte.tt.formatting.FormattingObject;
-	import org.osmf.smpte.tt.model.metadata.ActorElement;
 	import org.osmf.smpte.tt.model.metadata.AgentElement;
-	import org.osmf.smpte.tt.model.metadata.CopyrightElement;
-	import org.osmf.smpte.tt.model.metadata.DescElement;
-	import org.osmf.smpte.tt.model.metadata.NameElement;
-	import org.osmf.smpte.tt.model.metadata.TitleElement;
-	import org.osmf.smpte.tt.model.parameter.ExtensionElement;
-	import org.osmf.smpte.tt.model.parameter.FeatureElement;
 	import org.osmf.smpte.tt.model.parameter.ParameterElement;
 	import org.osmf.smpte.tt.styling.AutoExtent;
 	import org.osmf.smpte.tt.styling.AutoOrigin;
@@ -67,65 +60,17 @@ package org.osmf.smpte.tt.model
 		}
 		
 		//{ region Properties
-		private var _language:String;
-		public function get language():String
-		{
-			return _language;
-		}
-		public function set language(value:String):void
-		{
-			_language = value;
-		}
+		public var language:String;
 		
-		private var _localName:String;
-		public function get localName():String
-		{
-			return _localName;
-		}
-		public function set localName(value:String):void
-		{
-			_localName = value;
-		}
+		public var localName:String;
 		
-		private var _namespace:Namespace;
-		public function get namespace():Namespace
-		{
-			return _namespace;
-		}
-		public function set namespace(value:Namespace):void
-		{
-			_namespace = value;
-		}
+		public var namespace:Namespace;
 		
-		private var _body:BodyElement;
-		public function get body():BodyElement
-		{
-			return _body;
-		}
-		public function set body(value:BodyElement):void
-		{
-			_body = value;
-		}
+		public var body:BodyElement;
 		
-		private var _id:String;
-		public function get id():String
-		{
-			return _id;
-		}
-		public function set id(value:String):void
-		{
-			_id = value;
-		}
+		public var id:String;
 		
-		private var _root:TtElement;
-		public function get root():TtElement
-		{
-			return _root;
-		}
-		public function set root(value:TtElement):void
-		{
-			_root = value;
-		}
+		public var root:TtElement;
 		//} endregion
 		
 		//{ region Local members
@@ -155,7 +100,7 @@ package org.osmf.smpte.tt.model
 		 */
 		public static function getElementFromName(elem:String):TimedTextElementBase
 		{
-			var ClassReference:Class =  flash.utils.getDefinitionByName(elem) as Class;
+			var ClassReference:Class = getDefinitionByName(elem) as Class;
 			
 			if (ClassReference != null)
 			{
@@ -244,35 +189,36 @@ package org.osmf.smpte.tt.model
 			var styleCount:uint = DictionaryUtils.getLength(_styling);
 
 			// check for local override, this will always win
-			if (styleCount > 0 && DictionaryUtils.containsKey(_styling,property))
+			if (styleCount > 0 && _styling[property] !== undefined)
 			{	
 				return _styling[property];
 			}
 			
 			// find out if we refer to any other styles.
-			if (styleCount > 0 && DictionaryUtils.containsKey(_styling,"style"))
+			var referentStyles:Vector.<String> = _styling["style"] as Vector.<String>;
+			if (styleCount > 0 && referentStyles)
 			{
-				
-				var referentStyles:Vector.<String> = _styling["style"] as Vector.<String>;
-								
 				if (referentStyles == null || referentStyles.length == 0)
 				{
 					_styling[property] = null;
 					return null;
 				} 
 				// recursively check them in reverse order.
-				for (var i:int = referentStyles.length - 1; i >= 0; i--)
+				var i:int = referentStyles.length - 1;
+				while (i >= 0)
 				{
 					var s:String = referentStyles[i];
-					if (DictionaryUtils.containsKey(root.styles,s))
+					var styleElement:StyleElement = root.styles[s] as StyleElement;
+					if (styleElement)
 					{
-						var result:* = (root.styles[s] as StyleElement).getReferentStyle(property);
+						var result:* = styleElement.getReferentStyle(property);
 						if (result != null)
 						{	
 							_styling[property] = result;
 							return result;
 						}
 					}
+					i--;
 				}
 				
 			}
@@ -314,7 +260,7 @@ package org.osmf.smpte.tt.model
 		public function getInheritedStyle(propertyName:String, currentRegion:RegionElement):Object
 		{
 			var isBodyElement:Boolean = (this is BodyElement);
-			var canInherit:Boolean = !(isBodyElement) && !(this is RegionElement);
+			var canInherit:Boolean = !isBodyElement && !(this is RegionElement);
 
 			// we don't want the same background colors to to be 
 			// inherited by a container element and an inline element.
@@ -325,7 +271,7 @@ package org.osmf.smpte.tt.model
 			
 			if (parent != null && canInherit)
 			{	
-				return (parent as TimedTextElementBase).getComputedStyle(propertyName, currentRegion);
+				return TimedTextElementBase(parent).getComputedStyle(propertyName, currentRegion);
 			} if (isBodyElement && currentRegion != null)
 			{
 				// body needs to inherit from the region it has been parented to
@@ -385,17 +331,6 @@ package org.osmf.smpte.tt.model
 									: new Namespace(a.namespace.prefix,a.namespace.uri);
 				writer.@aNS::[a.localName] = a.value;
 			}
-			var ns:Namespace = new Namespace( writer.namespace().uri );
-			if(begin){
-				writer.@ns::begin = begin.toString();
-			}
-			if(duration){
-				writer.@ns::dur = duration.toString();
-			}
-			if(end){
-				writer.@ns::end = end.toString();
-			}
-			
 		}
 		
 		public function serialize():String
@@ -662,7 +597,7 @@ package org.osmf.smpte.tt.model
 					case "http://www.w3.org/ns/ttml/profile/dfxp-transformation":
 						for each (f in ParameterElement.transformProfile)
 						{
-							if (!DictionaryUtils.containsKey(ParameterElement.features, f.key))
+							if (ParameterElement.features[f.key] !== undefined)
 							{   // if local profile has added this, then dont over-ride it
 								ParameterElement.features[f.key] = f.value;
 							}
@@ -671,7 +606,7 @@ package org.osmf.smpte.tt.model
 					case "http://www.w3.org/ns/ttml/profile/dfxp-presentation":
 						for each (f in ParameterElement.presentationProfile)
 						{
-							if (!DictionaryUtils.containsKey(ParameterElement.features, f.key))
+							if (ParameterElement.features[f.key] !== undefined)
 							{   // if local profile has added this, then dont over-ride it
 								ParameterElement.features[f.key] = f.value;
 							}
@@ -680,14 +615,14 @@ package org.osmf.smpte.tt.model
 					case "http://www.w3.org/ns/ttml/profile/dfxp-full":
 						for each (f in ParameterElement.presentationProfile)
 						{
-							if (!DictionaryUtils.containsKey(ParameterElement.features, f.key))
+							if (ParameterElement.features[f.key] !== undefined)
 							{   // if local profile has added this, then dont over-ride it
 								ParameterElement.features[f.key] = f.value;
 							}
 						}
 						for each (f in ParameterElement.transformProfile)
 						{
-							if (!DictionaryUtils.containsKey(ParameterElement.features, f.key))
+							if (ParameterElement.features[f.key] !== undefined)
 							{   // if local profile has added this, then dont over-ride it
 								ParameterElement.features[f.key] = f.value;
 							}
@@ -751,7 +686,8 @@ package org.osmf.smpte.tt.model
 			// we should do a pattern match to ensure its legal.
 			var idrefs:Vector.<String> = new Vector.<String>();
 			var whitespace:String = " ";
-			for each (var s:String in attribute.value.split(whitespace))
+			var attributeArray:Array = attribute.value.split(whitespace);
+			for each (var s:String in attributeArray)
 			{
 				// to do - what we want to do here is check it's in m_styles; however that won't work for 
 				// forward references in styling; can we get a spec restriction here?.
@@ -801,7 +737,7 @@ package org.osmf.smpte.tt.model
 		private function validAttributeValue(matchExpression:String, attribute:TimedTextAttributeBase):Boolean
 		{
 			var matchRE:RegExp;
-			if (DictionaryUtils.containsKey(cachedRegex, matchExpression))
+			if (cachedRegex[matchExpression])
 			{
 				matchRE = cachedRegex[matchExpression];
 			}
@@ -862,11 +798,11 @@ package org.osmf.smpte.tt.model
 					case "extent":
 						if (value == "auto")
 						{
-							_styling[attribute.localName] = new AutoExtent();
+							_styling[attribute.localName] = AutoExtent.instance;
 						}
 						else
 						{
-							_styling[attribute.localName] = new Extent(value);
+							_styling[attribute.localName] = Extent.getExtent(value);
 						};
 						break;
 					case "fontFamily":
@@ -882,9 +818,9 @@ package org.osmf.smpte.tt.model
 					case "fontSize":
 						if(validAttributeValue(s_fontSizeExpression, attribute))
 						{
-							_styling["fontSize"] = new FontSize(value);
+							_styling["fontSize"] = FontSize.getFontSize(value);
 						} else {
-							_styling["fontSize"] = new FontSize("1c 1c");
+							_styling["fontSize"] = FontSize.getFontSize("1c");
 						}
 						break;
 					case "fontStyle":
@@ -921,8 +857,8 @@ package org.osmf.smpte.tt.model
 						{
 							_styling["lineHeight"] = 
 								(value=="normal")
-								? new NormalHeight() 
-								: new LineHeight(value);
+								? NormalHeight.instance
+								: LineHeight.getLineHeight(value);
 						}
 						break;
 					case "opacity":
@@ -935,13 +871,13 @@ package org.osmf.smpte.tt.model
 						switch (value)
 						{
 							case "auto":
-								_styling["origin"] = new AutoOrigin();
+								_styling["origin"] = AutoOrigin.instance;
 								break;
 							case "inherit":
 								_styling["origin"] = new Inherit();
 								break;
 							default:
-								_styling["origin"] = new Origin(value);
+								_styling["origin"] = Origin.getOrigin(value);
 								break;
 						};
 						break;
@@ -951,7 +887,7 @@ package org.osmf.smpte.tt.model
 					case "padding":
 						if (validAttributeValue(s_paddingExpression, attribute))
 						{
-							_styling["padding"] = new PaddingThickness(value);
+							_styling["padding"] = PaddingThickness.getPaddingThickness(value);
 						}
 						break;
 					case "showBackground":
@@ -963,29 +899,31 @@ package org.osmf.smpte.tt.model
 					case "textDecoration":
 						if (validAttributeValue(s_textDecorationExpression, attribute))
 						{
-							switch (value)
-							{   //underline | noUnderline ] || [ lineThrough  | noLineThrough ] || [ overline | noOverline
-								case "underline": 
-									_styling["textDecoration"] = TextDecorationAttributeValue.UNDERLINE;
-									break;
-								case "noUnderline": 
-									_styling["textDecoration"] = TextDecorationAttributeValue.NO_UNDERLINE;
-									break;
-								case "lineThrough": 
-									_styling["textDecoration"] = TextDecorationAttributeValue.LINE_THROUGH;
-									break;
-								case "noLineThrough": 
-									_styling["textDecoration"] = TextDecorationAttributeValue.NO_LINE_THROUGH;
-									break;
-								case "overline": 
-									_styling["textDecoration"] = TextDecorationAttributeValue.OVERLINE;
-									break;
-								case "noOverline": 
-									_styling["textDecoration"] = TextDecorationAttributeValue.NO_OVERLINE;
-									break;
-								default: 
-									_styling["textDecoration"] = TextDecorationAttributeValue.NONE;
-									break;
+							var matchRE:RegExp = new RegExp(s_textDecorationExpression,"g");
+							var result:Array = matchRE.exec(value);
+							
+							while (result != null) 
+							{ 
+								switch(result.toString())
+								{
+									case TextDecorationAttributeValue.UNDERLINE.value: 
+										_styling["textDecoration"] = TextDecorationAttributeValue.UNDERLINE;
+										break;
+									case TextDecorationAttributeValue.NO_UNDERLINE.value: 
+										_styling["textDecoration"] = TextDecorationAttributeValue.NO_UNDERLINE;
+										break;
+									case TextDecorationAttributeValue.LINE_THROUGH.value: 
+										_styling["lineThrough"] = TextDecorationAttributeValue.LINE_THROUGH;
+										break;
+									case TextDecorationAttributeValue.NO_LINE_THROUGH.value: 
+										_styling["lineThrough"] = TextDecorationAttributeValue.NO_LINE_THROUGH;
+										break;
+									case TextDecorationAttributeValue.NONE.value: 
+										_styling["textDecoration"] = TextDecorationAttributeValue.NONE;
+										break;
+								}
+								
+								result = matchRE.exec(value); 
 							}
 						}
 						break;
@@ -1090,12 +1028,12 @@ package org.osmf.smpte.tt.model
 						case "thought":
 						case "title":
 						case "transcription":
-							this.metadata[attribute.localName] = attribute.value;
+							metadata[attribute.localName] = attribute.value;
 							break;
 						default:
 							if (attribute.value.indexOf("x-")==0)
 							{
-								this.metadata[attribute.localName] = attribute.value;
+								metadata[attribute.localName] = attribute.value;
 							}
 							else
 							{
@@ -1111,316 +1049,14 @@ package org.osmf.smpte.tt.model
 		}
 		//} endregion
 		
-		//{ region Parsing
-		/**
-		 * Convert an XML object to the internal TimedText classes.
-		 *
-		 * @param timedTextData Raw XML construct
-		 * @returns Timed text Element hierachy
-		 */
-		public static function parse(timedTextData:XML):TimedTextElementBase
-		{
-			TimedTextElementBase.initializeDefaults();
-						
-			var tteb:TimedTextElementBase;
-			tteb = TimedTextElementBase.parseRecursive(timedTextData, null, false);			
-			return tteb;
-		}
-		
-		/**
-		 * Initialise all the components for this parse
-		 */
-		private static function initializeDefaults():void
-		{
-			TimeExpression.initializeParameters();
-			ParameterElement.initializeParameters();
-		}
-		
-		/**
-		 *  Convert an XML object to the internal TimedText classes.
-		 * 
-		 * 	@param timedTextData Raw XML construct
-		 *  @param root root element of the tree
-		 *  @returns tt_element hierachy
-		 */
-		private static function parseRecursive(xmlElement:XML, root:TtElement, preserveContext:Boolean):TimedTextElementBase
-		{	
-			if(root==null){
-				if(xmlElement.namespace().uri.match(/^http\:\/\/www.w3.org\/2006\/(?:02|04|10)\/ttaf1/)){
-					Namespaces.useLegacyNamespace(xmlElement.namespace());
-				}
-			}
-			
-			var element:String = xmlElement.localName();
-			
-			var nameSpace:String = namespaceFromTimedTextNamespace(xmlElement.namespace().uri);
-
-			var parentNode:TimedTextElementBase = null;
-			
-			if (!(!nameSpace || nameSpace.length==0))
-			{
-				// To meet naming conventions, have to manipulate the name.
-				var conventionName:String = StringUtils.capitalize(element) + "Element";
-				
-				// if there is a namespace, then its a timed text element
-				parentNode = TimedTextElementBase.getElementFromName(nameSpace + conventionName);
-				parentNode.localName = element;
-				parentNode.namespace = xmlElement.namespace();
-			}
-
-			/// if node is still null, either we failed to implement the element
-			/// or its an element in a foreign namespace, either way we bail.
-			if (parentNode == null) return null;
-			
-			//{ region test if root element
-			var newRoot:TtElement = (root == null) ? parentNode as TtElement : root;
-			
-			// null should only occur in the first call,
-			if (newRoot == null)
-			{
-				error("tt not at root of document");
-			}
-			parentNode.root = newRoot;
-			//} endregion
-			
-			var localPreserve:Boolean = preserveContext;  // record whether xml:space=preserve is in effect
-
-			//{ region process raw xml attributes into timed text equivalents
-			for each (var xmlAttribute:XML in xmlElement.attributes())
-			{
-				// copy the attribute identity
-				var attribute:TimedTextAttributeBase = new TimedTextAttributeBase();
-				attribute.parent = parentNode as TimedTextElementBase;;
-				attribute.localName = xmlAttribute.localName();
-				attribute.value = xmlAttribute;
-				
-				// not sure if it is absolutely correct to move 
-				// empty namespace elements into tt namespace but seems
-				// to work.
-				attribute.namespace = (!xmlAttribute.namespace()) ? xmlElement.namespace() : xmlAttribute.namespace();
-				
-				if(!attribute.namespace.uri && attribute.parent.namespace) {
-					attribute.namespace = attribute.parent.namespace;
-				}
-				
-				// attach new attribute to current element
-				parentNode.attributes.push(attribute);
-				
-				// check whether we are changing the space preserve behaviour
-				if (attribute.isXmlAttribute() && attribute.localName == "space")
-				{
-					localPreserve = (attribute.value == "preserve");
-				}
-				// record the type of preservation as a local style.
-				parentNode.setLocalStyle("preserve", localPreserve);
-				
-				//trace("\t"+attribute.namespace+":"+attribute.localName+"="+attribute.value);
-			}
-			//} endregion
-			
-			//{ region process child elements
-			for each (var xmlNode:XML in xmlElement.children())
-			{
-				parseChild(
-					{ 
-						xmlNode:xmlNode, 
-						parentNode:parentNode, 
-						newRoot:newRoot, 
-						localPreserve:localPreserve 
-					}
-				);
-			}
-			//} endregion
-			return parentNode;
-		}
-		
-		private static function parseChild(obj:Object):void {
-			
-			var xmlNode:XML 					= obj.xmlNode,
-				parentNode:TimedTextElementBase = obj.parentNode,
-				newRoot:TtElement				= obj.newRoot,
-				localPreserve:Boolean 			= obj.localPreserve;
-			
-			switch(xmlNode.nodeKind())
-			{
-				//text, comment, processing-instruction, attribute, or element.
-				case "element":
-					
-					//{ region convert XML Element to Timed Text Element
-					var child:TimedTextElementBase = parseRecursive(xmlNode, newRoot, localPreserve);
-					if (child != null)
-					{
-						parentNode.children.push(child as TreeType);
-						
-						if (child is BodyElement)
-						{
-							parentNode.body = child as BodyElement;
-						}
-						if (parentNode is TtElement)
-						{
-							var ttElement:TtElement = parentNode as TtElement;
-							if (child is HeadElement)
-							{
-								ttElement.head = child as HeadElement;
-							}
-						}
-						
-						child.parent = parentNode;
-						child.root = parentNode.root;
-					}
-					//} endregion
-					break;
-				
-				case "text":
-					
-					//{ region convert XML Text into an anonymous span element
-					if (isContentElement(parentNode))
-					{
-						//{ region elements that admit PCDATA as children get anonymous spans
-						var text:AnonymousSpanElement;
-						if (!localPreserve)
-						{  // squeeze out all the redundant whitespace
-							var normalized:String = normalizeWhitespace(xmlNode);
-							text = new AnonymousSpanElement(normalized);
-						}
-						else
-						{  
-							// preserve the raw text as it came in
-							text = new AnonymousSpanElement(xmlNode.toString());	
-						}
-						parentNode.children.push(text as TreeType);
-						text.parent = parentNode;
-						if(!isMetadataContentElement(parentNode) 
-							&& !isParameterContentElement(parentNode))
-						{
-							parentNode.root.totalNodeCount++;
-						}
-						//} endregion
-					}
-					else
-					{
-						//{ region test non content element for non-whitespace error.
-						if (normalizeWhitespace(xmlNode) != " ")
-						{
-							error("Use of non whitespace in " + parentNode);
-						}
-						//} endregion
-					}
-					//} endregion
-					break;
-				
-			}
-		}
 		
 		
-		//{ region Helper Methods
-		/** 
-		 * convert newlines to space, and collpase runs of space to a single space
-		 * 
-		 * @param n
-		 */
-		private static function normalizeWhitespace(n:XML):String
-		{
-			var normalized:String = n.normalize().toString().replace(/[\n\r\t]/g, " ");
-			while (/\ {2}/g.test(normalized))
-			{
-				normalized = normalized.replace(/\ {2}/g, " ");
-			}
-			return normalized;
-		}
 		
-		/**
-		 * Is it a content element for purposes of parenting anonymous span's?
-		 * 
-		 * @param node
-		 */
-		private static function isContentElement(node:TimedTextElementBase):Boolean
-		{
-			if (node is PElement) return true;
-			if (node is SpanElement) return true;
-			if (isMetadataContentElement(node)) return true;
-			if (isParameterContentElement(node)) return true;
-			return false;
-		}
 		
-		/**
-		 * Metadata items that admit PCDATA as content
-		 * 
-		 * @param node
-		 */
-		private static function isMetadataContentElement(node:TimedTextElementBase):Boolean
-		{
-			if (node is TitleElement) return true;
-			if (node is NameElement) return true;
-			if (node is DescElement) return true;
-			if (node is CopyrightElement) return true;
-			if (node is AgentElement) return true;
-			if (node is ActorElement) return true;
-			
-			return false;
-		}
 		
-		/**
-		 * Parameter items that admit PCDATA as content
-		 * 
-		 * @param node
-		 */
-		private static function isParameterContentElement(node:TimedTextElementBase):Boolean
-		{
-			if (node is ExtensionElement) return true;
-			if (node is FeatureElement) return true;
-			return false;
-		}
-		//} endregion
 		
-		//{ region  Namespace Handling
-		/**
-		 * Get the local AS3 namespace from the Timed Text XML namespace
-		 * @param pXML namespace
-		 * @returns as3 namespace prefix as a string
-		 */
-		private static function namespaceFromTimedTextNamespace(p:String):String
-		{
-			var nsPrefix:String = "";
-			switch (p)
-			{   // got to be a better way to do this using reflection?
-				case "http://www.w3.org/2006/02/ttaf1":
-				case "http://www.w3.org/2006/04/ttaf1":
-				case "http://www.w3.org/2006/10/ttaf1":
-				case "http://www.w3.org/ns/ttml":
-					nsPrefix = "org.osmf.smpte.tt.model.";
-					break;
-				case "http://www.w3.org/2006/02/ttaf1#metadata":
-				case "http://www.w3.org/2006/04/ttaf1#metadata":
-				case "http://www.w3.org/2006/10/ttaf1#metadata":
-				case "http://www.w3.org/ns/ttml#metadata":
-					nsPrefix = "org.osmf.smpte.tt.model.metadata.";
-					break;
-				case "http://www.w3.org/2006/02/ttaf1#style":
-				case "http://www.w3.org/2006/02/ttaf1#styling":
-				case "http://www.w3.org/2006/04/ttaf1#style":
-				case "http://www.w3.org/2006/04/ttaf1#styling":
-				case "http://www.w3.org/2006/10/ttaf1#style":
-				case "http://www.w3.org/2006/10/ttaf1#styling":
-				case "http://www.w3.org/ns/ttml#styling":
-					nsPrefix = "org.osmf.smpte.tt.styling.";
-					break;
-				case "http://www.w3.org/2006/02/ttaf1#parameter":
-				case "http://www.w3.org/2006/04/ttaf1#parameter":
-				case "http://www.w3.org/2006/10/ttaf1#parameter":
-				case "http://www.w3.org/ns/ttml#parameter":
-					nsPrefix = "org.osmf.smpte.tt.model.parameter.";
-					break;
-				case "http://www.w3.org/ns/ttml/profile":
-					nsPrefix = "org.osmf.smpte.tt.model.parameter.";
-					break;
-				default: 
-					nsPrefix = "";
-					break;
-			}
-			return nsPrefix;
-		}
-		//} endregion
+	
+		
 		
 		/**
 		 * Get recorded metadata for the given attribute
@@ -1429,9 +1065,9 @@ package org.osmf.smpte.tt.model
 		 */
 		public function getMetadata(attribute:String):String
 		{
-			if (DictionaryUtils.containsKey(metadata,attribute))
+			if (metadata[attribute] !== undefined)
 			{
-				return this.metadata[attribute] as String;
+				return metadata[attribute] as String;
 			}
 			else
 			{

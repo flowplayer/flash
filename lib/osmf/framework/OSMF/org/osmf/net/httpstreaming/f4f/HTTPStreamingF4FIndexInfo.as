@@ -27,6 +27,7 @@ package org.osmf.net.httpstreaming.f4f
 	
 	import org.osmf.net.httpstreaming.HTTPStreamingIndexInfoBase;
 	import org.osmf.net.httpstreaming.dvr.DVRInfo;
+	import org.osmf.elements.f4mClasses.BestEffortFetchInfo;
 	
 	[ExcludeClass]
 	
@@ -42,6 +43,7 @@ package org.osmf.net.httpstreaming.f4f
 			 serverBaseURL:String=null
 			, streamInfos:Vector.<HTTPStreamingF4FStreamInfo>=null
 			, dvrInfo:DVRInfo = null
+			, befInfo:BestEffortFetchInfo = null
 			)
 		{
 			super();
@@ -49,6 +51,7 @@ package org.osmf.net.httpstreaming.f4f
 			_serverBaseURL = serverBaseURL;
 			_streamInfos = streamInfos;
 			_dvrInfo = dvrInfo;
+			_befInfo = befInfo;
 		}
 
 		public function get serverBaseURL():String
@@ -66,8 +69,14 @@ package org.osmf.net.httpstreaming.f4f
 			return _dvrInfo;
 		}
 		
+		public function get bestEffortFetchInfo():BestEffortFetchInfo
+		{
+			return _befInfo;
+		}
+		
 		private var _serverBaseURL:String;
 		private var _dvrInfo:DVRInfo;
+		private var _befInfo:BestEffortFetchInfo;
 		private var _streamInfos:Vector.<HTTPStreamingF4FStreamInfo>;
 	}
 }

@@ -21,9 +21,26 @@ package org.osmf.smpte.tt.styling
 {
 	public class NormalHeight extends LineHeight
 	{
-		public function NormalHeight()
+		private static var _instance:NormalHeight;
+		
+		public static function get instance():NormalHeight
 		{
-			super("1.2c");
+			if( _instance == null ) _instance = new NormalHeight( new SingletonLock() );
+			return _instance;
+		}
+		
+		public function NormalHeight( lock:SingletonLock )
+		{
+			// Verify that the lock is the correct class reference.
+			if (lock is SingletonLock)
+			{
+				super("1.2c");
+			} else 
+			{	
+				throw new Error( "Invalid Singleton access.  Use NormalHeight.instance." );
+			}
 		}
 	}
 }
+
+internal class SingletonLock{}

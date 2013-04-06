@@ -390,6 +390,58 @@ package org.osmf.layout
 		/**
 		 * @private
 		 **/
+		override public function set x(value:Number):void
+		{			
+			super.x = value;
+			
+			// In case we use stageVideo, the VideoSurface object needs
+			// to be informed that this value changed in one of his parents
+			// so that he can recalculate the viewport. We only call the
+			// setter of the child, this will propagate to the VideoSurface 
+			// object and localToGlobal will compute the absolute coordinate
+			if (this.numChildren)
+			{	
+				for (var i:int = 0; i<this.numChildren; i++)
+				{
+					if (this.getChildAt(i))
+					{
+						// we only call the setter, we don't actually want to
+						// change the value in the child
+						this.getChildAt(i).x = this.getChildAt(i).x;						
+					}
+				}
+			}			
+		}
+		
+		/**
+		 * @private
+		 **/
+		override public function set y(value:Number):void
+		{
+			super.y = value;
+			
+			// In case we use stageVideo, the VideoSurface object needs
+			// to be informed that this value changed in one of his parents
+			// so that he can recalculate the viewport. We only call the
+			// setter of the child, this will propagate to the VideoSurface 
+			// object and localToGlobal will compute the absolute coordinate
+			if (this.numChildren)
+			{	
+				for (var i:int = 0; i<this.numChildren; i++)
+				{
+					if (this.getChildAt(i))
+					{
+						// we only call the setter, we don't actually want to
+						// change the value in the child
+						this.getChildAt(i).y = this.getChildAt(i).y;						
+					}
+				}
+			}
+		}
+		
+		/**
+		 * @private
+		 **/
 		override public function set width(value:Number):void
 		{
 			_layoutMetadata.width = value; 

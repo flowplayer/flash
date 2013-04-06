@@ -86,7 +86,6 @@ package org.osmf.smpte.tt.timing
 		{
 			if (TimeExpression.CurrentFrameRateDenominator == 0) TimeExpression.CurrentFrameRateDenominator = 1;
 			var framerate:Number = TimeExpression.CurrentFrameRate * (TimeExpression.CurrentFrameRateNominator / TimeExpression.CurrentFrameRateDenominator);
-			TimeCode.parseFramerate(framerate);
 			var s:SmpteFrameRate = SmpteFrameRate.UNKNOWN;
 			switch (TimeExpression.CurrentTimeBase)
 			{
@@ -102,8 +101,10 @@ package org.osmf.smpte.tt.timing
 					break;
 				case TimeBase.MEDIA:
 					s = SmpteFrameRate.SMPTE_30;
+					break;
 				case TimeBase.CLOCK:
 					s = SmpteFrameRate.UNKNOWN;
+					break;
 			}
 			return s;
 		}
