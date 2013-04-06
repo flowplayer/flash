@@ -94,6 +94,8 @@
 				<arg line="-default-frame-rate=${framerate}" />
 				<arg line="-default-background-color=${bgcolor}" />
                 <arg line="-strict=true" />
+                <arg line="-static-link-runtime-shared-libraries=false"/>
+                <arg line="-generate-frame-loader=false"/>
 				<arg line="-keep-as3-metadata=Value,External" />
 				<arg line="'${src-as}/@{plugin-main-class}'" />
 				<arg line="-output '${build-dir}/@{out}'" />
