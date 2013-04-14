@@ -9,16 +9,13 @@
  *    Additional Term, see http://flowplayer.org/license_gpl.html
  */
 package org.flowplayer.ui.dock {
-    import org.flowplayer.ui.*;
+
+    import org.flowplayer.ui.AutoHideConfig;
     import org.flowplayer.model.DisplayPluginModel;
     import org.flowplayer.model.DisplayPluginModelImpl;
-    import org.flowplayer.model.DisplayProperties;
-    import org.flowplayer.model.DisplayPropertiesImpl;
     import org.flowplayer.ui.buttons.ButtonConfig;
     import org.flowplayer.util.PropertyBinder;
     import org.flowplayer.view.FlowStyleSheet;
-
-    import spark.components.Button;
 
     public class DockConfig {
         private var _model:DisplayPluginModel;

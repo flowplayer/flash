@@ -8,9 +8,6 @@
  */
 
 package org.flowplayer.bwcheck.detect {
-    import flash.net.Responder;
-
-    import org.flowplayer.bwcheck.detect.AbstractDetectionStrategy;
 
     /**
      * @author danielr
