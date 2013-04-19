@@ -1,5 +1,9 @@
 Version history:
 
+3.2.9
+-----
+- #99 cleanup domain parsing, use native function instead of mx classes.
+
 3.2.4
 -----
 - #601 dispatch resolver failure correctly.

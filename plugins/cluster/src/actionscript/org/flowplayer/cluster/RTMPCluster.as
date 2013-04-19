@@ -162,8 +162,14 @@ package org.flowplayer.cluster
 
         private function _getFailedServerSO(host:String):SharedObject
         {
-            var domain:String = URLUtil.baseUrl(host);
-            return SharedObject.getLocal(domain,"/");
+            return SharedObject.getLocal(getDomain(host),"/");
+        }
+
+        private function getDomain(url:String):String {
+            var schemeEnd:int = url.indexOf("//") + 2;
+            var domain:String = url.substr(schemeEnd);
+            var endPos:int = domain.indexOf("/");
+            return domain.substr(0, endPos);
         }
 
         public function setFailedServer(host:String):void
