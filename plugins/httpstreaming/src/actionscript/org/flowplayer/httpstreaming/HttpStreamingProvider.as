@@ -287,7 +287,7 @@ package org.flowplayer.httpstreaming {
             return httpNetStream;
         }
 
-        //#70 fixes for bugger start value
+        //#70 fixes for buffer start value
         override public function get bufferStart():Number
         {
             if (! clip) return 0;
