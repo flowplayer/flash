@@ -287,10 +287,11 @@ package org.flowplayer.httpstreaming {
             return httpNetStream;
         }
 
-        override public function get bufferStart() : Number {
-            if (!clip) return 0;
-            if (!netStream) return 0;
-            return Math.max(0, getCurrentPlayheadTime(netStream));
+        //#70 fixes for bugger start value
+        override public function get bufferStart():Number
+        {
+            if (! clip) return 0;
+            return _bufferStart - clip.start;
         }
 
         override public function get bufferEnd() : Number {
