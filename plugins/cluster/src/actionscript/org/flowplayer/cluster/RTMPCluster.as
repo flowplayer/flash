@@ -96,6 +96,16 @@ package org.flowplayer.cluster
             return _hosts;
         }
 
+        public function get hostIndex():int
+        {
+            return _hostIndex;
+        }
+
+        public function updateCurrentHost(host:String):void
+        {
+            _hosts[_hostIndex] = {host: host};
+        }
+
         public function get nextHost():String
         {
             if (hasMultipleHosts())
