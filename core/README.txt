@@ -3,6 +3,7 @@ Version history:
 3.2.17
 ------
 - #75 set the child display list different when a gradient is set.
+- The clip property 'bufferLength' now accepts decimal values, for example bufferLength: 0.2
 
 3.2.16
 ------

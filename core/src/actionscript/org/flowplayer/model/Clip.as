@@ -61,7 +61,7 @@ package org.flowplayer.model {
 		private var _content:DisplayObject;
 		private var _originalWidth:int;
 		private var _originalHeight:int;
-        private var _bufferLength:int;
+        private var _bufferLength:Number;
         private var _backBufferLength:int;
 		private var _played:Boolean;
 		private var _provider:String;
@@ -643,11 +643,11 @@ package org.flowplayer.model {
 		}
 		
         [Value]
-        public function get bufferLength():int {
+        public function get bufferLength():Number {
             return _bufferLength;
         }
 		
-        public function set bufferLength(bufferLength:int):void {
+        public function set bufferLength(bufferLength:Number):void {
             _bufferLength = bufferLength;
         }
 

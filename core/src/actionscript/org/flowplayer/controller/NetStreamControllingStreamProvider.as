@@ -893,10 +893,11 @@ package org.flowplayer.controller {
           dispatchPlayEvent(ClipEventType.BUFFER_STOP);
        }
 
-       private function _createNetStream():void {
-          _netStream = createNetStream(_connection) || new NetStream(_connection);
+        private function _createNetStream():void {
+            _netStream = createNetStream(_connection) || new NetStream(_connection);
             netStream.client = new NetStreamClient(clip, _player.config, _streamCallbacks);
             _netStream.bufferTime = clip.bufferLength;
+            log.debug("using buffer time of " + _netStream.bufferTime);
             _volumeController.netStream = _netStream;
             clip.setNetStream(_netStream);
             _netStream.addEventListener(NetStatusEvent.NET_STATUS, _onNetStatus);
