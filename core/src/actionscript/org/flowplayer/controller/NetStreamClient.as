@@ -47,10 +47,7 @@ package org.flowplayer.controller {
         }
 
         public function onMetaData(infoObject:Object):void {
-
-            log.info("onMetaData, current clip " + _clip);
-
-            log.debug("onMetaData, data for clip " + _clip + ":");
+            log.debug("onMetaData(), data for clip " + _clip + ":");
             var metaData:Object = new Object();
             for (var key:String in infoObject) {
                 if (key == "duration" && _clip && _clip.metaData && _clip.metaData.duration) {
