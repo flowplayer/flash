@@ -46,7 +46,8 @@ package org.flowplayer.view {
 	import org.flowplayer.model.ProviderModel;
 	import org.flowplayer.model.State;
 	import org.flowplayer.util.Arrange;
-	import org.flowplayer.util.Log;
+import org.flowplayer.util.DomainUtil;
+import org.flowplayer.util.Log;
 	import org.flowplayer.util.TextUtil;
 	import org.flowplayer.util.URLUtil;
 	import org.flowplayer.view.Panel;
@@ -621,7 +622,15 @@ package org.flowplayer.view {
                 callAndHandleError(initPhase1, PlayerError.INIT_FAILED);
 
             } else {
-                ConfigParser.loadConfig(configObj.hasOwnProperty("url") ? String(configObj["url"]) : configStr, BuiltInConfig.config, function(config:Config):void {
+                var configUrl:String = configObj.hasOwnProperty("url") ? String(configObj["url"]) : configStr;
+
+                if (! DomainUtil.allowCodeLoading(configUrl)) {
+                    log.error("Cannot load config from " + configUrl + ", only player's domain is accepted");
+                    throw new Error("Cannot load config from " + configUrl + ", only player's domain is accepted");
+                    return;
+                }
+
+                ConfigParser.loadConfig(configUrl, BuiltInConfig.config, function(config:Config):void {
                     _config = config;
                     callAndHandleError(initPhase1, PlayerError.INIT_FAILED);
                 }, new ResourceLoaderImpl(null, this), loaderInfo.url, VersionInfo.controlsVersion, VersionInfo.audioVersion);

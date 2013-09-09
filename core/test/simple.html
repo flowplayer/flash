@@ -18,9 +18,9 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.view.Screen'},
+        log: { level: 'debug', filter: 'org.flowplayer.view.PluginLoader'},
 
         key: '#$b6223bfbd646c621758',
 
@@ -80,7 +80,13 @@
             autoBuffering: true
 //            ,
 //            duration: 20
-        }
+        },
+
+                plugins: {
+                    controls: {
+                        url: "http://releases.flowplayer.org/swf/flowplayer.controls.swf"
+                    }
+                }
 
 
     });

@@ -117,5 +117,29 @@ package org.flowplayer.util {
             return domain.length;
         }
 
+        public static function isLocal(url:String):Boolean {
+            trace("localDomain? " + url);
+            if (url.indexOf("http://localhost") == 0) return true;
+            if (url.indexOf("http://localhost:") == 0) return true;
+            if (url.indexOf("file://") == 0) return true;
+            if (url.indexOf("http://127.0.0.1") == 0) return true;
+            if (url.indexOf("http://") == 0) return false;
+            if (url.indexOf("/") == 0) return true;
+            return false;
+        }
+
+        public static function allowCodeLoading(resourceUrl:String):Boolean {
+            if (! URLUtil.isCompleteURLWithProtocol(resourceUrl)) return true;
+            var playerUrl:String = URLUtil.playerBaseUrl;
+
+            if (isLocal(playerUrl)) return true;
+
+            var playerDomain:String = parseDomain(playerUrl, true);
+            var resourceDomain:String = parseDomain(resourceUrl, true);
+
+            trace("player domain " + playerDomain);
+            trace("resource domain " + resourceDomain);
+            return playerDomain == resourceDomain;
+        }
     }
 }
