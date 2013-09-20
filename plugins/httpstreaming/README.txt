@@ -3,6 +3,8 @@ Version history:
 3.2.11
 ------
 - New code requires to be compiled against OSMF 2.0
+- #70 fixes for live streams
+- #70 fixes for buffer start value.
 
 3.2.10
 ------

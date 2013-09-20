@@ -1,6 +1,8 @@
 3.2.10
 ------
 - New code requires to be compiled against OSMF 2.0
+- fixes for osmf dateutil class
+- #99 add isDefault bitrate config option
 
 3.2.9
 -----

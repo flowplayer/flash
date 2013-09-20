@@ -124,7 +124,8 @@ package org.flowplayer.menu.ui {
         public function enableItems(enabled:Boolean,  indexes:Array = null):void {
             log.debug("enableItems()");
             iterateViews(function(item:MenuItem, index:int):void {
-                item.enabled = enabled;
+                //#71 enable items that are not currently selected as default.
+                if (!item.selected) item.enabled = enabled;
             }, indexes);
         }
         /**
@@ -320,13 +321,17 @@ package org.flowplayer.menu.ui {
             itemConfig.width = model.widthPx;
             var item:MenuItem = new MenuItem(_player, itemConfig, _player.animationEngine);
             itemConfig.view = item;
+            item.mouseChildren = false;
             item.tabEnabled = true;
             item.tabIndex = tabIndex;
 
             var menu:Menu = this;
             item.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void {
-                if (! item.enabled) return;
+                //#71 return if the item is selected and currently disabled.
+                if (!MenuItem(event.target).enabled) return;
                 if (menu.alpha == 0) return;
+                //#71 select the current item here, to disable and enable other items.
+                MenuItem(event.target).selected = true;
                 _player.animationEngine.fadeOut(menu);
                 itemConfig.fireCallback(model);
                 deselectOtherItemsInGroup(itemConfig);

@@ -16,9 +16,6 @@ package org.flowplayer.bwcheck.net {
     import org.flowplayer.view.Flowplayer;
     import org.flowplayer.controller.ClipURLResolver;
     import org.flowplayer.util.Log;
-    //import org.flowplayer.util.PropertyBinder;
-
-
 
     import org.flowplayer.model.DisplayProperties;
 
@@ -27,20 +24,16 @@ package org.flowplayer.bwcheck.net {
 
     import org.flowplayer.bwcheck.config.Config;
 
-    import org.osmf.net.DynamicStreamingItem;
-    //import org.osmf.net.NetStreamMetricsBase;
     import org.osmf.net.NetStreamSwitchManagerBase;
 
     CONFIG::enableRtmpMetrics {
         import org.osmf.net.NetStreamSwitchManager;
     }
 
-public class BWStreamSelectionManager extends StreamSelectionManager {
+    public class BWStreamSelectionManager extends StreamSelectionManager {
 
         private var _config:Config;
         private static var bwSelectLog:Log = new Log("org.flowplayer.bwcheck.net::BWStreamSelectionManager");
-        private var dynamicStreamingItems:Vector.<DynamicStreamingItem>;
-        //private var _netStreamMetrics:NetStreamMetricsBase;
         private var _netStreamSwitchManager:NetStreamSwitchManagerBase;
 
         public function BWStreamSelectionManager(bitrateResource:BitrateResource, player:Flowplayer, resolver:ClipURLResolver, config:Config) {
