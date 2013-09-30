@@ -8,28 +8,27 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.flowplayer.bwcheck.detect {
-import flash.events.EventDispatcher;
-import flash.events.NetStatusEvent;
-import flash.net.NetConnection;
+    package org.flowplayer.bwcheck.detect {
+    import flash.events.EventDispatcher;
+    import flash.events.NetStatusEvent;
+    import flash.net.NetConnection;
 
-import flash.utils.setTimeout;
+    import flash.utils.setTimeout;
 
-import org.flowplayer.bwcheck.config.Config;
-import org.flowplayer.bwcheck.net.NullNetConnectionClient;
+    import org.flowplayer.bwcheck.config.Config;
+    import org.flowplayer.bwcheck.net.NullNetConnectionClient;
 
-import org.flowplayer.cluster.RTMPCluster;
-import org.flowplayer.model.ClipEvent;
-import org.flowplayer.model.Playlist;
-import org.flowplayer.model.PluginEventType;
-import org.flowplayer.model.PluginModel;
-import org.flowplayer.util.Log;
-import org.flowplayer.view.Flowplayer;
+    import org.flowplayer.cluster.RTMPCluster;
+    import org.flowplayer.model.ClipEvent;
+    import org.flowplayer.model.Playlist;
+    import org.flowplayer.model.PluginEventType;
+    import org.flowplayer.model.PluginModel;
+    import org.flowplayer.util.Log;
 
-/**
- * @author danielr
- */
-public class BandwidthDetector extends EventDispatcher {
+    /**
+     * @author danielr
+     */
+    public class BandwidthDetector extends EventDispatcher {
     private var log:Log = new Log(this);
 
     // --------- These references are needed here, so that the classes get compiled in!

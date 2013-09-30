@@ -29,10 +29,9 @@
 
 		$.extend(opts, options);
 
-		var wrap = container;
+        var wrap = $(container);
 
-        // use either the element with templateId or the contents of wrap
-        var template = null;
+        var template = opts.templateId ? $('<div>').append($(opts.templateId).clone()).remove().html() : wrap.html();
 
 		var plugin = self.getPlugin(opts.pluginName) || null;
 
@@ -100,11 +99,6 @@
             bitrateItems = self.getClip().bitrateItems ? self.getClip().bitrateItems :  self.getClip().bitrates;
 
 			if (bitrateItems.length > 0) {
-                wrap = $(wrap);
-
-                //fix for #322 containers only obtainable at this point
-                template = opts.templateId ? $('<div>').append($(opts.templateId).clone()).remove().html() : wrap.html();
-
                 wrap.empty();
 				buildBitrateList();
 			}

@@ -13,7 +13,6 @@ package org.flowplayer.bwcheck.detect {
     import flash.events.ProgressEvent;
     import flash.net.URLLoader;
     import flash.net.URLRequest;
-    import flash.net.URLRequestHeader;
     import flash.net.URLRequestMethod;
     import flash.utils.getTimer;
 
@@ -28,7 +27,6 @@ package org.flowplayer.bwcheck.detect {
         private var _bandwidth:Number;
         private var _downloadTime:Number;
         public var maximumBytes:uint;
-        private var _nocache:URLRequestHeader;
         private var _referenceFileUrl:String;
 
         public function BandwidthDetectorHttp() {
