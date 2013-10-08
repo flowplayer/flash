@@ -361,10 +361,12 @@ package org.flowplayer.controls.scrubber {
 
        private function createBars():void {
           _progressBar = new Sprite();
+          _progressBar.name = "progressBar";
           addChild(_progressBar);
 
           _bufferBar = new Sprite();
           addChild(_bufferBar);
+          _bufferBar.name = "bufferBar";
           swapChildren(_dragger, _bufferBar);
        }
 
