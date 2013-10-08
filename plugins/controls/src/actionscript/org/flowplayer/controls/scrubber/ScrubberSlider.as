@@ -56,6 +56,7 @@ package org.flowplayer.controls.scrubber {
           lookupPluginAndBindEvent(_player, "audio", onAudioEvent);
           createBars();
           addPlaylistListeners(_player.playlist);
+          this.name = "scrubber";
        }
 
        private function lookupPluginAndBindEvent(player:Flowplayer, pluginName:String, eventHandler:Function):void {
