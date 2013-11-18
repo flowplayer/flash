@@ -262,8 +262,7 @@
 				}
 
 				// 1. clip properties, 2-3. metadata, 4. updates, 5. resumes from nested clip
-                //#148 add onMetaDataChange event to extend clip properties, this was needed to prevent regular updates during stream switching.
-				if (arg1 && "onBeforeBegin,onMetaData,onMetaDataChange,onStart,onUpdate,onResume".indexOf(evt) != -1) {
+				if (arg1 && "onBeforeBegin,onMetaData,onStart,onUpdate,onResume".indexOf(evt) != -1) {
 					// update clip properties
 					extend(target, arg1);
 
