@@ -298,6 +298,7 @@
 	
 	// clear timer when clip ends	
 	self.onFinish(function(clip) {		
+		play.className = opts.playClass;
 		clearInterval(timer);	
 	}); 
 	
