@@ -256,7 +256,8 @@
             time.innerHTML = getTime(status.time, clip.duration);
 
 			// buffer width
-			var x = getMax(status.bufferEnd, duration);
+			// assume "filled buffer" for streaming protocols #152
+			var x = getMax(clip.provider == "http" ? status.bufferEnd : duration, duration);
 			bufferBar.style.width = x + "px";
 			head.setMax(x);	
 
