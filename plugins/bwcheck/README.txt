@@ -4,6 +4,9 @@ Version history:
 ------
 - Upgraded to OSMF 2.0
 - #70 Refactored changes with dynamic stream switching features for rtmp and httpstreaming. Switching rules and metrics differ between them.
+- Fix for issue caused by #322 with bitrateselect plugin
+- #96 possible confusion caused by the naming of the widgets with accessibility options for screen readers. Use the tooltip labels instead
+  of the widget name if set.
 
 3.2.12
 ------

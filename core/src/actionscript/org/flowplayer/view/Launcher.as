@@ -16,6 +16,8 @@
  *    along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.flowplayer.view {
+    import flash.external.ExternalInterface;
+
     import org.flowplayer.config.Config;
 	import org.flowplayer.config.ConfigParser;
 	import org.flowplayer.config.ExternalInterfaceHelper;
@@ -23,12 +25,12 @@ package org.flowplayer.view {
 	import org.flowplayer.controller.PlayListController;
 	import org.flowplayer.controller.ResourceLoader;
 	import org.flowplayer.controller.ResourceLoaderImpl;
-    import org.flowplayer.flow_internal;
+	import org.flowplayer.flow_internal;
 	import org.flowplayer.model.Callable;
 	import org.flowplayer.model.Clip;
 	import org.flowplayer.model.ClipEvent;
-    import org.flowplayer.model.ClipEventType;
-    import org.flowplayer.model.DisplayPluginModel;
+import org.flowplayer.model.ClipEventType;
+import org.flowplayer.model.DisplayPluginModel;
 	import org.flowplayer.model.DisplayProperties;
 	import org.flowplayer.model.DisplayPropertiesImpl;
     import org.flowplayer.model.ErrorCode;
@@ -46,8 +48,7 @@ package org.flowplayer.view {
 	import org.flowplayer.model.ProviderModel;
 	import org.flowplayer.model.State;
 	import org.flowplayer.util.Arrange;
-import org.flowplayer.util.DomainUtil;
-import org.flowplayer.util.Log;
+	import org.flowplayer.util.Log;
 	import org.flowplayer.util.TextUtil;
 	import org.flowplayer.util.URLUtil;
 	import org.flowplayer.view.Panel;
@@ -100,6 +101,7 @@ import org.flowplayer.util.Log;
         private var _clickCount:int;
         private var _clickTimer:Timer = new Timer(200, 1);
         private var _clickEvent:MouseEvent;
+
 		private var _screenMask:Sprite;
 
 		[Frame(factoryClass="org.flowplayer.view.Preloader")]
@@ -214,6 +216,7 @@ import org.flowplayer.util.Log;
                 log.debug("no loadable plugins, calling initPhase4");
                 initPhase4();
             }
+            Focus.init(stage);
 		}
 
 		private function initPhase4(event:Event = null):void {
@@ -622,15 +625,7 @@ import org.flowplayer.util.Log;
                 callAndHandleError(initPhase1, PlayerError.INIT_FAILED);
 
             } else {
-                var configUrl:String = configObj.hasOwnProperty("url") ? String(configObj["url"]) : configStr;
-
-                if (! DomainUtil.allowCodeLoading(configUrl)) {
-                    log.error("Cannot load config from " + configUrl + ", only player's domain is accepted");
-                    throw new Error("Cannot load config from " + configUrl + ", only player's domain is accepted");
-                    return;
-                }
-
-                ConfigParser.loadConfig(configUrl, BuiltInConfig.config, function(config:Config):void {
+                ConfigParser.loadConfig(configObj.hasOwnProperty("url") ? String(configObj["url"]) : configStr, BuiltInConfig.config, function(config:Config):void {
                     _config = config;
                     callAndHandleError(initPhase1, PlayerError.INIT_FAILED);
                 }, new ResourceLoaderImpl(null, this), loaderInfo.url, VersionInfo.controlsVersion, VersionInfo.audioVersion);
@@ -746,19 +741,14 @@ import org.flowplayer.util.Log;
 
             //#508 disabling the stagevideo screen mask, canvas is visible without it.
             CONFIG::FLASH_10_1 {
-			   _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
+			    _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
 
-               //#44 fixes for #627, now bind and unbind stagevideo events during seeking to prevent the mask repositioning.
-               _flowplayer.playlist.onBeforeSeek(function(event:ClipEvent):void {
-                   _flowplayer.playlist.unbind(onStageVideoStateChange);
-               });
-
-               _flowplayer.playlist.onSeek(function(event:ClipEvent):void {
-                   _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
-               });
+                //#627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
+                _flowplayer.onFullscreen(onStageVideoFullscreen);
+                _flowplayer.onFullscreenExit(onStageVideoFullscreen);
             }
 		}
-
+		
 		private function onMouseOut(event:MouseEvent):void {
 			_flowplayer.dispatchEvent(PlayerEvent.mouseOut());
 		}
@@ -768,53 +758,50 @@ import org.flowplayer.util.Log;
 		}
 
         //#508 disabling the stagevideo screen mask, canvas is visible without it.
-        CONFIG::FLASH_10_1 {
+		CONFIG::FLASH_10_1 {
             private function onStageVideoStateChange(event:ClipEvent):void {
                 var stageVideo:StageVideo = event.info as StageVideo;
-                log.debug("stage video state changed " + stageVideo);
+                log.info("stage video state changed " + stageVideo);
 
-                if (stageVideo) {
-                    //#44 fixes for #627 check if the stagevideo dimensions and positioning has changed to update the stage video mask with.
-                    //unbinding and binding stage video events caused issues with instream playlists therefore has to be kept binded.
-                    if (_screenMask.width !== stageVideo.viewPort.width) {
-                        _screenMask.width = stageVideo.viewPort.width;
-                    }
+                if ( stageVideo ) {
 
-                    if (_screenMask.height !== stageVideo.viewPort.height) {
-                        _screenMask.height = stageVideo.viewPort.height;
-                    }
-
-                    if (_screenMask.x !== stageVideo.viewPort.x) _screenMask.x = stageVideo.viewPort.x;
-                    if (_screenMask.y !== stageVideo.viewPort.y) _screenMask.y = stageVideo.viewPort.y;
+                    _screenMask.width  = stageVideo.viewPort.width;
+                    _screenMask.height = stageVideo.viewPort.height;
+                    _screenMask.x = stageVideo.viewPort.x;
+                    _screenMask.y = stageVideo.viewPort.y;
 
                     log.debug("mask dimensions " + _screenMask.width + " x " + _screenMask.height);
                     log.debug("mask pos " + _screenMask.x + ", " + _screenMask.y);
 
-
-                    if (!contains(_screenMask)) {
+                    if ( ! contains(_screenMask) ) {
                         //#508 stage video mask was being added to the top layer and hiding all children.
-                        //_canvasLogo.visible = false;
-                        //#20 for the free player swap the logo with the stage video mask to display underneath not on top.
-                        CONFIG::freeVersion {
-
-                            addChildAt(_screenMask, 0);
-                            swapChildren(_screenMask, _copyrightNotice);
-                            swapChildren(_screenMask, _canvasLogo);
-
-                        }
-
-                        CONFIG::commercialVersion {
-                             //#75 set the child display list different when a gradient is set.
-                             addChildAt(_screenMask, style.backgroundGradient ? 1 : 0);
-                        }
+                        addChildAt(_screenMask, 0);
+                        //addChildAt(_screenMask, _canvasLogo ? getChildIndex(_canvasLogo) + 1 : 1);
                         log.debug("adding mask");
                     }
+
+                    //#627 unbind the stagevideo state change events after the screen mask is setup.
+                    _flowplayer.playlist.unbind(onStageVideoStateChange);
                 } else {
-                    if (contains(_screenMask)) {
+                    if ( contains(_screenMask) ) {
                         log.debug("removing mask")
                         removeChild(_screenMask);
+                        _flowplayer.playlist.unbind(onStageVideoStateChange);
                     }
                 }
+            }
+
+            /**
+             * #627 re-enable stagevideo state change listeners if stagevideo is available or detach the fullscreen events on first call.
+             * @param event
+             */
+            private function onStageVideoFullscreen(event:PlayerEvent):void
+            {
+                //#627 if stage video is not configured or available unbind the fullscreen events on first try.
+                if (!_flowplayer.playlist.current.useStageVideo) {
+                    _flowplayer.unbind(onStageVideoFullscreen);
+                }
+                _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
             }
         }
 

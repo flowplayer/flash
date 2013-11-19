@@ -5,6 +5,7 @@ Version history:
 - #75 set the child display list different when a gradient is set.
 - The clip property 'bufferLength' now accepts decimal values, for example bufferLength: 0.2
 - #121 only load plugins and external config from the same domain as the player swf from loaded from
+- Made it possible to tab out of the player and into the HTML page using the keyboard alone.
 
 3.2.16
 ------

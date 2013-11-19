@@ -1,7 +1,7 @@
 Version history:
 
-3.2.9
------
+3.2.10
+------
 - #99 cleanup domain parsing, use native function instead of mx classes.
 - #101 fixes for handling origin server redirections.
 
