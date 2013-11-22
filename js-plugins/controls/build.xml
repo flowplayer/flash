@@ -1,6 +1,6 @@
 
 <!-- projet name is used as a base name for distribution files -->
-<project name="controls" default="default">
+<project name="controls.js" default="default">
     <property file="build.properties" />
 
 	<!-- required property -->
