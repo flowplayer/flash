@@ -12,7 +12,7 @@
 	<property file="../../../flash-build/plugin-build.properties" />
 	<import file="../../../flash-build/plugin-build.xml"/>
 	
-	<property name="shortname" value="bwcheck-httpstreaming" />
+	<property name="shortname" value="bwcheck_httpstreaming" />
     <property name="basename" value="flowplayer.${shortname}" />
     <property name="releasedir" value="${basename}" />
 	<property name="plugin-binary" value="${basename}.swf" />
