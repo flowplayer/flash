@@ -936,7 +936,7 @@ import org.flowplayer.model.DisplayPluginModel;
 			_canvasLogo.scaleY = _canvasLogo.scaleX;
 			_canvasLogo.alpha = .4;
 			_canvasLogo.addEventListener(MouseEvent.CLICK, 
-				function(event:MouseEvent):void { navigateToURL(new URLRequest("http://flowplayer.org"), "_self"); });
+				function(event:MouseEvent):void { navigateToURL(new URLRequest("http://flash.flowplayer.org"), "_self"); });
 			_canvasLogo.buttonMode = true;
 			log.debug("adding logo to display list");
 			addChild(_canvasLogo);
