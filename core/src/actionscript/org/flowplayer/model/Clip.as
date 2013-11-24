@@ -670,6 +670,7 @@ package org.flowplayer.model {
 		
 		[Value]
 		public function get provider():String {
+            if (_clipObject && _clipObject.hasOwnProperty("provider")) return _clipObject.provider;
 			if (type == ClipType.AUDIO && _provider == "http") return "audio";
             if (_url && _url.toLowerCase().indexOf("rtmp") == 0 && _provider == "http") return "rtmp";
             if (parent) return _provider + "Instream";
