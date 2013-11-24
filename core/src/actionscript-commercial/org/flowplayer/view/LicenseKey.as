@@ -31,7 +31,7 @@ package org.flowplayer.view {
 
 		public static function validate(swfUrl:String, version:Array, configuredKeys:Object, externalInterfaceAvailable:Boolean):Boolean {
 			trace("using validator " + FlowplayerLicenseKey.id);
-			return FlowplayerLicenseKey.validate(swfUrl, version, configuredKeys, externalInterfaceAvailable);
+			return FlowplayerLicenseKey.validate(swfUrl, version, configuredKeys, (CONFIG::secondaryDomains).split(" "), externalInterfaceAvailable);
 		}
 	}
 	

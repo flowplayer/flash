@@ -6,6 +6,7 @@ Version history:
 - The clip property 'bufferLength' now accepts decimal values, for example bufferLength: 0.2
 - #121 only load plugins and external config from the same domain as the player swf from loaded from
 - Made it possible to tab out of the player and into the HTML page using the keyboard alone.
+- Change links in the context menu and in the logos to point to http://flash.flowplayer.org
 
 3.2.16
 ------

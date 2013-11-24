@@ -14,5 +14,6 @@
 	<property name="plugin-main-class" value="org/flowplayer/securestreaming/SecureStreamingPlugin.as" />
 	<property name="library-path" value="lib/corelib" />
     <property name="extra-sources" value="../../lib/common/src/actionscript"/>
+    <property name="compiler-defines" value="-define+=CONFIG::FLASH_10_1,'true'"/>
 
 </project>

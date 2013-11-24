@@ -75,13 +75,15 @@ import org.flowplayer.util.URLUtil;
         private var _allPlugins:Array;
         private var _loaderContext:LoaderContext;
         private var _loadStartedCount:int = 0;
+        private var _secondaries:Array;
 
-		public function PluginLoader(baseUrl:String, pluginRegistry:PluginRegistry, errorHandler:ErrorHandler, useExternalInterface:Boolean) {
+		public function PluginLoader(baseUrl:String, pluginRegistry:PluginRegistry, errorHandler:ErrorHandler, useExternalInterface:Boolean, secondaries:Array) {
 			_baseUrl = baseUrl;
 			_pluginRegistry = pluginRegistry;
 			_errorHandler = errorHandler;
 			_useExternalInterface = useExternalInterface;
 			_loadedCount = 0;
+            _secondaries = secondaries;
 		}
 
 		private function constructUrl(url:String):String {
@@ -160,7 +162,7 @@ import org.flowplayer.util.URLUtil;
                 if (! loadable.isBuiltIn && loadable.url && result.indexOf(loadable.url) < 0) {
                     var pluginUrl:String = constructUrl(loadable.url);
 
-                    if (DomainUtil.allowCodeLoading(pluginUrl)) {
+                    if (DomainUtil.allowCodeLoading(pluginUrl, _secondaries)) {
                         result.push(pluginUrl);
                     } else {
                         log.error("Unable to load plugin from " + loadable.url);
