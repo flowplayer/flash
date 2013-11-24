@@ -1,5 +1,9 @@
 Version history:
 
+3.2.10
+------
+- Added external methods showButton() and hideButton() that can be used for the CC button.
+
 3.2.9
 -----
 - #19, loadCaptions() had disappeared somewhere, now works again
