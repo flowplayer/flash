@@ -135,8 +135,12 @@ package org.flowplayer.controller {
             _clip.dispatchNetStreamEvent("RtmpSampleAccess", infoObject);
         }
 
-        public function onTextData(infoObject:Object):void {
-            _clip.dispatchNetStreamEvent("onTextData", infoObject);
+        public function onTextData(info:Object):void {
+            var eventInfo:Object = {};
+            for (var prop:String in info) {
+                eventInfo[prop] = info[prop];
+            }
+            _clip.dispatchNetStreamEvent("onTextData", eventInfo);
         }
 
         public function onPlayStatus(...rest):void {
