@@ -166,7 +166,6 @@ package org.flowplayer.viralvideos {
                     }
                 }
             }
-            updatedConfig.plugins[_viralPluginConfiguredName].share = false;
 
             fixPluginsURLs(updatedConfig);
             fixPageUrl(updatedConfig);

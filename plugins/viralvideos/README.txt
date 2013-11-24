@@ -3,6 +3,7 @@ sVersion history:
 3.2.14
 ------
 - Added helper methods to hide / show the dock when autohide is enabled or not, issue #60
+- Sharing is now enabled in virally shared players. #110
 
 3.2.12
 ------
