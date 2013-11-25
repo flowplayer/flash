@@ -64,7 +64,7 @@ package org.flowplayer.controller {
         private var _pauseAfterStart:Boolean;
         private var _volumeController:VolumeController;
         private var _seekTargetWaitTimer:Timer;
-        private var _seekTarget:Number;
+        private var _seekTarget:Number = 0;
         private var _model:ProviderModel;
         private var _connectionProvider:ConnectionProvider;
         private var _clipUrlResolverHelper:ClipURLResolverHelper;
@@ -788,6 +788,7 @@ package org.flowplayer.controller {
 
                 //				dispatchPlayEvent(ClipEventType.STOP);
             } else if (event.info.code == "NetStream.Seek.Notify") {
+
                 if (! silentSeek) {
                     startSeekTargetWait();
                 } else {
@@ -840,7 +841,8 @@ package org.flowplayer.controller {
         }
 
         private function onSeekTargetWait(event:TimerEvent):void {
-            if (time >= _seekTarget) {
+            //#104 if the updated time is a fraction less than the seek target time ie for HDS, use a bitwise rounding so the seek time can stop.
+            if ((time|0) >= (_seekTarget|0)) {
                 _seekTargetWaitTimer.stop();
                 log.debug("dispatching onSeek");
                 dispatchPlayEvent(ClipEventType.SEEK, _seekTarget);

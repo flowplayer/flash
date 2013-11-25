@@ -427,13 +427,17 @@ package org.flowplayer.controls.scrubber {
 
           if (_isSeekPaused) {
              _player.resume(true);
-             seekToScrubberValue(false);
+             //seekToScrubberValue(false);
              _isSeekPaused = false;
-             return;
+             //return;
           }
-          if (_player.isPaused()) {
-             _currentClip.dispatchEvent(new ClipEvent(ClipEventType.SEEK, value));
-          }
+
+          //#104 when completing a seek click or drag, do a final non silent seek request when both paused and resuming playback from a paused seek.
+          seekToScrubberValue(false);
+           //else if (_player.isPaused()) {
+              //seekToScrubberValue(false);
+             //_currentClip.dispatchEvent(new ClipEvent(ClipEventType.SEEK, value));
+          //}
        }
 
        //#321 set an maximum end seek limit or else playback completion may fail
