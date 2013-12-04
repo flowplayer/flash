@@ -247,7 +247,7 @@
 		private function createScreenMask():void {
 			blendMode = BlendMode.LAYER;
 
-            /*var squareEdgeSize:int = Math.max(stage.stageWidth, stage.stageHeight);
+            var squareEdgeSize:int = Math.max(stage.stageWidth, stage.stageHeight);
 			
 			_screenMask = new Sprite();
 			_screenMask.graphics.beginFill(0x000000, 1);
@@ -256,17 +256,7 @@
 			_screenMask.blendMode = BlendMode.ERASE;
 			
 			_screenMask.x = 0;
-			_screenMask.y = 0;*/
-
-            _screenMask = new Sprite();
-            _screenMask.graphics.beginFill(0xff0000);
-            _screenMask.graphics.drawRect(0, 0, 1, 1);
-            _screenMask.blendMode = BlendMode.ERASE;
-
-            _screenMask.x = 0;
-            _screenMask.y = 0;
-            _screenMask.width = 100;
-            _screenMask.height = 100;
+			_screenMask.y = 0;
 
 		}
 
