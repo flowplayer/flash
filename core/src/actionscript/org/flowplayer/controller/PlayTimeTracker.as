@@ -119,6 +119,7 @@ package org.flowplayer.controller {
 		}
 
         public function get durationReached():Boolean {
+            if (_clip.live) return false;
             if (_clip.durationFromMetadata > _clip.duration) {
                 return time >= _clip.duration;
             }
