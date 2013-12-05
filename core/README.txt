@@ -7,6 +7,10 @@ Version history:
 - #121 only load plugins and external config from the same domain as the player swf from loaded from
 - Made it possible to tab out of the player and into the HTML page using the keyboard alone.
 - Change links in the context menu and in the logos to point to http://flash.flowplayer.org
+- Pausing a live stream now leaves the video frame visible #81
+- Audio plugin is not loaded nor used when the the provider is set excplicitly in the clip to a non-audio value, for
+ example to 'http'
+- Allow playing another instream clip while already playing one. Issue #131
 
 3.2.16
 ------
