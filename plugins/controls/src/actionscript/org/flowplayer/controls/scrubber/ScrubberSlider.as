@@ -233,15 +233,6 @@ package org.flowplayer.controls.scrubber {
              return;
           }
 
-          if (_seekInProgress) {
-             log.debug("doStart(), seek in progress, returning");
-             return;
-          }
-
-          if (! _player.isPlaying()) {
-             log.debug("doStart(), not playing, returning");
-             return;
-          }
           if (_startDetectTimer && _startDetectTimer.running) {
              log.debug("doStart(), not playing, returning");
              return;
@@ -258,17 +249,17 @@ package org.flowplayer.controls.scrubber {
           _startDetectTimer.addEventListener(TimerEvent.TIMER,
                   function(event:TimerEvent):void {
                      var currentTime:Number = _player.status.time;
-                     log.debug("on startDetectTimer() currentTime " + currentTime + ", time " + time);
+//                     log.debug("on startDetectTimer() currentTime " + currentTime + ", time " + time);
 
                      if (Math.abs(currentTime - time) > 0.2) {
                         _startDetectTimer.stop();
                         var endPos:Number = width - _dragger.width;
-                        log.debug("animation duration is " + clip.duration + " - "+ time + " * 1000");
+//                        log.debug("animation duration is " + clip.duration + " - "+ time + " * 1000");
                         // var duration:Number = (clip.duration - time) * 1000;
                         var duration:Number = (clip.duration - currentTime) * 1000;
 
                         updateDraggerPos(currentTime, clip);
-                        log.debug("doStart(), starting an animation to x pos " + endPos + ", the duration is " + duration + ", current pos is " + _dragger.x + ", time is "+ currentTime);
+//                        log.debug("doStart(), starting an animation to x pos " + endPos + ", the duration is " + duration + ", current pos is " + _dragger.x + ", time is "+ currentTime);
 
                         animationEngine.animateProperty(_dragger, "x", endPos, duration, null,
                                 function():void {
@@ -277,8 +268,6 @@ package org.flowplayer.controls.scrubber {
                                 function(t:Number, b:Number, c:Number, d:Number):Number {
                                    return c * t / d + b;
                                 });
-                     } else {
-                        log.debug("not started yet, currentTime " + currentTime + ", time " + time);
                      }
                   });
           log.debug("doStart(), starting timer");
