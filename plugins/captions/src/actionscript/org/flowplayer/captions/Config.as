@@ -83,8 +83,7 @@ package org.flowplayer.captions
                 delete defaults[prop1];
             }
         }
-
-    }
+   }
 }
 
 
