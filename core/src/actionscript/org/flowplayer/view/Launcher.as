@@ -906,7 +906,7 @@ package org.flowplayer.view {
                 onDoubleClick(event);
             } else {
                 _clickEvent = event;
-                //_clickTimer.start();
+                _clickTimer.start();
             }
         }
 
