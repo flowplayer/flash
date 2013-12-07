@@ -5,6 +5,7 @@ Version history:
 - Now uses OSMF 2.0
 - #70 fixes for live streams
 - #70 fixes for buffer start value.
+- #136 when we are streaming live and not in dvr mode set the duration to zero in the index handler instead of the metadata callback.
 
 3.2.10
 ------
