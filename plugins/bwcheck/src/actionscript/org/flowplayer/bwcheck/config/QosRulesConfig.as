@@ -37,10 +37,19 @@ package org.flowplayer.bwcheck.config {
         private var _maxUpSwitchesPerStream:int = 3;
         private var _waitDurationAfterDownSwitch:int = 30000;
         private var _clearFailedCountInterval:Number = 1;
+        private var _bufferScaleDownFactor:Number = 0.6;
 
 		public function reset():void {
 			_values = new Object();
 		}
+
+        public function get bufferScaleDownFactor():Number {
+            return _bufferScaleDownFactor;
+        }
+
+        public function set bufferScaleDownFactor(value:Number):void {
+            _bufferScaleDownFactor = value;
+        }
 
         public function get minBufferLength():Number {
             return _minBufferLength;

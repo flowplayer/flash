@@ -32,6 +32,7 @@ package org.flowplayer.httpstreaming {
     import org.osmf.net.httpstreaming.HTTPNetStream;
     import org.osmf.net.httpstreaming.f4f.HTTPStreamingF4FFactory;
     import org.osmf.net.httpstreaming.dvr.DVRInfo;
+    import org.osmf.net.StreamingURLResource;
     import org.osmf.metadata.Metadata;
     import org.osmf.metadata.MetadataNamespaces;
     import org.osmf.media.URLResource;
@@ -97,8 +98,8 @@ package org.flowplayer.httpstreaming {
             _dvrInfo = null;
             _dvrIsRecording = false;
 
-            //netStream.client = new NetStreamClient(clip, _player.config, streamCallbacks);
-            netStream.play(clip.url, clip.start);
+            //#70 fixes for live streams.
+            netStream.play(clip.url, clip.live && !isDvr ? -1 : clip.start);
         }
 
         private function onPlayStatus(event:ClipEvent) : void {
@@ -121,6 +122,15 @@ package org.flowplayer.httpstreaming {
                     //#550 for live streams once unpublished,  stop the player to prevent streamnotfound errors reconnecting.
                    //#27 regression caused by #550, only stop the player for live streams. caused issues when stopping between playlist items.
                    if (clip.live && !_player.playlist.hasNext()) _player.stop();
+                    break;
+                case "NetStream.Buffer.Empty":
+                    //#70 implement playback optimisations from strobe media playback.
+                    if (netStream.bufferTime >= 2.0) {
+                        netStream.bufferTime += 1.0;
+                    }
+                    else {
+                        netStream.bufferTime = 2.0;
+                    }
                     break;
             }
             return;
@@ -162,11 +172,19 @@ package org.flowplayer.httpstreaming {
 			}
         }
 
-        override protected function onMetaData(event:ClipEvent):void {
+        /*override protected function onMetaData(event:ClipEvent):void {
             log.debug("in NetStreamControllingStremProvider.onMetaData: " + event.target);
 
-            //if we are not dvr recording dispatch start
-            if (! clip.startDispatched && !_dvrIsRecording) {
+            //#70 remove clip duration for live streams and when not dvr recording
+            if (clip.live && !isDvr) {
+                clip.metaData.duration = 0;
+                clip.duration = 0;
+                clip.durationFromMetadata = 0;
+            }
+
+
+
+            if (! clip.startDispatched) {
                 clip.dispatch(ClipEventType.START, pauseAfterStart);
                 clip.startDispatched = true;
             }
@@ -175,7 +193,7 @@ package org.flowplayer.httpstreaming {
                 pauseToFrame();
             }
             switching = false;
-        }
+        } */
 
         override public function get allowRandomSeek():Boolean {
            return true;
@@ -218,16 +236,17 @@ package org.flowplayer.httpstreaming {
             //dispatch the dvr event
             dispatchDVREvent(_dvrInfo);
 
-            //dispatch clip start
-            clip.dispatch(ClipEventType.START, false);
-            clip.startDispatched = true;
-
             //seek to the closest offset to the live position determined by the current dvr duration, buffertime and live snap offset.
             var livePosition:Number = Math.max(0, dvrSeekOffset);
             this.netStream.seek(livePosition);
 
             dispatchLiveEvent(livePosition);
 
+        }
+
+        private function get isDvr():Boolean
+        {
+            return StreamingURLResource(netResource).streamType == "dvr";
         }
 
         private function dispatchDVREvent(dvrInfo:DVRInfo):void
@@ -274,10 +293,11 @@ package org.flowplayer.httpstreaming {
             return httpNetStream;
         }
 
-        override public function get bufferStart() : Number {
-            if (!clip) return 0;
-            if (!netStream) return 0;
-            return Math.max(0, getCurrentPlayheadTime(netStream));
+        //#70 fixes for buffer start value
+        override public function get bufferStart():Number
+        {
+            if (! clip) return 0;
+            return _bufferStart - clip.start;
         }
 
         override public function get bufferEnd() : Number {

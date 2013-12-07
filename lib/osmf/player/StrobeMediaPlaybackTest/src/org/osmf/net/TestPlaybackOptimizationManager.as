@@ -28,9 +28,13 @@ package org.osmf.net
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertTrue;
 	import org.flexunit.async.Async;
+	import org.osmf.logging.Log;
 	import org.osmf.netmocker.MockNetConnection;
 	import org.osmf.netmocker.MockNetStream;
 	import org.osmf.player.configuration.PlayerConfiguration;
+	import org.osmf.player.debug.LogHandler;
+	import org.osmf.player.debug.StrobeLogger;
+	import org.osmf.player.debug.StrobeLoggerFactory;
 	
 	public class TestPlaybackOptimizationManager
 	{	
@@ -52,7 +56,11 @@ package org.osmf.net
 				// Ignore this error
 			}
 			
-			
+			CONFIG::LOGGING
+			{
+				// Setup the custom logging factory
+				Log.loggerFactory = new StrobeLoggerFactory(new LogHandler(false));
+			}
 			
 		}
 		

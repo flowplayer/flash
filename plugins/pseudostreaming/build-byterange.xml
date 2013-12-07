@@ -2,13 +2,13 @@
 
 	<property file="${user.home}/plugin.properties" />
 	<property file="build.properties" />
-	<property file="${devkit-dir}/plugin-build.properties" />
+	<property file="../../../flash-build/plugin-build.properties" />
 	
 	<property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
 	<property name="extra-sources" value="../../core/lib/corelib/src" />
     <property name="plugin-libs" value="lib/as3crypto-1_3_patched.swc" />
     <property name="compiler-defines" value="-define+=CONFIG::enableByteRange,'true'"/>
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<import file="../../../flash-build/plugin-build.xml"/>
 	
 	<property name="basename" value="flowplayer.pseudostreaming-byterange" />
     <property name="releasedir" value="${basename}" />

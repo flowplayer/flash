@@ -1,5 +1,13 @@
 Version history:
 
+3.2.13
+------
+- Upgraded to OSMF 2.0
+- #70 Refactored changes with dynamic stream switching features for rtmp and httpstreaming. Switching rules and metrics differ between them.
+- Fix for issue caused by #322 with bitrateselect plugin
+- #96 possible confusion caused by the naming of the widgets with accessibility options for screen readers. Use the tooltip labels instead
+  of the widget name if set.
+
 3.2.12
 ------
 - #47 close the connection or else wowza dispatches two bwcheck events.
@@ -8,6 +16,8 @@ Version history:
 3.2.11
 ------
 - #6 cache control headers don't work on chrome windows, just use the cache busting url param.
+- #47 close the connection or else wowza dispatches two bwcheck events.
+- #47 regression with 417 disable screen checks with the qos screen property.
 
 3.2.10
 ------

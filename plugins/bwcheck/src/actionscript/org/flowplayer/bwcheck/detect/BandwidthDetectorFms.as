@@ -8,15 +8,11 @@
  */
 
 package org.flowplayer.bwcheck.detect {
-import org.flowplayer.bwcheck.detect.*;
-import org.flowplayer.bwcheck.detect.AbstractDetectionStrategy;
 
-import flash.utils.setTimeout;
-
-/**
- * @author danielr
- */
-public class BandwidthDetectorFms extends AbstractDetectionStrategy {
+    /**
+     * @author danielr
+     */
+    public class BandwidthDetectorFms extends AbstractDetectionStrategy {
 
     private var _host:String;
 

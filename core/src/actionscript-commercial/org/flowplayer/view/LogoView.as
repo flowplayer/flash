@@ -306,7 +306,7 @@ package org.flowplayer.view {
 			_model.top = "20";
 			_model.right = "20";
 			_model.opacity = 0.3;
-			_model.linkUrl = "http://flowplayer.org";
+			_model.linkUrl = "http://flash.flowplayer.org";
 			log.debug("initial model dimensions " + _model.dimensions);
 		}
 		

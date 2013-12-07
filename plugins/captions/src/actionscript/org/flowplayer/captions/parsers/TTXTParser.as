@@ -14,25 +14,21 @@ package org.flowplayer.captions.parsers {
     import org.flowplayer.view.FlowStyleSheet;
 
     public class TTXTParser extends AbstractCaptionParser {
-        private var _tt:Namespace = new Namespace("http://www.w3.org/2006/10/ttaf1");
-
         private var _bodyStyle:String;
         private var _simpleFormatting:Boolean = false;
         private var _cueRow:int = 0;
         internal static const SIMPLE_FORMATTING_PROPS:Array = ["fontStyle", "fontWeight", "textAlign"];
 
         protected var log:Log = new Log(this);
+        private var _namespace:Namespace;
 
-        public function TTXTParser(textTemplate:String) {
+        public function TTXTParser(textTemplate:String, xmlNamespace:String, simpleFormatting:Boolean) {
             super(textTemplate);
-            default xml namespace = _tt;
-        }
 
-        public function get simpleFormatting():Boolean {
-            return _simpleFormatting;
-        }
+            _namespace = new Namespace(xmlNamespace);
+            default xml namespace = _namespace;
 
-        public function set simpleFormatting(simpleFormatting:Boolean):void {
+            log.debug("using namespace " + xmlNamespace);
             _simpleFormatting = simpleFormatting;
         }
 

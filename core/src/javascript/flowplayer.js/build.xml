@@ -3,7 +3,7 @@
 <project name="flowplayer" default="min">	
 	
 	<property name="DEVKIT_HOME" value="../../../../lib/devkit"/>
-	<import file="${DEVKIT_HOME}/js.xml"/>
+	<import file="../../../../../flash-build/js.xml"/>
 
 	<property name="version" value="3.2.12"/>
 	
@@ -18,7 +18,7 @@
 	</target>
 	
 	<target name="min" depends="concat">
-		<ant antfile="${DEVKIT_HOME}/js.xml" target="min"/>
+		<ant antfile="../../../../../flash-build/js.xml" target="min"/>
 	</target>
 
    <target name="lint">		

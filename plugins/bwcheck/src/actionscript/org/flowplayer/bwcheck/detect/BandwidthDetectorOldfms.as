@@ -8,7 +8,6 @@
  */
 
 package org.flowplayer.bwcheck.detect {
-    import org.flowplayer.bwcheck.detect.AbstractDetectionStrategy;
 
     /**
      * @author danielr

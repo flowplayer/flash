@@ -279,5 +279,15 @@ package org.flowplayer.captions {
         internal function set config(value:Config):void {
             _config = value;
         }
+
+        [External]
+        public function showButton():void {
+            _captionView.showButton();
+        }
+
+        [External]
+        public function hideButton():void {
+            _captionView.hideButton();
+        }
     }
 }

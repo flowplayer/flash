@@ -1,0 +1,17 @@
+<project name="Flowplayer CloudFront Signed Url" default="deploy">
+
+    <property file="${user.home}/plugin.properties" />
+	<property name="devkit-dir" value="../../lib/devkit" />
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
+	<property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
+	
+	<property name="version" value="1.0" />
+	<property name="basename" value="flowplayer.cloudfrontsignedurl" />
+    <property name="releasedir" value="${basename}" />
+	<property name="plugin-binary" value="${basename}.swf" />
+	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
+	<property name="plugin-main-class" value="org/flowplayer/cloudfrontsignedurl/CloudFrontSignedUrlPlugin.as" />
+	<property name="library-path" value="lib" />
+
+</project>

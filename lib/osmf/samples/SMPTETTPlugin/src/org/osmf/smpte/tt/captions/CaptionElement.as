@@ -19,6 +19,10 @@
  **********************************************************/
 package org.osmf.smpte.tt.captions
 {
+	import flash.utils.getQualifiedClassName;
+	
+	import org.osmf.smpte.tt.timing.TimeExpression;
+
 	/**
 	 * 
 	 * @author mjordan
@@ -77,6 +81,11 @@ package org.osmf.smpte.tt.captions
 		public function set regionId(value:String):void
 		{
 			_regionId = value;
+		}
+		
+		public function toString():String
+		{
+			return "["+getQualifiedClassName(this).split("::")[1]+" captionElementType=\""+captionElementType+"\" index=\""+_index+"\"  id=\""+id+"\" regionID=\""+_regionId+"\" begin=\""+TimeExpression.parse(begin+"s")+"\" end=\""+TimeExpression.parse(end+"s")+"\""+( (content is String) ? " content=\""+content+"\"" : "" )+"]";
 		}
 
 	}

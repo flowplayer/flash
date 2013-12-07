@@ -18,9 +18,9 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer.commercial-3.2.17-dev.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.view.Screen'},
+        log: { level: 'debug', filter: 'org.flowplayer.util.DomainUtil'},
 
         key: '#$b6223bfbd646c621758',
 
@@ -80,6 +80,10 @@
             autoBuffering: true
 //            ,
 //            duration: 20
+        },
+
+        plugins: {
+            content: { url: 'flowplayer.rtmp.swf' }
         }
 
 

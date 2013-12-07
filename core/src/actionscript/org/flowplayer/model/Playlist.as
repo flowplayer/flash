@@ -217,7 +217,6 @@ package org.flowplayer.model {
 
         public function setInStreamClip(clip:Clip):void {
             log.debug("setInstremClip to " + clip);
-            if (clip && _inStreamClip) throw new Error("Already playing an instream clip");
             _inStreamClip = clip;
         }
 	

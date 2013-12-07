@@ -69,7 +69,7 @@ package org.osmf.player.utils
 		public static const title:String = 'Strobe Media Playback';
 		
 		/** Use single quotes, to facilitate build system updates **/
-		public static const version:String = '1.6.1.trunk';
+		public static const version:String = '2.0.2494';
 		
 		public static const ILLEGAL_INPUT_VARIABLE:String 			= "illegalInputVariable";
 		

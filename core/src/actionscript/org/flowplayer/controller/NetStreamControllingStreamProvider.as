@@ -17,35 +17,30 @@
  */
 
 package org.flowplayer.controller {
-    import org.flowplayer.controller.StreamProvider;
-    import org.flowplayer.controller.TimeProvider;
-    import org.flowplayer.controller.VolumeController;
-    import org.flowplayer.model.Clip;
-    import org.flowplayer.model.ClipError;
-    import org.flowplayer.model.ClipEvent;
-    import org.flowplayer.model.ClipEventType;
-    import org.flowplayer.model.EventType;
-    import org.flowplayer.model.Playlist;
-    import org.flowplayer.model.PluginEventType;
-    import org.flowplayer.model.PluginModel;
-    import org.flowplayer.model.ProviderModel;
-    import org.flowplayer.util.Assert;
-    import org.flowplayer.util.Log;
-    import org.flowplayer.view.Flowplayer;
+import flash.display.DisplayObject;
+import flash.errors.IOError;
+import flash.events.NetStatusEvent;
+import flash.events.TimerEvent;
+import flash.media.Video;
+import flash.net.NetConnection;
+import flash.net.NetStream;
+import flash.utils.Dictionary;
+import flash.utils.Timer;
 
-    import flash.utils.Dictionary;
-    import flash.display.DisplayObject;
-    import flash.errors.IOError;
-    import flash.events.NetStatusEvent;
-    import flash.events.TimerEvent;
-    import flash.media.Video;
-    import flash.net.NetConnection;
-    import flash.net.NetStream;
-    import flash.utils.Timer;
+import org.flowplayer.model.Clip;
+import org.flowplayer.model.ClipError;
+import org.flowplayer.model.ClipEvent;
+import org.flowplayer.model.ClipEventType;
+import org.flowplayer.model.Playlist;
+import org.flowplayer.model.PluginModel;
+import org.flowplayer.model.ProviderModel;
+import org.flowplayer.util.Assert;
+import org.flowplayer.util.Log;
+import org.flowplayer.view.Flowplayer;
 
-    CONFIG::FLASH_10_1 {
+CONFIG::FLASH_10_1 {
     import org.flowplayer.view.StageVideoWrapper;
-    }
+}
 
     /**
      * A StreamProvider that does it's job using the Flash's NetStream class.
@@ -64,7 +59,7 @@ package org.flowplayer.controller {
         private var _pauseAfterStart:Boolean;
         private var _volumeController:VolumeController;
         private var _seekTargetWaitTimer:Timer;
-        private var _seekTarget:Number;
+        private var _seekTarget:Number = 0;
         private var _model:ProviderModel;
         private var _connectionProvider:ConnectionProvider;
         private var _clipUrlResolverHelper:ClipURLResolverHelper;
@@ -211,6 +206,7 @@ package org.flowplayer.controller {
          * @inheritDoc
          */
         public final function resume(event:ClipEvent):void {
+            log.debug("resume");
             _paused = false;
             _stopping = false;
             doResume(_netStream, event);
@@ -545,13 +541,14 @@ package org.flowplayer.controller {
         }
 
         protected function doSwitchStream(event:ClipEvent, netStream:NetStream, clip:Clip, netStreamPlayOptions:Object = null):void {
+            import flash.net.NetStreamPlayOptions;
+
             //fix for #279, switch and pause if the current clip is currently in a paused state
             //#404 implement netstreamplayoptions for http streams, resets the stream or start loading a new stream.
             //implement switch support for flash9 players that do not support dynamic switching
             if (CONFIG::FLASH_10_1) {
                 if (netStreamPlayOptions) {
                     pauseAfterStart = paused;
-                    import flash.net.NetStreamPlayOptions;
                     if (netStreamPlayOptions is NetStreamPlayOptions) {
                         log.debug("doSwitchStream() calling play2()");
                         //#461 when we have a clip base url set, we need the complete clip url sent to play2 for http streams.
@@ -788,6 +785,7 @@ package org.flowplayer.controller {
 
                 //				dispatchPlayEvent(ClipEventType.STOP);
             } else if (event.info.code == "NetStream.Seek.Notify") {
+
                 if (! silentSeek) {
                     startSeekTargetWait();
                 } else {
@@ -840,7 +838,8 @@ package org.flowplayer.controller {
         }
 
         private function onSeekTargetWait(event:TimerEvent):void {
-            if (time >= _seekTarget) {
+            //#104 if the updated time is a fraction less than the seek target time ie for HDS, use a bitwise rounding so the seek time can stop.
+            if ((time|0) >= (_seekTarget|0)) {
                 _seekTargetWaitTimer.stop();
                 log.debug("dispatching onSeek");
                 dispatchPlayEvent(ClipEventType.SEEK, _seekTarget);
@@ -875,10 +874,6 @@ package org.flowplayer.controller {
           _startedClip = null;
           log.debug("doStop(), closing netStream and connection");
 
-          if (clip.getContent() is Video) {
-             Video(clip.getContent()).clear();
-          }
-
           try {
              netStream.close();
              _netStream = null;
@@ -893,10 +888,11 @@ package org.flowplayer.controller {
           dispatchPlayEvent(ClipEventType.BUFFER_STOP);
        }
 
-       private function _createNetStream():void {
-          _netStream = createNetStream(_connection) || new NetStream(_connection);
+        private function _createNetStream():void {
+            _netStream = createNetStream(_connection) || new NetStream(_connection);
             netStream.client = new NetStreamClient(clip, _player.config, _streamCallbacks);
             _netStream.bufferTime = clip.bufferLength;
+            log.debug("using buffer time of " + _netStream.bufferTime);
             _volumeController.netStream = _netStream;
             clip.setNetStream(_netStream);
             _netStream.addEventListener(NetStatusEvent.NET_STATUS, _onNetStatus);

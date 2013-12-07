@@ -1,5 +1,10 @@
 Version history:
 
+3.2.13 (Nov 2013)
+------
+- #71 fixes for menu plugin to disable currently selected items to prevent toggling and over states.
+  When other items are clicked and selected all other items will become enabled.
+
 3.2.12
 ------
 - #36 adjust the menu during fullscreen events as this is prevented once added to the stage.

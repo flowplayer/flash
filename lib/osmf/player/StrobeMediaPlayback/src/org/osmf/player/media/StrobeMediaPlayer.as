@@ -262,56 +262,6 @@ package org.osmf.player.media
 						);								
 			}				
 			return rect;
-		}		
-	
-		public function seekUntilSuccess(position:Number, maxRepeatCount:uint = 10):void
-		{
-			var repeatCount:uint = 0;
-			// WORKARROUND: FM-939 - HTTPStreamingDVR - the first seek always fails
-			// http://bugs.adobe.com/jira/browse/FM-939
-			var workarroundTimer:Timer = new Timer(2000, 1);
-			workarroundTimer.addEventListener(TimerEvent.TIMER, 
-				function (event:Event):void
-				{					
-					if (canSeek)
-					{
-						repeatCount ++;
-						if (repeatCount < maxRepeatCount)
-						{
-							seek(position);
-						}
-					}
-				}
-			);
-			
-			addEventListener
-				( SeekEvent.SEEKING_CHANGE
-					, function(event:SeekEvent):void
-					{									
-						if (event.seeking == false)
-						{
-							removeEventListener(event.type, arguments.callee);						
-							
-							if (workarroundTimer != null)
-							{
-								// WORKARROUND: FM-939
-								workarroundTimer.stop();
-								workarroundTimer = null;
-							}
-						}
-						else
-						{	
-							// WORKARROUND: FM-939
-							if (workarroundTimer != null)
-							{
-								workarroundTimer.start();
-							}
-						}
-					}
-				);
-			
-			// Seek to the live position:
-			seek(position);
 		}
 		
 		public function snapToLive():Boolean
@@ -331,7 +281,7 @@ package org.osmf.player.media
 				var livePosition:Number = Math.max(0, duration - bufferTime - dvrSnapToLiveClockOffset); 
 				if (canSeekTo(livePosition))
 				{
-					seekUntilSuccess(livePosition);
+					seek(livePosition);
 					isDVRLive = true;
 					return true;
 				}		

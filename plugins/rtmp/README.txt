@@ -1,5 +1,10 @@
 Version history:
 
+3.2.13 (Nov 2013)
+------
+- #77 for live streams once unpublished,  stop the player to prevent streamnotfound errors reconnecting or if the server shuts down.
+- #28 fix for live rtmp servers which don't provide metadata needed for red5 and vp6 live streaming, 1500ms should give metadata time if available
+
 3.2.12
 ------
 - fix for resuming live streams with Wowza

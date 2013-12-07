@@ -112,17 +112,33 @@ package org.osmf.net
 		 * The preferred starting index.
 		 * 
 		 * @throws RangeError If the index is out of range.
+		 * 
+		 * From OSMF 2.0 upwards you can set the initialIndex through a metadata as
+		 * well, using the RESOURCE_INITIAL_INDEX key. This metadata can be added to 
+		 * any media resource, such as an URLResource, and it will be used to set 
+		 * the initial index when the DynamicStreamingResource is created.
+		 * 
+		 * For example, having resource as a URLResource you can set the initialIndex
+		 * in the following way:
+		 * 
+		 *      resource.addMetadata(MetadataNamespaces.RESOURCE_INITIAL_INDEX, 1);
+		 * 
+		 * The RESOURCE_INITIAL_INDEX metadata accepts integers, and will adjust the
+		 * value to fit into the streamItems range. This means that if the specified
+		 * value is negative it will be adjusted to 0, and if it is larger than the
+		 * available streamItems, then it will be adjusted to the greatest streamItem
+		 * index. 
 		 *  
 		 *  @langversion 3.0
 		 *  @playerversion Flash 10
 		 *  @playerversion AIR 1.5
 		 *  @productversion OSMF 1.0
-		 */
+		 */	
 		public function get initialIndex():int
 		{
 			return _initialIndex;
-		}
-		
+		}		
+			
 		public function set initialIndex(value:int):void
 		{
 			if (_streamItems == null || value >= _streamItems.length)
@@ -133,16 +149,14 @@ package org.osmf.net
 			_initialIndex = value;
 		}
     			
-		// Internals
-		//		
-    					
+						
 		/**
 		 * @private
 		 * 
 		 * Returns the index associated with a stream name. The match will be tried 
 		 * both with and without a mp4: prefix. Returns -1 if no match is found.
 		 */		
-		internal function indexFromName(name:String):int 
+		public function indexFromName(name:String):int 
 		{
 			for (var i:int = 0; i < _streamItems.length; i++) 
 			{
@@ -155,6 +169,10 @@ package org.osmf.net
 			}
 			return -1;
 		}
+
+		// Internals
+		//		
+    	
 		
 		/**
 		 * A comparison method that determines the behavior of the sort of the vector member variable.

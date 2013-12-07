@@ -19,13 +19,7 @@
  **********************************************************/
 package org.osmf.smpte.tt.timing
 {
-	import flash.utils.Dictionary;
-	
-	import mx.collections.ArrayList;
-	
 	import org.osmf.smpte.tt.model.TimedTextAttributeBase;
-	import org.osmf.smpte.tt.model.TimedTextElementBase;
-	import org.osmf.smpte.tt.utilities.DictionaryUtils;
 
 	public class TimeTree extends TreeType
 	{	

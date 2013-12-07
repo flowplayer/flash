@@ -106,7 +106,7 @@ package org.flowplayer.view {
 		private function buildMenu(menu:ContextMenu):ContextMenu {
 			 
 			addItem(menu, new ContextMenuItem("About " +VersionInfo.versionInfo()+ "...", false, true), function(event:ContextMenuEvent):void {
-				navigateToURL(new URLRequest("http://flowplayer.org"), "_self");
+				navigateToURL(new URLRequest("http://flash.flowplayer.org"), "_self");
 			});
 			// 1-3 Required by the GPL license
 			// 1 copyright notice

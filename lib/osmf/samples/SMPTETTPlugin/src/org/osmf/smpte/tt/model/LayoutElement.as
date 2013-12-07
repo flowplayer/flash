@@ -20,7 +20,6 @@
 package org.osmf.smpte.tt.model
 {
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
-	import org.osmf.smpte.tt.timing.TimeTree;
 	
 	public class LayoutElement extends TimedTextElementBase
 	{
@@ -50,35 +49,22 @@ package org.osmf.smpte.tt.model
 		 */
 		protected override function validElements():void
 		{
-			var child:uint = 0;
-			
-			//{ region Allow arbitrary metadata
-			while ((child < children.length) 
-				&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement) 
-				|| (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary region elements
-			while ((child < children.length) && (children[child] is RegionElement))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Ensure no other element is present
-			if (children.length != child)
-			{
-				error(children[child]+ " is not allowed in " + this + " at position " + child);
-			}
-			//} endregion
-			
+			var child:uint = 0;			
 			//{ region Check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
-				element.valid();
+				if (element is org.osmf.smpte.tt.model.MetadataElement
+					|| element is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| element is RegionElement)
+				{
+					child++;
+					element.valid();
+				} 
+				else
+				{
+					error(element+ " is not allowed in " + this + " at position " + (children.length-child));
+				}
+					
 			}
 			//} endregion
 		}

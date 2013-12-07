@@ -19,17 +19,13 @@
  **********************************************************/
 package org.osmf.smpte.tt.captions
 {
+	import flash.errors.IllegalOperationError;
 	import flash.utils.Dictionary;
 	
-	import org.osmf.smpte.tt.timing.TimeExpression;
-	import org.osmf.smpte.tt.timing.TreeType;
-	import org.osmf.smpte.tt.utilities.DictionaryUtils;
-
+	import org.osmf.utils.OSMFStrings;
+	
 	public class CaptioningDocument
 	{
-		import flash.errors.IllegalOperationError;
-		
-		import org.osmf.utils.OSMFStrings;
 		
 		/**
 		 * The title, if it was found in the metadata in the header.
@@ -124,11 +120,14 @@ package org.osmf.smpte.tt.captions
 				_captionElements = new Vector.<CaptionElement>();
 				_captionElementsHash = new Dictionary();
 			}
-			var timeString:String = TimeExpression.parse(caption.begin+"s").toString();
-			if(!_captionElementsHash[timeString]){
+			var timeString:String = caption.begin+"s";
+			if(!_captionElementsHash[timeString])
+			{
 				_captionElementsHash[timeString] = caption;
 				_captionElements.push(caption);
-			} else if(_captionElementsHash[timeString].siblings.indexOf(caption as TimedTextElement)==-1){
+			} 
+			else if(_captionElementsHash[timeString].siblings.indexOf(caption as TimedTextElement)==-1)
+			{
 				_captionElementsHash[timeString].siblings.push(caption);
 			}
 		}
@@ -190,7 +189,7 @@ package org.osmf.smpte.tt.captions
 			if (_captionElements != null)
 			{
 				for each(var c:CaptionElement in _captionElements){
-					num += 1+c.siblings.length;
+					num += (c.siblings.length+1);
 				}
 			}
 			

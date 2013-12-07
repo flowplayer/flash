@@ -23,6 +23,7 @@ package org.osmf.events
 {
 	import flash.events.Event;
 	
+	import org.osmf.net.httpstreaming.HTTPStreamDownloader;
 	import org.osmf.net.httpstreaming.flv.FLVTagScriptDataMode;
 	import org.osmf.net.httpstreaming.flv.FLVTagScriptDataObject;
 	
@@ -68,6 +69,22 @@ package org.osmf.events
 		public static const DOWNLOAD_ERROR:String = "downloadError";
 		
 		/**
+		 * Dispatched when an error occurs while downloading a fragment but we want to ignore the error,
+		 * or when we download a fragment and we just don't care about it.
+		 */
+		public static const DOWNLOAD_SKIP:String = "downloadSkip";
+		
+		/**
+		 * Dispatched for best effort fetch to indicate that fragment processing may proceed.
+		 */
+		public static const DOWNLOAD_CONTINUE:String = "downloadContinue";
+		
+		/**
+		 * Fired when some data arrives for a download.
+		 */
+		public static const DOWNLOAD_PROGRESS:String = "downloadProgress";
+		
+		/**
 		 * Dispatched when the duration of the current fragment/chunk has been calculated.
 		 */
 		public static const FRAGMENT_DURATION:String = "fragmentDuration";
@@ -91,6 +108,13 @@ package org.osmf.events
 		 * Dispacthed when streaming objects needs initializations.
 		 */
 		public static const ACTION_NEEDED:String = "actionNeeded";
+		
+		/**
+		 * Dispatched when it is a suitable time for the switch manager to run the
+		 * Adaptive Bitrate algorithm and identify the next quality level to be
+		 * played back
+		 */	
+		public static const RUN_ALGORITHM:String = "runAlgorithm";
 
 		/**
 		 * Default constructor.
@@ -102,7 +126,10 @@ package org.osmf.events
 				fragmentDuration:Number = 0,
 				scriptDataObject:FLVTagScriptDataObject = null,
 				scriptDataMode:String = FLVTagScriptDataMode.NORMAL,
-				url:String = null
+				url:String = null,
+				bytesDownloaded:uint = 0,
+				reason:String = "normal",
+				downloader:HTTPStreamDownloader = null
 				)
 		{
 			super(type, bubbles, cancelable);
@@ -111,6 +138,9 @@ package org.osmf.events
 			_scriptDataObject = scriptDataObject;
 			_scriptDataMode   = scriptDataMode;
 			_url = url;
+			_bytesDownloaded = bytesDownloaded;
+			_reason = reason;
+			_downloader = downloader;
 		}
 		
 		/**
@@ -146,6 +176,30 @@ package org.osmf.events
 		}
 		
 		/**
+		 * The number of bytes downloaded (in case the type is DOWNLOAD_COMPLETE)
+		 */
+		public function get bytesDownloaded():uint
+		{
+			return _bytesDownloaded;
+		}
+		
+		/**
+		 * The reason for failure. One of the values specified in HttpStreamingEventReason.
+		 */
+		public function get reason():String
+		{
+			return _reason;
+		}
+		
+		/**
+		 * The downloader for DOWNLOAD_* events
+		 */
+		public function get downloader():HTTPStreamDownloader
+		{
+			return _downloader;
+		}
+		
+		/**
 		 * Clones the event.
 		 */
 		override public function clone():Event
@@ -157,7 +211,10 @@ package org.osmf.events
 							fragmentDuration, 
 							scriptDataObject, 
 							scriptDataMode,
-							_url
+							_url,
+							_bytesDownloaded,
+							_reason,
+							_downloader
 					);
 		}
 		
@@ -166,5 +223,8 @@ package org.osmf.events
 		private var _scriptDataObject:FLVTagScriptDataObject;
 		private var _scriptDataMode:String;
 		private var _url:String;
+		private var _bytesDownloaded:uint;
+		private var _reason:String;
+		private var _downloader:HTTPStreamDownloader;
 	}
 }

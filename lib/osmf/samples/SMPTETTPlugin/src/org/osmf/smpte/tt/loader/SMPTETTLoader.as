@@ -20,6 +20,7 @@
 package org.osmf.smpte.tt.loader
 {
 	import flash.events.IEventDispatcher;
+	import flash.utils.getTimer;
 	
 	import org.osmf.events.LoaderEvent;
 	import org.osmf.events.MediaErrorEvent;
@@ -30,6 +31,7 @@ package org.osmf.smpte.tt.loader
 	import org.osmf.smpte.tt.model.TtElement;
 	import org.osmf.smpte.tt.parsing.ISMPTETTParser;
 	import org.osmf.smpte.tt.parsing.SMPTETTParser;
+	import org.osmf.smpte.tt.timing.TimeCode;
 	import org.osmf.smpte.tt.timing.TimeExpression;
 	import org.osmf.traits.LoadState;
 	import org.osmf.traits.LoadTrait;
@@ -95,100 +97,16 @@ package org.osmf.smpte.tt.loader
 		 */
 		override protected function executeLoad(loadTrait:LoadTrait):void
 		{
-			updateLoadTrait(loadTrait, LoadState.LOADING);			
-						
-			httpLoader.addEventListener(LoaderEvent.LOAD_STATE_CHANGE, onHTTPLoaderStateChange);
-			
-			// Create a temporary LoadTrait for this purpose, so that our main
-			// LoadTrait doesn't reflect any of the state changes from the
-			// loading of the URL, and so that we can catch any errors.
-			var httpLoadTrait:HTTPLoadTrait = new HTTPLoadTrait(httpLoader, loadTrait.resource);
-						
-			httpLoadTrait.addEventListener(MediaErrorEvent.MEDIA_ERROR, onLoadError);
-			
-			CONFIG::LOGGING
-			{
-				if (logger != null)
-				{
-					logger.debug("Downloading document at " + URLResource(httpLoadTrait.resource).url);
-				}
-			}
-			
-			httpLoader.load(httpLoadTrait);
-
-			function onHTTPLoaderStateChange(event:LoaderEvent):void
-			{
-				if (event.newState == LoadState.READY)
-				{
-					// This is a terminal state, so remove all listeners.
-					httpLoader.removeEventListener(LoaderEvent.LOAD_STATE_CHANGE, onHTTPLoaderStateChange);
-					httpLoadTrait.removeEventListener(MediaErrorEvent.MEDIA_ERROR, onLoadError);
-
-					var parser:ISMPTETTParser = createSMPTETTParser();
-					var captioningDocument:CaptioningDocument;
-					
-					try
-					{
-						TimeExpression.initializeParameters();
-						var p:SMPTETTParser = parser as SMPTETTParser;
-						if (p) 
-						{
-							p.addEventListener(ParseEvent.BEGIN, onParseEvent);
-							p.addEventListener(ParseEvent.PROGRESS, onParseEvent);
-							p.addEventListener(ParseEvent.COMPLETE, onParseEvent);
-						}
-						parser.parse(httpLoadTrait.urlLoader.data.toString());
-					}
-					catch(e:Error)
-					{
-						CONFIG::LOGGING
-						{
-							if (logger != null)
-							{
-								logger.debug("Error parsing captioning document: " + e.errorID + "-" + e.message);
-							}
-						}
-						updateLoadTrait(loadTrait, LoadState.LOAD_ERROR);
-					}
-					
-					function onParseEvent(event:ParseEvent):void
-					{
-						// trace(event);
-						if(event.type == ParseEvent.COMPLETE){
-							captioningDocument = event.data as CaptioningDocument;
-							SMPTETTLoadTrait(loadTrait).document = captioningDocument;
-							updateLoadTrait(loadTrait, LoadState.READY);
-						}
-					}
-				}
-				else if (event.newState == LoadState.LOAD_ERROR)
-				{
-					// This is a terminal state, so remove the listener.  But
-					// don't remove the error event listener, as that will be
-					// removed when the error event for this failure is
-					// dispatched.
-					httpLoader.removeEventListener(LoaderEvent.LOAD_STATE_CHANGE, onHTTPLoaderStateChange);
-					
-					CONFIG::LOGGING
-					{
-						if (logger != null)
-						{
-							logger.debug("Error loading SMPTE-TT document");;
-						}
-					}
-					
-					updateLoadTrait(loadTrait, event.newState);
-				}
-			}
-			
-			function onLoadError(event:MediaErrorEvent):void
-			{
-				// Only remove this listener, as there will be a corresponding
-				// event for the load failure.
-				httpLoadTrait.removeEventListener(MediaErrorEvent.MEDIA_ERROR, onLoadError);
-				
-				loadTrait.dispatchEvent(event.clone());
-			}	
+			var helper:SMPTETTLoader_LoadTrait_Helper = SMPTETTLoader_LoadTrait_Helper.create(this,httpLoader);
+			helper.executeLoad(loadTrait);
+		}
+		
+		
+		
+		//Referenced from the LoadTrait_Helper
+		public function updateLoadTraitAccessor(loadTrait:LoadTrait, newState:String):void
+		{
+			updateLoadTrait(loadTrait, newState);
 		}
 		
 		/**
@@ -212,14 +130,29 @@ package org.osmf.smpte.tt.loader
 			updateLoadTrait(loadTrait, LoadState.UNINITIALIZED);
 		}
 		
-		/**
-		 * Override to create your own parser.
-		 */
-		protected function createSMPTETTParser():ISMPTETTParser
+		private var _startTime:TimeCode = null;
+		public function get startTime():TimeCode
 		{
-			return new SMPTETTParser();
+			return _startTime;
 		}
-
+		
+		public function set startTime(value:TimeCode):void
+		{
+			_startTime = value;
+		}
+		
+		private var _endTime:TimeCode = null;
+		public function get endTime():TimeCode
+		{
+			return _endTime;
+		}
+		
+		public function set endTime(value:TimeCode):void
+		{
+			_endTime = value;
+		}
+		
+		
 		private var httpLoader:HTTPLoader;
 		
 		CONFIG::LOGGING

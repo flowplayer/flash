@@ -3,7 +3,6 @@ package org.osmf.media.videoClasses
 	[ExcludeClass]
 	
 	import flash.events.Event;
-	import flash.events.StageVideoEvent;
 	import flash.events.VideoEvent;
 	import flash.geom.Rectangle;
 	import flash.media.Video;
@@ -153,9 +152,9 @@ package org.osmf.media.videoClasses
 		 * A StageVideo instance might become unavailable while it is being used.
 		 * Switches to Video once this happens.
 		 */ 
-		private function onStageVideoRenderState(event:StageVideoEvent):void
+		private function onStageVideoRenderState(event:Event):void
 		{
-			if (event.status == UNAVAILABLE)
+			if (event["status"] == UNAVAILABLE)
 			{
 				for (var key:* in activeVideoSurfaces)
 				{
@@ -219,7 +218,7 @@ package org.osmf.media.videoClasses
 					videoSurface.stageVideo = stageVideo;
 					renderer = stageVideo;			
 					stageVideo.depth = maxDepth + 1;
-					renderer.addEventListener(StageVideoEvent.RENDER_STATE, onStageVideoRenderState);				
+					renderer.addEventListener("renderState", onStageVideoRenderState);				
 				}
 				else
 				{

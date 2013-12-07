@@ -142,7 +142,7 @@
          <path-element>${flexlib}/libs/air/servicemonitor.swc</path-element>
          
          <path-element>${flexlib}/locale/{locale}</path-element>
-         <path-element>../../testing/NetMockerLibrary/#output.bin#/NetMocker.swc</path-element>
+         <path-element>../../testing/NetMockerLibrary/#output.bin#/NetMockerLibrary.swc</path-element>
          <path-element>#osmf.swc.path#</path-element>
       </library-path>
       <!-- compiler.locale: specifies the locale for internationalization-->
