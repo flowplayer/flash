@@ -61,6 +61,8 @@ public class DefaultSeekDataStore {
 
 
     public function getQueryStringStartValue(seekPosition: Number, rangeBegin:Number = 0, rangeEnd:Number = undefined):Number {
+        //#164 request zero position for the initial start time or else video will sit pending possible due to cache.
+        if (seekPosition == 0) return 0;
         if (!rangeEnd) {
             rangeEnd = _keyFrameTimes.length - 1;
         }
