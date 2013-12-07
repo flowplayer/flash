@@ -16,57 +16,58 @@
  *    along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.flowplayer.view {
-import flash.display.BlendMode;
-import flash.display.DisplayObject;
-import flash.display.DisplayObjectContainer;
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.events.MouseEvent;
-import flash.events.TimerEvent;
-import flash.net.URLRequest;
-import flash.net.navigateToURL;
-import flash.system.Capabilities;
-import flash.system.Security;
-import flash.text.TextField;
-import flash.text.TextFieldAutoSize;
-import flash.utils.*;
+    import flash.display.BlendMode;
+    import flash.display.DisplayObject;
+    import flash.display.DisplayObjectContainer;
+    import flash.display.Sprite;
+    import flash.events.Event;
+    import flash.events.MouseEvent;
+    import flash.events.TimerEvent;
+    import flash.net.URLRequest;
+    import flash.net.navigateToURL;
+    import flash.system.Capabilities;
+    import flash.system.Security;
+    import flash.text.TextField;
+    import flash.text.TextFieldAutoSize;
+    import flash.utils.Timer;
+    import flash.utils.Dictionary;
 
-import org.flowplayer.config.Config;
-import org.flowplayer.config.ConfigParser;
-import org.flowplayer.config.ExternalInterfaceHelper;
-import org.flowplayer.config.VersionInfo;
-import org.flowplayer.controller.PlayListController;
-import org.flowplayer.controller.ResourceLoader;
-import org.flowplayer.controller.ResourceLoaderImpl;
-import org.flowplayer.flow_internal;
-import org.flowplayer.model.Callable;
-import org.flowplayer.model.Clip;
-import org.flowplayer.model.ClipEvent;
-import org.flowplayer.model.ClipEventType;
-import org.flowplayer.model.DisplayPluginModel;
-import org.flowplayer.model.DisplayProperties;
-import org.flowplayer.model.ErrorCode;
-import org.flowplayer.model.Loadable;
-import org.flowplayer.model.Logo;
-import org.flowplayer.model.PlayButtonOverlay;
-import org.flowplayer.model.PlayerError;
-import org.flowplayer.model.PlayerEvent;
-import org.flowplayer.model.Playlist;
-import org.flowplayer.model.Plugin;
-import org.flowplayer.model.PluginEvent;
-import org.flowplayer.model.PluginModel;
-import org.flowplayer.model.ProviderModel;
-import org.flowplayer.model.State;
-import org.flowplayer.util.Arrange;
-import org.flowplayer.model.EventDispatcher;
-import org.flowplayer.util.Log;
-import org.flowplayer.util.TextUtil;
-import org.flowplayer.util.URLUtil;
-import org.osflash.thunderbolt.Logger;
+    import org.flowplayer.config.Config;
+    import org.flowplayer.config.ConfigParser;
+    import org.flowplayer.config.ExternalInterfaceHelper;
+    import org.flowplayer.config.VersionInfo;
+    import org.flowplayer.controller.PlayListController;
+    import org.flowplayer.controller.ResourceLoader;
+    import org.flowplayer.controller.ResourceLoaderImpl;
+    import org.flowplayer.flow_internal;
+    import org.flowplayer.model.Callable;
+    import org.flowplayer.model.Clip;
+    import org.flowplayer.model.ClipEvent;
+    import org.flowplayer.model.ClipEventType;
+    import org.flowplayer.model.DisplayPluginModel;
+    import org.flowplayer.model.DisplayProperties;
+    import org.flowplayer.model.ErrorCode;
+    import org.flowplayer.model.Loadable;
+    import org.flowplayer.model.Logo;
+    import org.flowplayer.model.PlayButtonOverlay;
+    import org.flowplayer.model.PlayerError;
+    import org.flowplayer.model.PlayerEvent;
+    import org.flowplayer.model.Playlist;
+    import org.flowplayer.model.Plugin;
+    import org.flowplayer.model.PluginEvent;
+    import org.flowplayer.model.PluginModel;
+    import org.flowplayer.model.ProviderModel;
+    import org.flowplayer.model.State;
+    import org.flowplayer.util.Arrange;
+    import org.flowplayer.model.EventDispatcher;
+    import org.flowplayer.util.Log;
+    import org.flowplayer.util.TextUtil;
+    import org.flowplayer.util.URLUtil;
+    import org.osflash.thunderbolt.Logger;
 
-CONFIG::FLASH_10_1 {
-    import flash.media.StageVideo;
-}
+    CONFIG::FLASH_10_1 {
+        import flash.media.StageVideo;
+    }
 	use namespace flow_internal; 
 
 	public class Launcher extends StyleableSprite implements ErrorHandler {
@@ -91,17 +92,23 @@ CONFIG::FLASH_10_1 {
         private var _clickCount:int;
         private var _clickTimer:Timer = new Timer(200, 1);
         private var _clickEvent:MouseEvent;
+        private var _fullscreenDelay:Timer;
 
 		private var _screenMask:Sprite;
 
 		[Frame(factoryClass="org.flowplayer.view.Preloader")]
 		public function Launcher() {
-			addEventListener(Event.ADDED_TO_STAGE, function(e:Event):void {
-                URLUtil.loaderInfo = loaderInfo;
-                trace("Launcher added to stage");
-                callAndHandleError(createFlashVarsConfig, PlayerError.INIT_FAILED);
-            });
+            //#163 add and remove stage add listener
+			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
             super("#canvas", this);
+        }
+
+        private function onAddedToStage(e:Event):void
+        {
+            URLUtil.loaderInfo = loaderInfo;
+            trace("Launcher added to stage");
+            callAndHandleError(createFlashVarsConfig, PlayerError.INIT_FAILED);
+            removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         }
 
         private function initPhase1():void {
@@ -123,8 +130,9 @@ CONFIG::FLASH_10_1 {
 			loader = createNewLoader(); 
 
 			rootStyle = _config.canvas.style;
+            //#163 combine resize events
             stage.addEventListener(Event.RESIZE, onStageResize);
-            stage.addEventListener(Event.RESIZE, arrangeScreen);
+            //stage.addEventListener(Event.RESIZE, arrangeScreen);
 
 			setSize(Arrange.parentWidth, Arrange.parentHeight);
 
@@ -272,6 +280,8 @@ CONFIG::FLASH_10_1 {
 		private function onStageResize(event:Event = null):void {
 			setSize(Arrange.parentWidth, Arrange.parentHeight);
 			arrangeCanvasLogo();
+            //#163 move second resize event here
+            arrangeScreen(event);
 		}
 
 		private function arrangeCanvasLogo():void {
@@ -592,14 +602,20 @@ CONFIG::FLASH_10_1 {
             stage.removeEventListener(Event.RESIZE, arrangeScreen);
             
             _enteringFullscreen = true;
-            var delay:Timer = new Timer(1000, 1);
-            delay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
-            delay.start();
+
+            //#163 add / remove delay timer
+            _fullscreenDelay = new Timer(1000, 1);
+            _fullscreenDelay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+            _fullscreenDelay.start();
 		}
 		
 		private function onTimerComplete(event:TimerEvent):void {
 			log.debug("fullscreen wait delay complete, display clicks are enabled again");
 			_enteringFullscreen = false;
+
+            _fullscreenDelay.reset();
+            _fullscreenDelay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+            _fullscreenDelay = null;
 		}
 
 		private function createFlashVarsConfig():void {
@@ -890,7 +906,7 @@ CONFIG::FLASH_10_1 {
                 onDoubleClick(event);
             } else {
                 _clickEvent = event;
-                _clickTimer.start();
+                //_clickTimer.start();
             }
         }
 

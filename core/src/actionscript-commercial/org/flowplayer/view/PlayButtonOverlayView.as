@@ -481,7 +481,12 @@ package org.flowplayer.view {
 
             var time:Number = _player.status.time;
 
+            if (_playDetectTimer) {
+                _playDetectTimer.reset();
+                _playDetectTimer = null;
+            }
             _playDetectTimer = new Timer(200);
+            //#163 use weak reference event here
             _playDetectTimer.addEventListener(TimerEvent.TIMER,
                     function(event:TimerEvent):void {
                         var currentTime:Number = _player.status.time;
@@ -494,7 +499,7 @@ package org.flowplayer.view {
                         } else {
                             log.debug("not started yet, currentTime " + currentTime + ", time " + time);
                         }
-                    });
+                    }, false, 0, true);
             log.debug("doStart(), starting timer");
             _playDetectTimer.start();
         }

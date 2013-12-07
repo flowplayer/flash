@@ -329,7 +329,9 @@ package org.flowplayer.controller {
         }
 
 		private function replacePlaylistAndPlay(clips:Object):void {
-			stop();
+
+            //#163 stop the connection and stream
+			_state.stop(true, true);
 			if (clips is Clip) {
 				_playList.replaceClips(clips as Clip);
 			} else {
