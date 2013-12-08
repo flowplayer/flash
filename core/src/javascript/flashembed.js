@@ -88,10 +88,14 @@
 		conf: GLOBAL_OPTS,
 
 		getVersion: function()  {
-			var fo, ver;
+			var fo, ver, plugin;
 
 			try {
-				ver = navigator.plugins["Shockwave Flash"].description.slice(16);
+				plugin = navigator.plugins["Shockwave Flash"];
+				// Safari 6 reports version even when disabled
+				// but [0, 0] should be returned (#167)
+				if (plugin[0].enabledPlugin != null)
+					ver = plugin.description.slice(16);
 			} catch(e) {
 
 				try  {
