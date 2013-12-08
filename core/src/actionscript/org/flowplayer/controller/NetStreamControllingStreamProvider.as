@@ -17,30 +17,30 @@
  */
 
 package org.flowplayer.controller {
-import flash.display.DisplayObject;
-import flash.errors.IOError;
-import flash.events.NetStatusEvent;
-import flash.events.TimerEvent;
-import flash.media.Video;
-import flash.net.NetConnection;
-import flash.net.NetStream;
-import flash.utils.Dictionary;
-import flash.utils.Timer;
+    import flash.display.DisplayObject;
+    import flash.errors.IOError;
+    import flash.events.NetStatusEvent;
+    import flash.events.TimerEvent;
+    import flash.media.Video;
+    import flash.net.NetConnection;
+    import flash.net.NetStream;
+    import flash.utils.Dictionary;
+    import flash.utils.Timer;
 
-import org.flowplayer.model.Clip;
-import org.flowplayer.model.ClipError;
-import org.flowplayer.model.ClipEvent;
-import org.flowplayer.model.ClipEventType;
-import org.flowplayer.model.Playlist;
-import org.flowplayer.model.PluginModel;
-import org.flowplayer.model.ProviderModel;
-import org.flowplayer.util.Assert;
-import org.flowplayer.util.Log;
-import org.flowplayer.view.Flowplayer;
+    import org.flowplayer.model.Clip;
+    import org.flowplayer.model.ClipError;
+    import org.flowplayer.model.ClipEvent;
+    import org.flowplayer.model.ClipEventType;
+    import org.flowplayer.model.Playlist;
+    import org.flowplayer.model.PluginModel;
+    import org.flowplayer.model.ProviderModel;
+    import org.flowplayer.util.Assert;
+    import org.flowplayer.util.Log;
+    import org.flowplayer.view.Flowplayer;
 
-CONFIG::FLASH_10_1 {
-    import org.flowplayer.view.StageVideoWrapper;
-}
+    CONFIG::FLASH_10_1 {
+        import org.flowplayer.view.StageVideoWrapper;
+    }
 
     /**
      * A StreamProvider that does it's job using the Flash's NetStream class.
@@ -117,7 +117,7 @@ CONFIG::FLASH_10_1 {
         }
 
         private function _load(clip:Clip, pauseAfterStart:Boolean, attempts:int = 3):void {
-            Assert.notNull(clip, "load(clip): clip cannot be null");
+             Assert.notNull(clip, "load(clip): clip cannot be null");
             _paused = false;
             _stopping = false;
             _attempts = attempts;
@@ -832,6 +832,13 @@ CONFIG::FLASH_10_1 {
             if (_seekTarget < 0) return;
             if (_seekTargetWaitTimer && _seekTargetWaitTimer.running) return;
             log.debug("starting seek target wait timer");
+
+            if (_seekTargetWaitTimer) {
+                _seekTargetWaitTimer.reset();
+                _seekTargetWaitTimer.removeEventListener(TimerEvent.TIMER, onSeekTargetWait);
+                _seekTargetWaitTimer = null;
+            }
+
             _seekTargetWaitTimer = new Timer(200);
             _seekTargetWaitTimer.addEventListener(TimerEvent.TIMER, onSeekTargetWait);
             _seekTargetWaitTimer.start();
@@ -840,7 +847,8 @@ CONFIG::FLASH_10_1 {
         private function onSeekTargetWait(event:TimerEvent):void {
             //#104 if the updated time is a fraction less than the seek target time ie for HDS, use a bitwise rounding so the seek time can stop.
             if ((time|0) >= (_seekTarget|0)) {
-                _seekTargetWaitTimer.stop();
+                _seekTargetWaitTimer.reset();
+                _seekTargetWaitTimer.removeEventListener(TimerEvent.TIMER, onSeekTargetWait);
                 log.debug("dispatching onSeek");
                 dispatchPlayEvent(ClipEventType.SEEK, _seekTarget);
                 _seekTarget = -1;
@@ -876,12 +884,14 @@ CONFIG::FLASH_10_1 {
 
           try {
              netStream.close();
+             _netStream.removeEventListener(NetStatusEvent.NET_STATUS, _onNetStatus);
              _netStream = null;
           } catch (e:Error) {
           }
 
           if (_connection) {
              _connection.close();
+             _connection.removeEventListener(NetStatusEvent.NET_STATUS, _onNetStatus);
              _connection = null;
           }
 

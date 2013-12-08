@@ -90,10 +90,11 @@ package org.flowplayer.controller {
                 doConnect(_rtmpConnector, _proxyType, objectEncoding, connArgs);
 
                 // RTMPT connect is started after 250 ms
+                //#163 weak reference
                 var delay:Timer = new Timer(_failOverDelay, 1);
                 delay.addEventListener(TimerEvent.TIMER, function(event:TimerEvent):void {
                     doConnect(_rtmptConnector, _proxyType, objectEncoding, connArgs);
-                });
+                }, false, 0 , true);
                 delay.start();
 
             } else {

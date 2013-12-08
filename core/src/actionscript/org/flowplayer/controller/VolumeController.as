@@ -104,6 +104,7 @@ package org.flowplayer.controller {
 				dispatchEvent(PlayerEvent.volume(this.volume));
 				if (!_storeDelayTimer.running) {
 					log.info("starting delay timer");
+                    _storeDelayTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerDelayComplete);
 					_storeDelayTimer.start();
 				}
 			}
@@ -123,6 +124,7 @@ package org.flowplayer.controller {
 		private function storeVolume(muted:Boolean = false):void {
 			log.info("persisting volume level");
 			_storeDelayTimer.stop();
+            _storeDelayTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerDelayComplete);
 			_storedVolume.volume = _soundTransform.volume;
 			_storedVolume.muted = muted;
 			_storedVolume.persist();

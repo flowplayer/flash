@@ -133,7 +133,7 @@ package org.flowplayer.view {
 		}
 
 		public function getZIndex(view:DisplayObject):int {
-			try {
+            try {
 				return getChildIndex(view);
 			} catch (e:Error) {
 				// view not added in this panel
@@ -168,6 +168,8 @@ package org.flowplayer.view {
 		}
 
 		private function createLayout(event:Event):void {
+            //#163 remove event listener
+            removeEventListener(Event.ADDED_TO_STAGE, createLayout);
 			layout = new MarginLayout(stage);
 		}
 		
