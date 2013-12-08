@@ -742,7 +742,9 @@
                    _flowplayer.playlist.unbind(onStageVideoStateChange);
                });
 
-               _flowplayer.playlist.onSeek(function(event:ClipEvent):void {
+               //#75 temporary fix for seeking with progressive download as it creates a delay to dispatch seek events because of the seek delay timer.
+               _flowplayer.playlist.onBufferFull(function(event:ClipEvent):void {
+                   _flowplayer.playlist.unbind(onStageVideoStateChange);
                    _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
                });
             }
