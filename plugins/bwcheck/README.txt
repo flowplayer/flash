@@ -7,6 +7,7 @@ Version history:
 - Fix for issue caused by #322 with bitrateselect plugin
 - #96 possible confusion caused by the naming of the widgets with accessibility options for screen readers. Use the tooltip labels instead
   of the widget name if set.
+- #164 default bandwidth checking if not set and dynamic not enabled
 
 3.2.12
 ------
