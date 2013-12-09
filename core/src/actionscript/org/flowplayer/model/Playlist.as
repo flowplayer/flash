@@ -21,6 +21,7 @@ package org.flowplayer.model {
 
     import org.flowplayer.flow_internal;
 
+
     use namespace flow_internal;
 	/**
 	 * @author anssi
@@ -81,7 +82,7 @@ package org.flowplayer.model {
             var oldClips:Array = _clips.concat([]);
 
             //#163 detach netstream on the current clip
-            if (_clips[_currentPos].getContent().hasOwnProperty("attachNetStream")) {
+            if (_clips[_currentPos] && _clips[_currentPos].getContent().hasOwnProperty("attachNetStream")) {
                 _clips[_currentPos].getContent().attachNetStream(null);
             }
 
@@ -146,6 +147,7 @@ package org.flowplayer.model {
             if (pos == -1) {
                 pos = clips.length - 1;
             }
+
             var parent:Clip = clips[pos];
             parent.addChild(clip);
             if (clip.position == 0) {
@@ -173,17 +175,19 @@ package org.flowplayer.model {
                 clip.onBeforeAll(_commonClip.onBeforeClipEvent);
             }
 
-            for (var i:int = 0; i < clip.playlist.length; i++) {
-                addChildClip(clip.playlist[i], pos,  dispatchEvents);
+            if (pos == -1) {
+                _clips.push(clip);
+            } else {
+                _clips.splice(_clips.indexOf(_clips[pos].preroll || _clips[pos]), 0, clip);
+            }
+
+            var nested:Array = clip.playlist;
+            for (var i:int = 0; i < nested.length; i++) {
+                addChildClip(nested[i], pos, dispatchEvents);
             }
 
             //log.debug("clips now " + _clips);
 
-            if (pos == -1) {
-                _clips.push(clip);
-            } else {
-                _clips.splice(_clips.indexOf(clips[pos].preroll || clips[pos]), 0, clip);
-            }
         }
 		
 		/**

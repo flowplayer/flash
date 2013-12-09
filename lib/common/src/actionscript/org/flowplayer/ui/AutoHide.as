@@ -354,21 +354,23 @@ package org.flowplayer.ui {
             }
             if (! _hideTimer) {
                 _hideTimer = new Timer(_config.hideDelay);
+                _hideTimer.addEventListener(TimerEvent.TIMER, hide);
             }
             // check if hideDelay has changed
             else if (_config.hideDelay != _hideTimer.delay) {
                 //                log.info("startHideTimer(), using new delay " + _config.hideDelay);
-                _hideTimer.stop();
-                _hideTimer = new Timer(_config.hideDelay);
+                //_hideTimer = new Timer(_config.hideDelay);
+                _hideTimer.delay = _hideTimer.delay;
             }
 
-            _hideTimer.addEventListener(TimerEvent.TIMER, hide);
+            //_hideTimer.addEventListener(TimerEvent.TIMER, hide);
             _hideTimer.start();
         }
 
         private function stopHideTimer():void {
             if (! _hideTimer) return;
-            _hideTimer.stop();
+            _hideTimer.reset();
+            _hideTimer.removeEventListener(TimerEvent.TIMER, hide);
             _hideTimer = null;
         }
 

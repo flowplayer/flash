@@ -136,14 +136,14 @@ package org.flowplayer.controls.scrubber {
           log.debug("stopTrickPlayTracking()");
           if (_trickPlayTrackTimer) {
              _trickPlayTrackTimer.stop();
+             _trickPlayTrackTimer.addEventListener(TimerEvent.TIMER, onTrickPlayProgress);
+             _trickPlayTrackTimer = null;
           }
        }
 
        private function startTrickPlayTracking():void {
           log.debug("startTrickPlayTracking()");
-          if (_trickPlayTrackTimer) {
-             _trickPlayTrackTimer.stop();
-          }
+           stopTrickPlayTracking();
           _trickPlayTrackTimer = new Timer(200);
           _trickPlayTrackTimer.addEventListener(TimerEvent.TIMER, onTrickPlayProgress);
           _trickPlayTrackTimer.start();
@@ -246,6 +246,7 @@ package org.flowplayer.controls.scrubber {
           var time:Number = startTime > 0 ? startTime : status.time;
 
           _startDetectTimer = new Timer(200);
+          //#163 set weak listener and clear the timer when done.
           _startDetectTimer.addEventListener(TimerEvent.TIMER,
                   function(event:TimerEvent):void {
                      var currentTime:Number = _player.status.time;
@@ -253,6 +254,7 @@ package org.flowplayer.controls.scrubber {
 
                      if (Math.abs(currentTime - time) > 0.2) {
                         _startDetectTimer.stop();
+                        _startDetectTimer = null;
                         var endPos:Number = width - _dragger.width;
 //                        log.debug("animation duration is " + clip.duration + " - "+ time + " * 1000");
                         // var duration:Number = (clip.duration - time) * 1000;
@@ -269,7 +271,7 @@ package org.flowplayer.controls.scrubber {
                                    return c * t / d + b;
                                 });
                      }
-                  });
+                  }, false, 0, true);
           log.debug("doStart(), starting timer");
           _startDetectTimer.start();
        }
@@ -291,6 +293,8 @@ package org.flowplayer.controls.scrubber {
           log.debug("stop()");
           if (_startDetectTimer) {
              _startDetectTimer.stop();
+              //#163 set weak listener and clear the timer when done.
+             _startDetectTimer = null;
           }
           animationEngine.cancel(_dragger);
        }
