@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.11.min.js"></script>
 
 
 	<!-- page title -->
@@ -11,14 +11,14 @@
 
 	<div id="page">
         <a
-                     href="flowplayer.flv"
+                     href="boris.mp3"
                      style="display:block;width:440px;height:247px"
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer-3.2.17-dev.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.controller.PlayingState' },
+        log: { level: 'debug', filter: 'org.flowplayer.audio.*' },
 
         key: '#$b6223bfbd646c621758',
 
@@ -45,22 +45,28 @@
         clip: {
 
             // baseUrl for both parent and instream clips
-            baseUrl: 'http://stream.flowplayer.org',
+            baseUrl: 'http://flowmac2:8000/',
 
             // duration for the parent clip
             duration: 10,
 
             // instream playlist
             playlist: [
+                {url: 'fake_empire.mp3', duration: 10, position: 0, provider: 'audioInstream' },
 
                 // in the middle of the parent clip (ie. "mid-roll") starting at
                 // 5 seconds
                 {
-                    url: 'honda_accord.flv', duration: 5, position: 2,
+                    url: 'apunk.mp3', duration: 5, position: 2, provider: 'audioInstream',
                     controls: {all: false, volume: true, fullscreen: true}
                 }
             ]
-    }
+        },
+        plugins: {
+            audioInstream: {
+                url: 'flowplayer.audio-3.2.11-dev.swf'
+            }
+        }
     });
 </script>
 	</div>

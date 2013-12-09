@@ -16,15 +16,16 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.rtmp.*' },
+        log: { level: 'debug', filter: 'org.flowplayer.rtmp.RTMPStreamProvider, org.flowplayer.controller.*' },
 
         clip: {
             provider: 'rtmp',
 //            bufferLength: 5,
-            url:'black-beatz',
+            url:'ch1',
             live: true,
+            bufferLength: 0,
 
             onStart: function() {
                 console.log("onStart");
@@ -53,7 +54,6 @@
 
             onStop: function() {
                 console.log("onStop");
-                $f().close();
             }
 
         },
@@ -61,7 +61,7 @@
         {
             rtmp: {
                 url: 'flowplayer.rtmp.swf',
-                netConnectionUrl: "rtmp://stream-6.antenne.de:80/live",
+                netConnectionUrl: "rtmp://itv08.digizuite.dk/tv2b",
                 failOverDelay: 4000,
                 connectionTimeout: 10000
             }

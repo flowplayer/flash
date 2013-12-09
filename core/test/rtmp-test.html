@@ -15,9 +15,13 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.rtmp.*, org.flowplayer.controller.*' },
+        log: { level: 'error', filter: 'org.flowplayer.rtmp.*, org.flowplayer.controller.*' },
+        onBegin: function() {
+            console.log("onBegin");
+        },
+
         onStart: function() {
             console.log("onStart");
         },
@@ -36,16 +40,16 @@
 
 
         clip: {
-            url: '000F7F/movietrailers/Skyfall.mp4',
+            url: 'mp4:buffalo_soldiers',
             provider: 'rtmp',
-            autoPlay: false,
+//            autoPlay: false,
             autoBuffering:true
         },
 
         plugins: {
             rtmp: {
-                url: 'http://releases.flowplayer.org/rtmp/flowplayer.rtmp.swf',
-                netConnectionUrl: 'rtmp://fms.0F7F.planetstream.net'
+                url: 'flowplayer.rtmp-3.2.13-dev.swf',
+                netConnectionUrl: 'rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st'
             }
         }
     });

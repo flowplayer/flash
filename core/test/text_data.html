@@ -20,7 +20,7 @@
 <script>
     flowplayer("player", "../../../flash-build/build/flowplayer-3.2.17-dev.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.controls.scrubber.ScrubberSlider'},
+        log: { level: 'debug', filter: 'org.flowplayer.controller.NetStreamClient'},
 
         key: '#$b6223bfbd646c621758',
 
@@ -35,14 +35,6 @@
         onStartBuffering: function() {
             console.log("onStartBuffering");
         },
-
-//        onBufferEmpty: function() {
-//            console.log("onBufferEmpty");
-//        },
-<!---->
-//        onBufferFull: function() {
-//            console.log("onBufferFull");
-//        },
 
         onFinish: function() {
             console.log("onFinish");
@@ -68,18 +60,40 @@
             console.log("onLastSecond");
         },
 
-                playlist: [
-                    "http://stream.flowplayer.org/flowplayer-700.flv"
-                ],
-
         clip: {
-            baseUrl: '../build',
-//            duration: 20,
-            bufferLength: 10,
-            autoPlay: true,
-            autoBuffering: true
-//            ,
-//            duration: 20
+            onNetStreamEvent: function (clip, type, info) {
+                if (type == "onTextData") {
+                    console.log("onTextData:", info);
+                }
+
+            },
+
+            url: 'http://stream.flowplayer.org/big_buck_bunny_with_captions.mp4',
+            captionsTrackFilter: "trackid=2",
+            scaling: 'fit'
+
+        },
+
+        plugins: {
+            captions: {
+                url: "flowplayer.captions-3.2.10-dev.swf",
+                captionTarget: "content"
+            },
+
+            content: {
+                url: "flowplayer.content-3.2.8.swf",
+                bottom: 26,
+                height: 30,
+                backgroundColor: "transparent",
+                backgroundGradient: "none",
+                border: "none",
+                textDecoration: "outline",
+                style: {
+                    body: {
+                        textAlign: "center"
+                    }
+                }
+            }
         }
 
 

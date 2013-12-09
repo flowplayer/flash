@@ -5,7 +5,7 @@
 	<property file="../../../flash-build/plugin-build.properties" />
 	<import file="../../../flash-build/plugin-build.xml"/>
 
-	<property name="version" value="3.2.8" />
+	<property name="version" value="3.2.9-dev" />
 	<property name="shortname" value="smil" />
     <property name="basename" value="flowplayer.${shortname}" />
     <property name="releasedir" value="${basename}" />
