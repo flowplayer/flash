@@ -481,10 +481,6 @@ package org.flowplayer.view {
 
             var time:Number = _player.status.time;
 
-            if (_playDetectTimer) {
-                _playDetectTimer.reset();
-                _playDetectTimer = null;
-            }
             _playDetectTimer = new Timer(200);
             //#163 use weak reference event here
             _playDetectTimer.addEventListener(TimerEvent.TIMER,
@@ -494,6 +490,7 @@ package org.flowplayer.view {
 
                         if (Math.abs(currentTime - time) > 0.2) {
                             _playDetectTimer.stop();
+                            _playDetectTimer = null;
                             log.debug("playback started");
                             callback();
                         } else {
