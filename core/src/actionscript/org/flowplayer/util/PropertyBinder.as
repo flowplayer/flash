@@ -17,11 +17,13 @@
  */
 
 package org.flowplayer.util {
-    import flash.utils.describeType;
+
+import flash.utils.describeType;
     import flash.utils.getQualifiedClassName;
 	
 	import org.flowplayer.util.Log;	
 
+    import flash.system.System;
 	/**
 	 * PropertyBinder is used to populate object's properties by copying values
 	 * from other objects. The target object should be an instance of a class that contains
@@ -42,7 +44,7 @@ package org.flowplayer.util {
 		 * @param extraProps a property name for all properties for which the target does not provide an accessor or a setter function
 		 */
 		public function PropertyBinder(object:Object, extraProps:String = null) {
-			log.info("created for " + getQualifiedClassName(object));
+			//log.info("created for " + getQualifiedClassName(object));
 			_object = object;
 			_extraProps = extraProps;
             _objectDesc = describeType(_object);
@@ -57,7 +59,10 @@ package org.flowplayer.util {
 					copyProperty(prop, source[prop]);
 				}
 			}
-			log.debug("done with " + getQualifiedClassName(_object));
+
+            //#163 cleanup xml object
+            System.disposeXML(_objectDesc);
+			//log.debug("done with " + getQualifiedClassName(_object));
 			return _object;
 		}
 

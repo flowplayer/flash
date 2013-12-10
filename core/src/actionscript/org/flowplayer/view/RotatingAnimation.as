@@ -28,7 +28,8 @@ import flash.utils.Timer;
         public function RotatingAnimation() {
             createRotation();
             _rotationTimer = new Timer(50);
-            _rotationTimer.addEventListener(TimerEvent.TIMER, rotate);
+            //#163 weak reference event
+            _rotationTimer.addEventListener(TimerEvent.TIMER, rotate, false,0,true);
             _rotationTimer.start();
         }
 

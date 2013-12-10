@@ -1,21 +1,21 @@
-    /**
-     *    Copyright (c) 2008-2011 Flowplayer Oy *
-     *    This file is part of Flowplayer.
-     *
-     *    Flowplayer is free software: you can redistribute it and/or modify
-     *    it under the terms of the GNU General Public License as published by
-     *    the Free Software Foundation, either version 3 of the License, or
-     *    (at your option) any later version.
-     *
-     *    Flowplayer is distributed in the hope that it will be useful,
-     *    but WITHOUT ANY WARRANTY; without even the implied warranty of
-     *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     *    GNU General Public License for more details.
-     *
-     *    You should have received a copy of the GNU General Public License
-     *    along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
-     */
- package org.flowplayer.view {
+/*    
+ *    Copyright (c) 2008-2011 Flowplayer Oy *
+ *    This file is part of Flowplayer.
+ *
+ *    Flowplayer is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    Flowplayer is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.flowplayer.view {
     import flash.display.BlendMode;
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
@@ -31,7 +31,6 @@
     import flash.text.TextFieldAutoSize;
     import flash.utils.Timer;
     import flash.utils.Dictionary;
-    import flash.utils.setTimeout;
 
     import org.flowplayer.config.Config;
     import org.flowplayer.config.ConfigParser;
@@ -93,16 +92,23 @@
         private var _clickCount:int;
         private var _clickTimer:Timer = new Timer(200, 1);
         private var _clickEvent:MouseEvent;
+        private var _fullscreenDelay:Timer;
+
 		private var _screenMask:Sprite;
 
 		[Frame(factoryClass="org.flowplayer.view.Preloader")]
 		public function Launcher() {
-			addEventListener(Event.ADDED_TO_STAGE, function(e:Event):void {
-                URLUtil.loaderInfo = loaderInfo;
-                trace("Launcher added to stage");
-                callAndHandleError(createFlashVarsConfig, PlayerError.INIT_FAILED);
-            });
+            //#163 add and remove stage add listener
+			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
             super("#canvas", this);
+        }
+
+        private function onAddedToStage(e:Event):void
+        {
+            URLUtil.loaderInfo = loaderInfo;
+            trace("Launcher added to stage");
+            callAndHandleError(createFlashVarsConfig, PlayerError.INIT_FAILED);
+            removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         }
 
         private function initPhase1():void {
@@ -124,8 +130,9 @@
 			loader = createNewLoader(); 
 
 			rootStyle = _config.canvas.style;
+            //#163 combine resize events
             stage.addEventListener(Event.RESIZE, onStageResize);
-            stage.addEventListener(Event.RESIZE, arrangeScreen);
+            //stage.addEventListener(Event.RESIZE, arrangeScreen);
 
 			setSize(Arrange.parentWidth, Arrange.parentHeight);
 
@@ -275,6 +282,8 @@
 		private function onStageResize(event:Event = null):void {
 			setSize(Arrange.parentWidth, Arrange.parentHeight);
 			arrangeCanvasLogo();
+            //#163 move second resize event here
+            arrangeScreen(event);
 		}
 
 		private function arrangeCanvasLogo():void {
@@ -595,14 +604,20 @@
             stage.removeEventListener(Event.RESIZE, arrangeScreen);
             
             _enteringFullscreen = true;
-            var delay:Timer = new Timer(1000, 1);
-            delay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
-            delay.start();
+
+            //#163 add / remove delay timer
+            _fullscreenDelay = new Timer(1000, 1);
+            _fullscreenDelay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+            _fullscreenDelay.start();
 		}
 		
 		private function onTimerComplete(event:TimerEvent):void {
 			log.debug("fullscreen wait delay complete, display clicks are enabled again");
 			_enteringFullscreen = false;
+
+            _fullscreenDelay.reset();
+            _fullscreenDelay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+            _fullscreenDelay = null;
 		}
 
 		private function createFlashVarsConfig():void {

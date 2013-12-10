@@ -64,6 +64,7 @@ package org.flowplayer.controller {
             log.debug("stop()");
             if (_timer && _timer.running) {
                 _timer.stop();
+                _timer.removeEventListener(TimerEvent.TIMER, onTimer);
             }
         }
 

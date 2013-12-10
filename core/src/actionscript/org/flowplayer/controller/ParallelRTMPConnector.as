@@ -57,7 +57,8 @@ package org.flowplayer.controller {
             if (_connectionClient) {
                 _connection.client = _connectionClient;
             }
-            _connection.addEventListener(NetStatusEvent.NET_STATUS, _onConnectionStatus);
+            //#163 weak reference to listener
+            _connection.addEventListener(NetStatusEvent.NET_STATUS, _onConnectionStatus, false, 0 , true);
 
             log.debug("netConnectionUrl is " + _url);
             if (connectionArgs && connectionArgs.length > 0) {

@@ -69,11 +69,7 @@ package org.flowplayer.view {
 		
 		public function resizeClipTo(clip:Clip, mediaSize:MediaSize, force:Boolean = false):void {
 			log.debug("resizeClipTo, clip " + clip);
-			if ( _resizerTimer ) {
-				log.debug("Killing old resize timer");
-				_resizerTimer.reset();
-				_resizerTimer = null;
-			}
+
 			
 			var resizer:MediaResizer = resizers[clip];
 			if (! resizer) {
@@ -92,16 +88,26 @@ package org.flowplayer.view {
 					screen.resized(clip);
 				}
 			};
+
+
 			
 			if ( resizer.hasOrigSize() ) {
 				log.debug("we have a size, resizing now !");
 				resizingFunc();
 			} else {
+
+                if ( _resizerTimer ) {
+                    log.debug("Killing old resize timer");
+                    _resizerTimer.reset();
+                    _resizerTimer.removeEventListener(TimerEvent.TIMER, resizingFunc);
+                    _resizerTimer = null;
+                }
+
 				// delayed one
 				log.warn("we don't have a size now, delaying the resize");
 				_resizerTimer = new Timer(500, 5);
 				_resizerTimer.addEventListener(TimerEvent.TIMER, resizingFunc);
-				_resizerTimer.start();
+				//_resizerTimer.start();
 				
 			}
 		}
