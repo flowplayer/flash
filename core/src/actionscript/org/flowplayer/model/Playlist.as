@@ -77,14 +77,9 @@ package org.flowplayer.model {
 				doAddClip(clips[i], -1, false);
 			}
 		}
-		
+
 		private function doReplace(newClips:Array, silent:Boolean = false):void {
             var oldClips:Array = _clips.concat([]);
-
-            //#163 detach netstream on the current clip
-            if (_clips[_currentPos] && _clips[_currentPos].getContent().hasOwnProperty("attachNetStream")) {
-                _clips[_currentPos].getContent().attachNetStream(null);
-            }
 
             initialize(newClips);
 
