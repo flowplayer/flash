@@ -57,6 +57,8 @@ package org.flowplayer.view {
 		private var _play:PlayButtonOverlay;
         private var _rotation:RotatingAnimation;
         private var _playDetectTimer:Timer;
+        private var _startTime:Number;
+        private var _playDetectCallback:Function;
 
 		public function PlayButtonOverlayView(resizeToTextWidth:Boolean, play:PlayButtonOverlay, pluginRegistry:PluginRegistry) {
 			_resizeToTextWidth = resizeToTextWidth;
@@ -479,26 +481,32 @@ package org.flowplayer.view {
                 return;
             }
 
-            var time:Number = _player.status.time;
+            _startTime = _player.status.time;
+            _playDetectCallback = callback;
 
             _playDetectTimer = new Timer(200);
-            //#163 use weak reference event here
-            _playDetectTimer.addEventListener(TimerEvent.TIMER,
-                    function(event:TimerEvent):void {
-                        var currentTime:Number = _player.status.time;
-                        log.debug("on detectPlayback() currentTime " + currentTime + ", time " + time);
-
-                        if (Math.abs(currentTime - time) > 0.2) {
-                            _playDetectTimer.stop();
-                            _playDetectTimer = null;
-                            log.debug("playback started");
-                            callback();
-                        } else {
-                            log.debug("not started yet, currentTime " + currentTime + ", time " + time);
-                        }
-                    }, false, 0, true);
+            _playDetectTimer.addEventListener(TimerEvent.TIMER,onPlayDetect);
             log.debug("doStart(), starting timer");
             _playDetectTimer.start();
+        }
+
+        //#163 move play detect timer to external listener and clear when done.
+        private function onPlayDetect(event:TimerEvent):void
+        {
+            var currentTime:Number = _player.status.time;
+            log.debug("on detectPlayback() currentTime " + currentTime + ", time " + _startTime);
+
+            if (Math.abs(currentTime - _startTime) > 0.2) {
+                _playDetectCallback();
+                _playDetectTimer.stop();
+                _playDetectTimer.removeEventListener(TimerEvent.TIMER,onPlayDetect);
+                _playDetectTimer = null;
+                _playDetectCallback = null;
+                _startTime = NaN;
+                log.debug("playback started");
+            } else {
+                log.debug("not started yet, currentTime " + currentTime + ", time " + _startTime);
+            }
         }
     }
 }
