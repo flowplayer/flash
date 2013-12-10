@@ -58,7 +58,6 @@ package org.flowplayer.view {
         private var _rotation:RotatingAnimation;
         private var _playDetectTimer:Timer;
         private var _startTime:Number;
-        private var _playDetectCallback:Function;
 
 		public function PlayButtonOverlayView(resizeToTextWidth:Boolean, play:PlayButtonOverlay, pluginRegistry:PluginRegistry) {
 			_resizeToTextWidth = resizeToTextWidth;
@@ -466,10 +465,10 @@ package org.flowplayer.view {
         private function bufferUntilStarted(event:ClipEvent = null):void {
             if (event && event.isDefaultPrevented()) return;
             startBuffering();
-            createPlaybackStartedCallback(stopBuffering);
+            createPlaybackStartedCallback();
         }
 
-        private function createPlaybackStartedCallback(callback:Function):void {
+        private function createPlaybackStartedCallback():void {
             log.debug("detectPlayback()");
 
             if (! _player.isPlaying()) {
@@ -482,7 +481,6 @@ package org.flowplayer.view {
             }
 
             _startTime = _player.status.time;
-            _playDetectCallback = callback;
 
             _playDetectTimer = new Timer(200);
             _playDetectTimer.addEventListener(TimerEvent.TIMER,onPlayDetect);
@@ -497,11 +495,10 @@ package org.flowplayer.view {
             log.debug("on detectPlayback() currentTime " + currentTime + ", time " + _startTime);
 
             if (Math.abs(currentTime - _startTime) > 0.2) {
-                _playDetectCallback();
+                stopBuffering();
                 _playDetectTimer.stop();
                 _playDetectTimer.removeEventListener(TimerEvent.TIMER,onPlayDetect);
                 _playDetectTimer = null;
-                _playDetectCallback = null;
                 _startTime = NaN;
                 log.debug("playback started");
             } else {
