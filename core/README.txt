@@ -4,13 +4,14 @@ Version history:
 ------
 - #75 set the child display list different when a gradient is set.
 - The clip property 'bufferLength' now accepts decimal values, for example bufferLength: 0.2
-- #121 only load plugins and external config from the same domain as the player swf from loaded from
+- #121 XSS fix: Only load plugins and external config from the same domain as the player swf is loaded from
 - Made it possible to tab out of the player and into the HTML page using the keyboard alone.
 - Change links in the context menu and in the logos to point to http://flash.flowplayer.org
 - Pausing a live stream now leaves the video frame visible #81
 - Audio plugin is not loaded nor used when the the provider is set excplicitly in the clip to a non-audio value, for
  example to 'http'
 - Allow playing another instream clip while already playing one. Issue #131
+- Fixed memory leaks related to repeatedly starting playback with the play() API method. #163
 
 3.2.16
 ------
