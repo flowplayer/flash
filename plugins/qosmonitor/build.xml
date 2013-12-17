@@ -13,6 +13,9 @@
 	<import file="../../../flash-build/plugin-build.xml"/>
 	
 	<property name="basename" value="flowplayer.qosmonitor" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="qosmonitor" />
+
     <property name="releasedir" value="${basename}" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-swc" value="${basename}.swc" />

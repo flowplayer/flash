@@ -10,6 +10,8 @@
 	<property name="version" value="3.2.8-dev" />
 	<property name="shortname" value="audiovisual" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
 
     <property name="releasedir" value="flowplayer.audiovisual" />
 	<property name="plugin-binary" value="${basename}.swf" />

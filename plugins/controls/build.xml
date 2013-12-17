@@ -7,6 +7,9 @@
     <!-- filename for the plugin swf -->
     <property name="shortname" value="controls" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
+
     <property name="releasedir" value="flowplayer.controls" />
 
     <!-- location of the skin swd, anc swc -->
