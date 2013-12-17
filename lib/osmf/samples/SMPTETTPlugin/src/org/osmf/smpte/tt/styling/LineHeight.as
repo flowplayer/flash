@@ -19,8 +19,25 @@
  **********************************************************/
 package org.osmf.smpte.tt.styling
 {
+	import flash.utils.Dictionary;
+
 	public class LineHeight extends NumberPair
 	{
+		private static var _cache:Dictionary = new Dictionary();
+		public static function getLineHeight(value:*):LineHeight
+		{
+			if (_cache[value] !== undefined)
+			{
+				return _cache[value];
+			}
+			else
+			{
+				var lineHeight:LineHeight = new LineHeight(value);
+				_cache[value] = lineHeight;
+				return lineHeight;
+			}
+		}
+		
 		public function get width():Number
 		{
 			return first;

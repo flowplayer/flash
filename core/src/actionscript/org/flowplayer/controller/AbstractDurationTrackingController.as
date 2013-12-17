@@ -84,12 +84,19 @@ package org.flowplayer.controller {
 
 		private function createDurationTracker(clip:Clip):void {
 			if (durationTracker) {
-				durationTracker.stop();
+                clearDurationTracker();
 			}
 			durationTracker = new PlayTimeTracker(clip, this);
 			durationTracker.addEventListener(TimerEvent.TIMER_COMPLETE, durationReached);
 			durationTracker.start();
 		}
+
+        private function clearDurationTracker():void
+        {
+            durationTracker.stop();
+            durationTracker.removeEventListener(TimerEvent.TIMER_COMPLETE, durationReached);
+            durationTracker = null;
+        }
 
 		public function get time():Number {
 			if (!durationTracker) return 0;
@@ -166,8 +173,8 @@ package org.flowplayer.controller {
 		private function stop(event:ClipEvent, closeStream:Boolean, silent:Boolean = false):void {
 			log.debug("stop " + durationTracker);
 			if (durationTracker) {
-				durationTracker.stop();
 				durationTracker.time = 0;
+                clearDurationTracker();
 			}
 			doStop(silent ? null : event, closeStream);
 		}

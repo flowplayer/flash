@@ -22,7 +22,7 @@
 package org.osmf.net.httpstreaming.f4f
 {
 	import __AS3__.vec.Vector;
-
+	
 	[ExcludeClass]
 	
 	/**
@@ -340,9 +340,15 @@ package org.osmf.net.httpstreaming.f4f
 		// Internal
 		//
 		
-		private function findValidFragmentDurationPair(index:uint):FragmentDurationPair
+		/**
+		 * @private
+		 * 
+		 * return the first FragmentDurationPair whose index >= i that is not a discontinuity,
+		 * or null if no such FragmentDurationPair exists.
+		 **/
+		private function findNextValidFragmentDurationPair(index:uint):FragmentDurationPair
 		{
-			for (var i:uint = index; index < _fragmentDurationPairs.length; i++)
+			for (var i:uint = index; i < _fragmentDurationPairs.length; ++i)
 			{
 				var fdp:FragmentDurationPair = _fragmentDurationPairs[i];
 				if (fdp.duration > 0)
@@ -354,6 +360,30 @@ package org.osmf.net.httpstreaming.f4f
 			return null;
 		}
 		
+		/**
+		 * @private
+		 * 
+		 * return the first FragmentDurationPair whose index < i that is not a discontinuity,
+		 * or null if no such FragmentDurationPair exists.
+		 **/
+		private function findPrevValidFragmentDurationPair(index:uint):FragmentDurationPair
+		{
+			var i:uint = index;
+			if(i > _fragmentDurationPairs.length)
+			{
+				i = _fragmentDurationPairs.length;
+			}
+			for (; i > 0; --i)
+			{
+				var fdp:FragmentDurationPair = _fragmentDurationPairs[i-1];
+				if (fdp.duration > 0)
+				{
+					return fdp;
+				}
+			}
+			return null;
+		}
+		
 		private function calculateFragmentId(fdp:FragmentDurationPair, time:Number):uint
 		{
 			if (fdp.duration <= 0)
@@ -362,14 +392,383 @@ package org.osmf.net.httpstreaming.f4f
 			}
 			
 			var deltaTime:Number = time - fdp.durationAccrued;
-			var count:uint = (deltaTime > 0)? deltaTime / fdp.duration : 1;
-			if ((deltaTime % fdp.duration) > 0)
-			{
-				count++;
-			}
-			return fdp.firstFragment + count - 1;
+			// this is the old code. i'm pretty sure that its code faulty for
+			// deltaTime that is an exact multiple of duration:
+			//
+			//var count:uint = (deltaTime > 0)? deltaTime / fdp.duration : 1;
+			//if ((deltaTime % fdp.duration) > 0)
+			//{
+			//	count++;
+			//}
+			//return fdp.firstFragment + count - 1;
+			return fdp.firstFragment + uint(deltaTime / fdp.duration);
 		}
-
+		
+		
+		/**
+		 * @return the id of the first (non-discontinuity) fragment in the FRT, or 0 if no such fragment exists
+		 **/
+		public function get firstFragmentId():uint
+		{
+			var fdp:FragmentDurationPair = findNextValidFragmentDurationPair(0);
+			if(fdp == null)
+			{
+				return 0;
+			}
+			return fdp.firstFragment;
+		}
+		
+		/**
+		 * @return true if the fragment is in a true gap within the middle of the content (discontinuity type 2).
+		 * returns false if fragment < first fragment number
+		 * returns false if fragment >= last fragment number
+		 **/
+		public function isFragmentInGap(fragmentId:uint):Boolean
+		{
+			var inGap:Boolean = false;
+			forEachGap(function(opt:Object):Boolean
+			{
+				var fdp:FragmentDurationPair = opt.fdp as FragmentDurationPair;
+				var nextFdp:FragmentDurationPair = opt.nextFdp as FragmentDurationPair;
+				var gapStartFragmentId:Number = fdp.firstFragment;
+				var gapEndFragmenId:Number = nextFdp.firstFragment;
+				if(gapStartFragmentId <= fragmentId && fragmentId < gapEndFragmenId)
+				{
+					inGap = true;
+				}
+				return !inGap;
+			})
+			return inGap;
+		}
+		
+		/**
+		 * @return true if the fragment is time is in a true gap within the middle of the content (discontinuity type 2).
+		 * returns false if time is < time of the first fragment
+		 * returns false if time is >= time the last fragment
+		 **/
+		public function isTimeInGap(time:Number, fragmentInterval:uint):Boolean
+		{
+			var inGap:Boolean = false;
+			forEachGap(function(opt:Object):Boolean
+			{
+				var fdp:FragmentDurationPair = opt.fdp as FragmentDurationPair;
+				var prevFdp:FragmentDurationPair = opt.prevFdp as FragmentDurationPair;
+				var nextFdp:FragmentDurationPair = opt.nextFdp as FragmentDurationPair;
+				var prevEndTime:Number = prevFdp.durationAccrued + prevFdp.duration * (fdp.firstFragment - prevFdp.firstFragment);
+				var nextStartTime:Number = nextFdp.durationAccrued;
+				var idealGapStartTime:Number = (Math.max(fdp.firstFragment, 1)-1) * fragmentInterval;
+				var idealGapEndTime:Number = (Math.max(nextFdp.firstFragment, fdp.firstFragment + 1, 1) - 1) * fragmentInterval;
+				var gapStartTime:Number = Math.min(prevEndTime, idealGapStartTime);
+				var gapEndTime:Number = Math.max(nextStartTime, idealGapEndTime);
+				if(gapStartTime <= time && time < gapEndTime)
+				{
+					inGap = true;
+				}
+				return !inGap;
+			})
+			return inGap;
+		}
+		
+		/**
+		 * @private
+		 * @return the number of fragments within a gap (discontinuity 2)
+		 **/
+		public function countGapFragments():uint
+		{
+			var count:uint = 0;
+			forEachGap(function(opt:Object):void {
+				var fdp:FragmentDurationPair = opt.fdp as FragmentDurationPair;
+				var nextFdp:FragmentDurationPair = opt.nextFdp as FragmentDurationPair;
+				var gapStartFragmentId:Number = fdp.firstFragment;
+				var gapEndFragmentId:Number = uint(Math.max(nextFdp.firstFragment, gapStartFragmentId));
+				count += gapEndFragmentId - gapStartFragmentId;
+			});
+			return count;
+		}
+		
+		/**
+		 * @private
+		 * calls f for each true gap (discontinuity of type 2) found within the FRT. f will be passed
+		 * an Object argument (arg) with 3 fields.
+		 * 
+		 * arg.fdp will be the discontinuity entry.
+		 * arg.prevFdp will be the previous non-discontinuity entry
+		 * arg.nextFdp will be the next non-discontinuity entry
+		 * 
+		 * if f returns false, iteration will halt
+		 * if f returns true, iteration will continue
+		 **/
+		private function forEachGap(f:Function):void
+		{
+			if (_fragmentDurationPairs.length <= 0)
+			{
+				return;
+			}
+			
+			// search for gaps, then check if the desired time is in that gap
+			for(var i:uint = 0; i < _fragmentDurationPairs.length; ++i)
+			{
+				var fdp:FragmentDurationPair = _fragmentDurationPairs[i];
+				
+				if(fdp.duration != 0 ||
+					fdp.discontinuityIndicator != 2)
+				{
+					// skip until we find a discontinuity of type 2
+					continue;
+				}
+				
+				// gaps should only be present in the middle of content,
+				// so there should always be a previous valid entry and 
+				// a next valid entry.
+				
+				// figure out the previous valid entry
+				var prevFdp:FragmentDurationPair = findPrevValidFragmentDurationPair(i);
+				if(prevFdp == null // very uncommon case: there are no non-discontinuities before the discontinuity
+					|| prevFdp.firstFragment > fdp.firstFragment) // very uncommon case: fragment numbers are out of order
+				{
+					continue;
+				}
+				
+				// search forwards for the first non-discontinuity
+				var nextFdp:FragmentDurationPair = findNextValidFragmentDurationPair(i+1);
+				if(nextFdp == null // very uncommon case: there are no valid fragments after the discontinuity
+					|| fdp.firstFragment > nextFdp.firstFragment) // very uncommon case: fragment numbers are out of order
+				{
+					continue;
+				}
+				
+				var shouldContinue:Boolean = f({
+					fdp:fdp,
+					prevFdp:prevFdp,
+					nextFdp:nextFdp
+				});
+				if(!shouldContinue)
+				{
+					return;
+				}
+			}
+		}
+		
+		/**
+		 * @return the fragment information for the first fragment in the FRT whose fragment number
+		 * is greater than or equal to fragment id. special cases:
+		 *
+		 *   if fragmentId is in a gap, the first fragment after the gap will be returned.
+		 *   if fragmentId is in a skip, the first fragment after the skip will be returned.
+		 *   if fragmentId is before the first fragment-duration-pair, the first fragment will be returned.
+		 *   if fragmentId is after the last fragment-duration-pair, it will be assumed to exist.
+		 *       (in other words, the live point is ignored).
+		 *
+		 *   if there are no valid entries in the FRT, returns null. this is the only situation that returns null.
+		 **/
+		public function getFragmentWithIdGreq(fragmentId:uint):FragmentAccessInformation
+		{
+			var desiredFdp:FragmentDurationPair = null;
+			var desiredFragmentId:uint = 0;
+			forEachInterval(function(opt:Object):Boolean
+			{
+				var fdp:FragmentDurationPair = opt.fdp as FragmentDurationPair;
+				var isLast:Boolean = opt.isLast as Boolean;
+				var startFragmentId:uint = opt.startFragmentId as uint;
+				var endFragmentId:uint = opt.endFragmentId as uint;
+				
+				if(fragmentId < startFragmentId)
+				{
+					// before the given interval
+					desiredFdp = fdp;
+					desiredFragmentId = startFragmentId;
+					return false; // stop iterating
+				}
+				else if(isLast)
+				{
+					// catch all in the last entry
+					desiredFdp = fdp;
+					desiredFragmentId = fragmentId;
+					return false;
+				}
+				else if(fragmentId < endFragmentId)
+				{
+					// between the start and end of this interval
+					desiredFdp = fdp;
+					desiredFragmentId = fragmentId;
+					return false; // stop iterating
+				}
+				else
+				{
+					// beyond this interval, but not the last entry 
+					return true; // keep iterating
+				}
+			});
+			
+			if(desiredFdp == null)
+			{
+				// no fragment entries case
+				return null;
+			}
+			
+			if(desiredFragmentId < desiredFdp.firstFragment)
+			{
+				// probably won't ever hit this
+				// just make sure that we're before the start 
+				desiredFragmentId = desiredFdp.firstFragment;
+			}
+			
+			var fai:FragmentAccessInformation = new FragmentAccessInformation();
+			fai.fragId = desiredFragmentId;
+			fai.fragDuration = desiredFdp.duration;
+			fai.fragmentEndTime = desiredFdp.durationAccrued + (desiredFragmentId - desiredFdp.firstFragment + 1) * desiredFdp.duration;
+			return fai;
+		}
+		
+		
+		/**
+		 * @return the fragment information for the first fragment in the FRT that contains a time
+		 * greater than or equal to fragment time. special cases:
+		 *
+		 *   if time is in a gap, the first fragment after the gap will be returned.
+		 *   if time is in a skip, the first fragment after the skip will be returned.
+		 *   if time is before the first fragment-duration-pair, the first fragment will be returned.
+		 *   if time is after the last fragment-duration-pair, it will be assumed to exist.
+		 *       (in other words, the live point is ignored).
+		 *
+		 *   if there are no valid entries in the FRT, returns null. this is the only situation that returns null.
+		 **/
+		public function getFragmentWithTimeGreq(fragmentTime:Number):FragmentAccessInformation
+		{
+			var desiredFdp:FragmentDurationPair = null;
+			var desiredFragmentStartTime:Number = 0;
+			forEachInterval(function(opt:Object):Boolean
+			{
+				var fdp:FragmentDurationPair = opt.fdp as FragmentDurationPair;
+				var isLast:Boolean = opt.isLast as Boolean;
+				var startTime:Number = opt.startTime as Number;
+				var endTime:Number = opt.endTime as Number;
+				
+				if(fragmentTime < startTime)
+				{
+					// before the given interval
+					desiredFdp = fdp;
+					desiredFragmentStartTime = startTime;
+					return false; // stop iterating
+				}
+				else if(isLast)
+				{
+					// catch all in the last entry
+					desiredFdp = fdp;
+					desiredFragmentStartTime = fragmentTime;
+					return false;
+				}
+				else if(fragmentTime < endTime)
+				{
+					// between the start and end of this interval
+					desiredFdp = fdp;
+					desiredFragmentStartTime = fragmentTime;
+					return false; // stop iterating
+				}
+				else
+				{
+					// beyond this interval, but not the last entry 
+					return true; // keep iterating
+				}
+			});
+			
+			if(desiredFdp == null)
+			{
+				// no fragment entries case
+				return null;
+			}
+			
+			var desiredFragmentId:uint = calculateFragmentId(desiredFdp, desiredFragmentStartTime);
+			var fai:FragmentAccessInformation = new FragmentAccessInformation();
+			fai.fragId = desiredFragmentId;
+			fai.fragDuration = desiredFdp.duration;
+			fai.fragmentEndTime = desiredFdp.durationAccrued + (desiredFragmentId - desiredFdp.firstFragment + 1) * desiredFdp.duration;
+			return fai;
+		}
+		
+		/**
+		 * @private
+		 * calls f for each set of fragments advertised by the FRT. f will be passed
+		 * an Object argument (arg) with 6 fields.
+		 * 
+		 * arg.fdp will be the entry corresponding to the fragment range.
+		 * arg.isLast will be true if this is the last entry in the table
+		 * arg.startFragmentId will be the id of the first fragment in the interval
+		 * arg.endFragmentId will be the id of the last fragment in the interval + 1
+		 * arg.startTime will be the start time of the first fragment in the interval
+		 * arg.endTime will be the end time of the last fragment in the interval
+		 * 
+		 * if f returns false, iteration will halt
+		 * if f returns true, iteration will continue
+		 *
+		 * f will be called in ascending startFragmentId order.
+		 **/
+		private function forEachInterval(f:Function):void
+		{
+			// search for gaps, then check if the desired time is in that gap
+			for(var i:uint = 0; i < _fragmentDurationPairs.length; ++i)
+			{
+				var fdp:FragmentDurationPair = _fragmentDurationPairs[i];
+				if(fdp.duration == 0)
+				{
+					// some kind of discontinuity
+					continue;
+				}
+					
+				var startFragmentId:uint = fdp.firstFragment;
+				var startTime:Number = fdp.durationAccrued;
+				
+				// find the valid entry or the next skip, gap, or skip+gap
+				var isLast:Boolean = true;
+				for(var j:uint = i + 1; j < _fragmentDurationPairs.length; ++j) 
+				{
+					if(_fragmentDurationPairs[j].duration != 0 || // next is valid entry
+						_fragmentDurationPairs[j].discontinuityIndicator == 1 || // next is skip
+						_fragmentDurationPairs[j].discontinuityIndicator == 2 || // next is gap
+						_fragmentDurationPairs[j].discontinuityIndicator == 3) // next is skip+gap
+					{
+						isLast = false;
+						break;
+					}
+					else
+					{
+						// eof or some unknown kind of discontinuity
+					}
+				}
+				
+				var endFragmentId:uint;
+				var endTime:Number;
+				if(isLast)
+				{
+					// there's no next entry
+					endFragmentId = 0;
+					endTime = Number.NaN;
+				}
+				else 
+				{
+					endFragmentId = _fragmentDurationPairs[j].firstFragment;
+					if(startFragmentId > endFragmentId) // very uncommon case: fragment numbers are out of order
+					{
+						continue;
+					}
+					endTime = startTime + (endFragmentId - startFragmentId) * fdp.duration;
+				}
+				
+				var shouldContinue:Boolean = f({
+					fdp:fdp,
+					isLast:isLast,
+					startFragmentId:startFragmentId,
+					endFragmentId:endFragmentId,
+					startTime:startTime,
+					endTime:endTime
+				});
+				if(!shouldContinue || isLast)
+				{
+					return;
+				}
+			}
+		}
+		
 		private var _timeScale:uint;
 		private var _qualitySegmentURLModifiers:Vector.<String>;
 		private var _fragmentDurationPairs:Vector.<FragmentDurationPair>;

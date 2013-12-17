@@ -21,9 +21,34 @@ package org.osmf.smpte.tt.styling
 {
 	public class AutoOrigin extends Origin
 	{
-		public function AutoOrigin()
+		private static var _instance:AutoOrigin;
+		
+		public static function get instance():AutoOrigin
 		{
-			super(-1,-1);
+			if( _instance == null ) _instance = new AutoOrigin( new SingletonLock() );
+			return _instance;
+		}
+		
+		public function AutoOrigin( lock:SingletonLock )
+		{
+			// Verify that the lock is the correct class reference.
+			if ( lock is SingletonLock )
+			{
+				super(-1,-1);
+			} else 
+			{	
+				throw new Error( "Invalid Singleton access.  Use AutoOrigin.instance." );
+			}
+			
 		}
 	}
 }
+
+/**
+ * This is a private class declared outside of the package
+ * that is only accessible to classes inside of the AutoOrigin.as
+ * file.  Because of that, no outside code is able to get a
+ * reference to this class to pass to the constructor, which
+ * enables us to prevent outside instantiation.
+ */
+internal class SingletonLock{};

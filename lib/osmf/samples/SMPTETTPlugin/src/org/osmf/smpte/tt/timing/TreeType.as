@@ -21,11 +21,7 @@ package org.osmf.smpte.tt.timing
 {	
 	import flash.utils.Dictionary;
 	
-	import org.osmf.smpte.tt.logging.SMPTETTLogging;
 	import org.osmf.smpte.tt.model.TimedTextAttributeBase;
-	import org.osmf.smpte.tt.timing.TimeCode;
-	import org.osmf.smpte.tt.timing.TimeContainer;
-	import org.osmf.smpte.tt.utilities.DictionaryUtils;
 	
 	public class TreeType 
 	{	
@@ -124,22 +120,25 @@ package org.osmf.smpte.tt.timing
 			return result;
 		}
 		
+		private var _events:Vector.<TimeCode>;
 		/** 
 		 * return an ordered list of the significant time events 
 		 * in the time tree.
 		 */ 
 		public function get events():Vector.<TimeCode>
-		{
-			var reduceQuery:Function = function(tree:TreeType):Vector.<TimeCode>
+		{   
+			if (!_events)
 			{
-				var t:Vector.<TimeCode> = new Vector.<TimeCode>();
-				t.push(tree.begin);
-				t.push(tree.end);
-				return t;
-			}
-			
-			var reduction:Vector.<TimeCode> = distinctTimeCodeVector( this.reduce(reduceQuery).sort(TimeCode.Compare) );
-			return reduction;
+				var reduceQuery:Function = function(tree:TreeType):Vector.<TimeCode>
+				{
+					var t:Vector.<TimeCode> = new Vector.<TimeCode>();
+					t.push(tree.begin);
+					t.push(tree.end);
+					return t;
+				}
+				_events = distinctTimeCodeVector( this.reduce(reduceQuery) );
+			} 
+			return _events;
 		}
 		
 		private function distinctTimeCodeVector(pv:Vector.<TimeCode>):Vector.<TimeCode>
@@ -155,7 +154,7 @@ package org.osmf.smpte.tt.timing
 					unique[unique.length] = tc;
 				}
 			}
-			return unique;
+			return unique.sort(TimeCode.Compare);
 		}
 		
 		/**
@@ -175,16 +174,14 @@ package org.osmf.smpte.tt.timing
 			_endTime = new TimeCode(0, TimeExpression.CurrentSmpteFrameRate);
 			
 			// compute the beginning of my interval.
-			locBegin = (DictionaryUtils.containsKey(timing,"begin")) ? (timing["begin"] as TimeCode) : new TimeCode(0, TimeExpression.CurrentSmpteFrameRate);
+			locBegin = (timing["begin"]) ? TimeCode(timing["begin"]) : new TimeCode(0, TimeExpression.CurrentSmpteFrameRate);
 			_startTime = referenceStart.plus(locBegin);
 			
 			// compute the simple duration of the interval,  
 			// par children have indefinite default duration, seq children have zero default duration.
 			// (we dont support indefinite here but  truncate to the outer container)
 			// does end work here?  surely it truncates the active duration, 
-			if (!DictionaryUtils.containsKey(timing,"dur") 
-				&& !DictionaryUtils.containsKey(timing,"end") 
-				&& context == TimeContainer.SEQ)
+			if (!timing["dur"] && !timing["end"] && context == TimeContainer.SEQ)
 			{
 				referenceDur = new TimeCode(0, TimeExpression.CurrentSmpteFrameRate);
 			}
@@ -201,10 +198,10 @@ package org.osmf.smpte.tt.timing
 			}
 			
 			var containsDur:Boolean = false;
-			if (DictionaryUtils.containsKey(timing,"dur"))
+			if (timing["dur"])
 			{
 				containsDur = true;
-				locDur = timing["dur"] as TimeCode;
+				locDur = TimeCode(timing["dur"]);
 				if (locDur.greaterThan(referenceDur))
 				{
 					locDur = referenceDur;
@@ -220,9 +217,9 @@ package org.osmf.smpte.tt.timing
 			var offsetEnd:TimeCode = new TimeCode(0, TimeExpression.CurrentSmpteFrameRate);
 			offsetEnd = offsetEnd.plus(referenceStart);
 
-			if (DictionaryUtils.containsKey(timing,"end"))
+			if (timing["end"])
 			{
-				locEnd = referenceStart.plus(timing["end"] as TimeCode);
+				locEnd = referenceStart.plus(TimeCode(timing["end"]));
 			}
 			else
 			{
@@ -255,9 +252,10 @@ package org.osmf.smpte.tt.timing
 			
 			var child:TreeType;
 			var i:uint = 0;
+			var len:uint = children.length;
 			if (timeSemantics == TimeContainer.PAR)
 			{
-				for (i = 0; i<children.length; i++)
+				for (i = 0; i<len; i++)
 				{
 					child = children[i] as TreeType;
 					child.computeTimeIntervals(timeSemantics, _startTime, _endTime);
@@ -266,7 +264,7 @@ package org.osmf.smpte.tt.timing
 			else
 			{
 				var s:TimeCode = _startTime;
-				for (i = 0; i<children.length; i++)
+				for (i = 0; i<len; i++)
 				{
 					child = children[i] as TreeType;
 					child.computeTimeIntervals(timeSemantics, s, _endTime);

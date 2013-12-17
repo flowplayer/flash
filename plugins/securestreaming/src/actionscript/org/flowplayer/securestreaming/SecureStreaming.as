@@ -92,7 +92,7 @@ package org.flowplayer.securestreaming {
         }
 
         private static function checkDomain(url:String, acceptedDomains:Array):Boolean {
-            var domain:String = DomainUtil.parseDomain(url, true);
+            var domain:String = DomainUtil.parseDomain(url, true, (CONFIG::secondaryDomains).split(" "));
 //            log.debug("domain is '" + domain + "'");
             return acceptedDomains.indexOf(domain) >= 0;
         }

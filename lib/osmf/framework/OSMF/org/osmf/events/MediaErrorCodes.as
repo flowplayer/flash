@@ -157,7 +157,7 @@ package org.osmf.events
 		 * Error constant for when the manifest file contains errors 
 		 **/
 		public static const F4M_FILE_INVALID:int						= 23;
-
+		
 		/**
 		 * @private
 		 * 

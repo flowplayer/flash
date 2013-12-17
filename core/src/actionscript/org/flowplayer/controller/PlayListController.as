@@ -67,6 +67,7 @@ package org.flowplayer.controller {
 		flow_internal function setPlaylist(clips:Array):void {
             if (getState() != State.WAITING) {
                 close(false);
+                clearStream();
             }
 			_playList.replaceClips2(clips);
 		}
@@ -328,8 +329,20 @@ package org.flowplayer.controller {
             }
         }
 
+        //#163 detach netstream on the current clip
+        private function clearStream():void
+        {
+            if (_playList.current && _playList.current.getContent() && _playList.current.getContent().hasOwnProperty("attachNetStream")) {
+                Object(_playList.current.getContent()).attachNetStream(null);
+            }
+        }
+
 		private function replacePlaylistAndPlay(clips:Object):void {
-			stop();
+
+            //#163 stop the connection and stream
+			_state.stop(true, true);
+            clearStream();
+
 			if (clips is Clip) {
 				_playList.replaceClips(clips as Clip);
 			} else {

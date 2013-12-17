@@ -102,14 +102,31 @@ package org.osmf.logging
 		{
 			var msg:String = "";
 			
+			var date:Date = new Date();
+			
 			// add datetime
-			msg += new Date().toLocaleString() + " [" + level + "] ";
+			msg += date.toLocaleString() + "." + leadingZeros(date.milliseconds) + " [" + level + "] ";
 			
 			// add category and params
 			msg += "[" + category + "] " + applyParams(message, params);
 			
 			// trace the message
 			trace(msg);
+		}
+		
+		private function leadingZeros(x:Number):String
+		{
+			if (x < 10)
+			{
+				return "00" + x.toString();
+			}
+			
+			if (x < 100)
+			{
+				return "0" + x.toString();
+			}
+			
+			return x.toString();
 		}
 		
 		/**

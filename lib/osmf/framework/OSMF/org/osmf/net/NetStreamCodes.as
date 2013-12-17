@@ -306,6 +306,39 @@ package org.osmf.net
 		 *  @productversion OSMF 1.0
 		 */ 
 		public static const NETSTREAM_PLAY_TRANSITION_COMPLETE:String = "NetStream.Play.TransitionComplete"; 
+		
+		/** 
+		 * "status"	
+		 * The seek operation is started.
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 2.0
+		 */ 
+		public static const NETSTREAM_SEEK_START:String = "NetStream.Seek.Start"; 
+		
+		/** 
+		 * "status"	
+		 * Playback reached the end of live content, but the stream is not done. Fires only for streaming connections.
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 1.0
+		 */ 
+		public static const NETSTREAM_PLAY_LIVE_STALL:String			= "NetStream.Play.LiveStall"; 
+		
+		/** 
+		 * "status"	
+		 * Playback was previously stalled and has now unstalled. Fires only for streaming connections.
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 1.0
+		 */ 
+		public static const NETSTREAM_PLAY_LIVE_RESUME:String			= "NetStream.Play.LiveResume"; 
 			
 		// NetStream events
 		

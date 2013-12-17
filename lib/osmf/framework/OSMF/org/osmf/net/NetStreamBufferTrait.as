@@ -99,6 +99,11 @@ package org.osmf.net
 						setBuffering(false);
 					}
 					break;
+				
+				case NetStreamCodes.NETSTREAM_SEEK_START:
+					setBuffering(true);
+					break;
+				
 				case NetStreamCodes.NETSTREAM_BUFFER_FLUSH:
 				case NetStreamCodes.NETSTREAM_BUFFER_FULL:
 					setBuffering(false);

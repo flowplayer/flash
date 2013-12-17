@@ -96,6 +96,19 @@ package org.osmf.media
 	 *  @productversion OSMF 1.0
 	 */
 	[Event(name="mediaError",type="org.osmf.events.MediaErrorEvent")]
+
+	/**
+	 * Dispatched when a info which impacts the operation of the media
+	 * element is available. MEDIA_INFO events are non-fatal.
+	 *
+	 * @eventType org.osmf.events.MediaErrorEvent.MEDIA_INFO
+	 *  
+	 *  @langversion 3.0
+	 *  @playerversion Flash 10
+	 *  @playerversion AIR 1.5
+	 *  @productversion OSMF 2.0
+	 */
+	[Event(name="mediaInfo",type="org.osmf.events.MediaErrorEvent")]
 	
 	/**
 	 * Dispatched when the element's container property changed.

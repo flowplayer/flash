@@ -16,64 +16,57 @@
  *    along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.flowplayer.view {
+    import flash.display.BlendMode;
+    import flash.display.DisplayObject;
+    import flash.display.DisplayObjectContainer;
+    import flash.display.Sprite;
+    import flash.events.Event;
+    import flash.events.MouseEvent;
+    import flash.events.TimerEvent;
+    import flash.net.URLRequest;
+    import flash.net.navigateToURL;
+    import flash.system.Capabilities;
+    import flash.system.Security;
+    import flash.text.TextField;
+    import flash.text.TextFieldAutoSize;
+    import flash.utils.Timer;
+    import flash.utils.Dictionary;
+
     import org.flowplayer.config.Config;
-	import org.flowplayer.config.ConfigParser;
-	import org.flowplayer.config.ExternalInterfaceHelper;
-	import org.flowplayer.config.VersionInfo;
-	import org.flowplayer.controller.PlayListController;
-	import org.flowplayer.controller.ResourceLoader;
-	import org.flowplayer.controller.ResourceLoaderImpl;
+    import org.flowplayer.config.ConfigParser;
+    import org.flowplayer.config.ExternalInterfaceHelper;
+    import org.flowplayer.config.VersionInfo;
+    import org.flowplayer.controller.PlayListController;
+    import org.flowplayer.controller.ResourceLoader;
+    import org.flowplayer.controller.ResourceLoaderImpl;
     import org.flowplayer.flow_internal;
-	import org.flowplayer.model.Callable;
-	import org.flowplayer.model.Clip;
-	import org.flowplayer.model.ClipEvent;
+    import org.flowplayer.model.Callable;
+    import org.flowplayer.model.Clip;
+    import org.flowplayer.model.ClipEvent;
     import org.flowplayer.model.ClipEventType;
     import org.flowplayer.model.DisplayPluginModel;
-	import org.flowplayer.model.DisplayProperties;
-	import org.flowplayer.model.DisplayPropertiesImpl;
+    import org.flowplayer.model.DisplayProperties;
     import org.flowplayer.model.ErrorCode;
+    import org.flowplayer.model.Loadable;
+    import org.flowplayer.model.Logo;
+    import org.flowplayer.model.PlayButtonOverlay;
+    import org.flowplayer.model.PlayerError;
+    import org.flowplayer.model.PlayerEvent;
+    import org.flowplayer.model.Playlist;
+    import org.flowplayer.model.Plugin;
+    import org.flowplayer.model.PluginEvent;
+    import org.flowplayer.model.PluginModel;
+    import org.flowplayer.model.ProviderModel;
+    import org.flowplayer.model.State;
+    import org.flowplayer.util.Arrange;
     import org.flowplayer.model.EventDispatcher;
-	import org.flowplayer.model.Loadable;
-	import org.flowplayer.model.Logo;
-	import org.flowplayer.model.PlayButtonOverlay;
-	import org.flowplayer.model.PlayerError;
-	import org.flowplayer.model.PlayerEvent;
-	import org.flowplayer.model.Playlist;
-	import org.flowplayer.model.Plugin;
-	import org.flowplayer.model.PluginError;
-	import org.flowplayer.model.PluginEvent;
-	import org.flowplayer.model.PluginModel;
-	import org.flowplayer.model.ProviderModel;
-	import org.flowplayer.model.State;
-	import org.flowplayer.util.Arrange;
-	import org.flowplayer.util.Log;
-	import org.flowplayer.util.TextUtil;
-	import org.flowplayer.util.URLUtil;
-	import org.flowplayer.view.Panel;
-	import org.flowplayer.view.PluginLoader;
-    import org.flowplayer.view.Screen;
-	import org.flowplayer.view.KeyboardHandler;
-	import org.osflash.thunderbolt.Logger;
-	
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.display.Sprite;
-	import flash.display.BlendMode;
-
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
-	import flash.system.Capabilities;
-	import flash.system.Security;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-
-	import flash.utils.*;
+    import org.flowplayer.util.Log;
+    import org.flowplayer.util.TextUtil;
+    import org.flowplayer.util.URLUtil;
+    import org.osflash.thunderbolt.Logger;
 
     CONFIG::FLASH_10_1 {
-    import flash.media.StageVideo;
+        import flash.media.StageVideo;
     }
 	use namespace flow_internal; 
 
@@ -99,16 +92,23 @@ package org.flowplayer.view {
         private var _clickCount:int;
         private var _clickTimer:Timer = new Timer(200, 1);
         private var _clickEvent:MouseEvent;
+        private var _fullscreenDelay:Timer;
+
 		private var _screenMask:Sprite;
 
 		[Frame(factoryClass="org.flowplayer.view.Preloader")]
 		public function Launcher() {
-			addEventListener(Event.ADDED_TO_STAGE, function(e:Event):void {
-                URLUtil.loaderInfo = loaderInfo;
-                trace("Launcher added to stage");
-                callAndHandleError(createFlashVarsConfig, PlayerError.INIT_FAILED);
-            });
+            //#163 add and remove stage add listener
+			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
             super("#canvas", this);
+        }
+
+        private function onAddedToStage(e:Event):void
+        {
+            URLUtil.loaderInfo = loaderInfo;
+            trace("Launcher added to stage");
+            callAndHandleError(createFlashVarsConfig, PlayerError.INIT_FAILED);
+            removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         }
 
         private function initPhase1():void {
@@ -130,8 +130,9 @@ package org.flowplayer.view {
 			loader = createNewLoader(); 
 
 			rootStyle = _config.canvas.style;
+            //#163 combine resize events
             stage.addEventListener(Event.RESIZE, onStageResize);
-            stage.addEventListener(Event.RESIZE, arrangeScreen);
+            //stage.addEventListener(Event.RESIZE, arrangeScreen);
 
 			setSize(Arrange.parentWidth, Arrange.parentHeight);
 
@@ -213,6 +214,7 @@ package org.flowplayer.view {
                 log.debug("no loadable plugins, calling initPhase4");
                 initPhase4();
             }
+            Focus.init(stage);
 		}
 
 		private function initPhase4(event:Event = null):void {
@@ -251,16 +253,18 @@ package org.flowplayer.view {
         //#508 disabling the stagevideo screen mask, canvas is visible without it.
 		private function createScreenMask():void {
 			blendMode = BlendMode.LAYER;
+
+            var squareEdgeSize:int = Math.max(stage.stageWidth, stage.stageHeight);
 			
 			_screenMask = new Sprite();
-			_screenMask.graphics.beginFill(0xff0000);
-			_screenMask.graphics.drawRect(0, 0, 1, 1);
+			_screenMask.graphics.beginFill(0x000000, 1);
+			_screenMask.graphics.drawRect(0, 0, squareEdgeSize, squareEdgeSize);
+            _screenMask.graphics.endFill();
 			_screenMask.blendMode = BlendMode.ERASE;
 			
 			_screenMask.x = 0;
 			_screenMask.y = 0;
-			_screenMask.width = 100;
-			_screenMask.height = 100;
+
 		}
 
 		private function resizeCanvasLogo():void {
@@ -278,6 +282,8 @@ package org.flowplayer.view {
 		private function onStageResize(event:Event = null):void {
 			setSize(Arrange.parentWidth, Arrange.parentHeight);
 			arrangeCanvasLogo();
+            //#163 move second resize event here
+            arrangeScreen(event);
 		}
 
 		private function arrangeCanvasLogo():void {
@@ -292,7 +298,7 @@ package org.flowplayer.view {
 			var plugins:Array = _config.getLoadables();
 			log.debug("will load following plugins: ");
             logPluginInfo(plugins);
-			_pluginLoader = new PluginLoader(URLUtil.playerBaseUrl, _pluginRegistry, this, useExternalInterface());
+			_pluginLoader = new PluginLoader(URLUtil.playerBaseUrl, _pluginRegistry, this, useExternalInterface(), (CONFIG::secondaryDomains).split(" "));
             _pluginLoader.addEventListener(Event.COMPLETE, pluginLoadListener);
             _flowplayer.pluginLoader = _pluginLoader;
             if (plugins.length == 0) {
@@ -598,14 +604,20 @@ package org.flowplayer.view {
             stage.removeEventListener(Event.RESIZE, arrangeScreen);
             
             _enteringFullscreen = true;
-            var delay:Timer = new Timer(1000, 1);
-            delay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
-            delay.start();
+
+            //#163 add / remove delay timer
+            _fullscreenDelay = new Timer(1000, 1);
+            _fullscreenDelay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+            _fullscreenDelay.start();
 		}
 		
 		private function onTimerComplete(event:TimerEvent):void {
 			log.debug("fullscreen wait delay complete, display clicks are enabled again");
 			_enteringFullscreen = false;
+
+            _fullscreenDelay.reset();
+            _fullscreenDelay.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+            _fullscreenDelay = null;
 		}
 
 		private function createFlashVarsConfig():void {
@@ -737,6 +749,7 @@ package org.flowplayer.view {
 
             //#508 disabling the stagevideo screen mask, canvas is visible without it.
             CONFIG::FLASH_10_1 {
+
 			   _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
 
                //#44 fixes for #627, now bind and unbind stagevideo events during seeking to prevent the mask repositioning.
@@ -744,7 +757,9 @@ package org.flowplayer.view {
                    _flowplayer.playlist.unbind(onStageVideoStateChange);
                });
 
-               _flowplayer.playlist.onSeek(function(event:ClipEvent):void {
+               //#75 temporary fix for seeking with progressive download as it creates a delay to dispatch seek events because of the seek delay timer.
+               _flowplayer.playlist.onBufferFull(function(event:ClipEvent):void {
+                   _flowplayer.playlist.unbind(onStageVideoStateChange);
                    _flowplayer.playlist.onStageVideoStateChange(onStageVideoStateChange);
                });
             }
@@ -765,6 +780,7 @@ package org.flowplayer.view {
                 log.debug("stage video state changed " + stageVideo);
 
                 if (stageVideo) {
+                    _screenMask.visible = false;
                     //#44 fixes for #627 check if the stagevideo dimensions and positioning has changed to update the stage video mask with.
                     //unbinding and binding stage video events caused issues with instream playlists therefore has to be kept binded.
                     if (_screenMask.width !== stageVideo.viewPort.width) {
@@ -795,11 +811,17 @@ package org.flowplayer.view {
                         }
 
                         CONFIG::commercialVersion {
-                            addChildAt(_screenMask, 1);
+                             //#75 set the child display list different when a gradient is set.
+                             addChildAt(_screenMask, style.backgroundGradient ? 1 : 0);
+
                         }
-                        //addChildAt(_screenMask, _canvasLogo ? 1 : 0);
+
+
                         log.debug("adding mask");
                     }
+                    _screenMask.visible = true;
+
+
                 } else {
                     if (contains(_screenMask)) {
                         log.debug("removing mask")
@@ -940,7 +962,7 @@ package org.flowplayer.view {
 			_canvasLogo.scaleY = _canvasLogo.scaleX;
 			_canvasLogo.alpha = .4;
 			_canvasLogo.addEventListener(MouseEvent.CLICK, 
-				function(event:MouseEvent):void { navigateToURL(new URLRequest("http://flowplayer.org"), "_self"); });
+				function(event:MouseEvent):void { navigateToURL(new URLRequest("http://flash.flowplayer.org"), "_self"); });
 			_canvasLogo.buttonMode = true;
 			log.debug("adding logo to display list");
 			addChild(_canvasLogo);

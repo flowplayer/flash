@@ -18,46 +18,42 @@
  */
 
 package org.flowplayer.view {
-    import flash.display.AVM1Movie;
+import com.adobe.utils.StringUtil;
+
+import flash.display.AVM1Movie;
+import flash.display.DisplayObject;
+import flash.display.Loader;
+import flash.display.LoaderInfo;
+import flash.events.Event;
+import flash.events.EventDispatcher;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
+import flash.net.URLRequest;
+import flash.system.ApplicationDomain;
+import flash.system.LoaderContext;
 import flash.system.Security;
+import flash.system.SecurityDomain;
+import flash.utils.Dictionary;
+import flash.utils.getDefinitionByName;
+import flash.utils.getQualifiedClassName;
 
-    import org.flowplayer.model.ErrorCode;
-    import org.flowplayer.model.Plugin;
-	import org.flowplayer.controller.NetStreamControllingStreamProvider;	
-	
-	import com.adobe.utils.StringUtil;
-	
-	import org.flowplayer.config.ExternalInterfaceHelper;
-	import org.flowplayer.controller.StreamProvider;
-	import org.flowplayer.model.Callable;
-	import org.flowplayer.model.DisplayPluginModel;
-	import org.flowplayer.model.FontProvider;
-	import org.flowplayer.model.Loadable;
-	import org.flowplayer.model.PlayerError;
-    import org.flowplayer.model.PluginError;
-    import org.flowplayer.model.PluginEvent;
-    import org.flowplayer.model.PluginModel;
-	import org.flowplayer.model.ProviderModel;
-	import org.flowplayer.util.Log;
-	import org.flowplayer.util.URLUtil;
-	
-	import flash.display.DisplayObject;
-	import flash.display.Loader;
-	import flash.display.LoaderInfo;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.IOErrorEvent;
-	import flash.events.ProgressEvent;
-	import flash.net.URLRequest;
-	import flash.system.ApplicationDomain;
-	import flash.system.LoaderContext;
-	import flash.system.SecurityDomain;
-	import flash.utils.Dictionary;
-	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedClassName;
+import org.flowplayer.config.ExternalInterfaceHelper;
+import org.flowplayer.controller.NetStreamControllingStreamProvider;
+import org.flowplayer.controller.StreamProvider;
+import org.flowplayer.model.Callable;
+import org.flowplayer.model.DisplayPluginModel;
+import org.flowplayer.model.FontProvider;
+import org.flowplayer.model.Loadable;
+import org.flowplayer.model.Plugin;
+import org.flowplayer.model.PluginError;
+import org.flowplayer.model.PluginEvent;
+import org.flowplayer.model.PluginModel;
+import org.flowplayer.model.ProviderModel;
+import org.flowplayer.util.DomainUtil;
+import org.flowplayer.util.Log;
+import org.flowplayer.util.URLUtil;
 
-
-    /**
+/**
 	 * @author api
 	 */
 	public class PluginLoader extends EventDispatcher {
@@ -79,13 +75,15 @@ import flash.system.Security;
         private var _allPlugins:Array;
         private var _loaderContext:LoaderContext;
         private var _loadStartedCount:int = 0;
+        private var _secondaries:Array;
 
-		public function PluginLoader(baseUrl:String, pluginRegistry:PluginRegistry, errorHandler:ErrorHandler, useExternalInterface:Boolean) {
+		public function PluginLoader(baseUrl:String, pluginRegistry:PluginRegistry, errorHandler:ErrorHandler, useExternalInterface:Boolean, secondaries:Array) {
 			_baseUrl = baseUrl;
 			_pluginRegistry = pluginRegistry;
 			_errorHandler = errorHandler;
 			_useExternalInterface = useExternalInterface;
 			_loadedCount = 0;
+            _secondaries = secondaries;
 		}
 
 		private function constructUrl(url:String):String {
@@ -162,7 +160,14 @@ import flash.system.Security;
             for (var i:Number = 0; i < plugins.length; i++) {
                 var loadable:Loadable = Loadable(plugins[i]);
                 if (! loadable.isBuiltIn && loadable.url && result.indexOf(loadable.url) < 0) {
-                    result.push(constructUrl(loadable.url));
+                    var pluginUrl:String = constructUrl(loadable.url);
+
+                    if (DomainUtil.allowCodeLoading(pluginUrl, _secondaries)) {
+                        result.push(pluginUrl);
+                    } else {
+                        log.error("Unable to load plugin from " + loadable.url);
+                        loadable.dispatchError(PluginError.ERROR, "Unable to load plugin from " + pluginUrl);
+                    }
                 }
             }
             return result;

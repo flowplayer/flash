@@ -75,9 +75,10 @@ package org.flowplayer.view {
 		public function getPlugin(name:String):Object {
 			var plugin:Object = _plugins[name] || _providers[name] || _genericPlugins[name];
 			log.debug("found plugin " + plugin);
-			if (plugin is DisplayProperties) {
-				updateZIndex(plugin as DisplayProperties);
-			}
+            //#163 is this needed ?
+			//if (plugin is DisplayProperties) {
+				//updateZIndex(plugin as DisplayProperties);
+			//}
             return plugin;
 		}
 		
@@ -203,6 +204,9 @@ package org.flowplayer.view {
 			for each (var model:Object in transientCopy) {
 				setPlayerToPlugin(model);
 			}
+
+            transientCopy.length = 0;
+            transientCopy = null;
 		}
 		
 		internal function setPlayerToPlugin(plugin:Object):void {

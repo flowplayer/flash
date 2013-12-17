@@ -1,5 +1,12 @@
 Version history:
 
+3.2.10
+------
+- Added external methods showButton() and hideButton() that can be used for the CC button.
+- Changed default Timed Text XML namespace to be http://www.w3.org/ns/ttml  This can be overridden using a clip
+    specific property 'ttNamespace'. The namespace of the old spec was http://www.w3.org/2006/10/ttaf1 Issue #35
+
+
 3.2.9
 -----
 - #19, loadCaptions() had disappeared somewhere, now works again

@@ -23,20 +23,19 @@
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark"
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   xmlns:mx_internal="http://www.adobe.com/2006/flex/mx/internal"
 			   xmlns:components="org.osmf.smpte.tt.components.*"
-			   xmlns:local="*"
 			   initialize="application1_initializeHandler(event)"
 			   skinClass="org.osmf.smpte.tt.skins.spark.ApplicationSkin"
 			   viewSourceURL="srcview/index.html">
-	<fx:Style source="SMPTETTPluginTest.css" />
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayList;
 			import mx.core.mx_internal;
 			import mx.events.FlexEvent;
 			
+			import org.osmf.media.MediaElement;
 			import org.osmf.media.MediaFactory;
+			import org.osmf.smpte.tt.events.ParseEvent;
 			import org.osmf.smpte.tt.utils.FileRenderer;
 			
 			import spark.components.VideoDisplay;
@@ -50,10 +49,15 @@
 			private static const F4M_STREAM_URL:String = "http://mediapm.edgesuite.net/osmf/content/test/manifest-files/dynamic_Streaming.f4m";
 			private static const AKAMAI_STREAM_URL:String = "rtmp://cp67126.edgefcs.net/ondemand/mediapm/osmf/content/test/akamai_10_year_f8_512K";
 			private static const ADOBE_STREAM_URL:String = "http://www.helpexamples.com/flash/video/caption_video.flv";
-			private static const W3C_STREAM_URL:String = "dfxp-testsuite/dfxp_movie.flv";
-			private static const BASE_W3C_TEST_SUITE_URL:String = "dfxp-testsuite/"; // "http://mediapm.edgesuite.net/osmf/content/test/captioning/dfxp-testsuite/";
+			private static const W3C_STREAM_URL:String = "http://www.w3.org/2008/12/dfxp-testsuite/web-framework/dfxp_movie.flv";
+			private static const BASE_W3C_TEST_SUITE_URL:String = "http://www.w3.org/2008/12/dfxp-testsuite/";
 			private static const BASE_OVP_TEST_SUITE_URL:String = "http://mediapm.edgesuite.net/osmf/content/test/captioning/ovp-testsuite/";
 			
+			private var videoDisplay:VideoDisplay;
+			private var mediaFactory:MediaFactory;
+			
+			[Bindable]
+			private var timingTestFiles:ArrayList;
 			private var timingTestFilesSource:Array = [	
 				
 				/* HBO sample 
@@ -295,9 +299,6 @@
 				BASE_W3C_TEST_SUITE_URL + "Animation/Animation006.xml",
 				BASE_W3C_TEST_SUITE_URL + "Animation/Animation007.xml",
 				BASE_W3C_TEST_SUITE_URL + "Animation/Animation008.xml",
-				BASE_W3C_TEST_SUITE_URL + "Animation/Animation009.xml",
-				BASE_W3C_TEST_SUITE_URL + "Animation/Animation010.xml",
-				BASE_W3C_TEST_SUITE_URL + "Animation/Animation011.xml",
 				BASE_W3C_TEST_SUITE_URL + "Animation/Animation012.xml",
 				BASE_W3C_TEST_SUITE_URL + "Animation/Animation013.xml",
 				BASE_W3C_TEST_SUITE_URL + "Animation/Animation014.xml",
@@ -329,13 +330,6 @@
 				BASE_W3C_TEST_SUITE_URL + "Metadata/Title001.xml"
 			];
 			
-			
-			private var videoDisplay:VideoDisplay;
-			private var mediaFactory:MediaFactory;
-			
-			[Bindable]
-			private var timingTestFiles:ArrayList;
-			
 			private function debug(msg:String):void
 			{
 				if (DEBUG)
@@ -357,8 +351,7 @@
 				timingTestFiles = new ArrayList();
 				timingTestFiles.source = timingTestFilesSource;
 				
-				cbTestFile.setSelectedIndex(0,true);
-				
+				cbTestFile.setSelectedIndex(0,true);	
 			}
 			
 			private const COMBOBOX_START_INDEX:int = -1;
@@ -371,26 +364,26 @@
 					tiMediaURL.text = STREAM_URL;
 				} 
 				else
-				if (event.target.selectedIndex==COMBOBOX_START_INDEX+1)
-				{
-					tiMediaURL.text = SMPTETT_URL;
-				} 
-				else if (event.target.selectedIndex==COMBOBOX_START_INDEX+2)
-				{
-					tiMediaURL.text = F4M_STREAM_URL;
-				} 
-				else if (event.target.selectedIndex==COMBOBOX_START_INDEX+4)
-				{
-					tiMediaURL.text = ADOBE_STREAM_URL;
-				} 
-				else if (event.target.selectedIndex>COMBOBOX_START_INDEX+13)
-				{
-					tiMediaURL.text = W3C_STREAM_URL;
-				} 
-				else
-				{
-					tiMediaURL.text = AKAMAI_STREAM_URL;
-				}
+					if (event.target.selectedIndex==COMBOBOX_START_INDEX+1)
+					{
+						tiMediaURL.text = SMPTETT_URL;
+					} 
+					else if (event.target.selectedIndex==COMBOBOX_START_INDEX+2)
+					{
+						tiMediaURL.text = F4M_STREAM_URL;
+					} 
+					else if (event.target.selectedIndex==COMBOBOX_START_INDEX+4)
+					{
+						tiMediaURL.text = ADOBE_STREAM_URL;
+					} 
+					else if (event.target.selectedIndex>COMBOBOX_START_INDEX+13)
+					{
+						tiMediaURL.text = W3C_STREAM_URL;
+					} 
+					else
+					{
+						tiMediaURL.text = AKAMAI_STREAM_URL;
+					}
 			}
 			
 			protected function btnLoadMedia_clickHandler(event:MouseEvent):void
@@ -404,12 +397,16 @@
 			}
 			
 			private function loadMedia(url:String, ttmlFile:String):void
-			{
-				
-				// var resource:URLResource = new URLResource(url);
-				// resource.addMetadataValue(SMPTETTPluginInfo.SMPTETT_METADATA_NAMESPACE, new Metadata());
-				
+			{			
 				videoPlayer.source = url;
+				
+				var mediaElement:MediaElement = videoPlayer.videoDisplay.videoPlayer.media;
+				
+				mediaElement.addEventListener(ParseEvent.BEGIN, onParseEvent, false, 0, true);
+				mediaElement.addEventListener(ParseEvent.PARTIAL, onParseEvent, false, 0, true);
+				mediaElement.addEventListener(ParseEvent.PROGRESS, onParseEvent, false, 0, true);
+				mediaElement.addEventListener(ParseEvent.COMPLETE, onParseEvent, false, 0, true);
+				
 				videoPlayer.captionsSource = ttmlFile;
 				
 				// Now load the DFXP file separately so we can show it in the UI (note this has
@@ -418,71 +415,84 @@
 				var fileRenderer:FileRenderer = new FileRenderer(this.dxfpFileContents, ttmlFile);
 			}
 			
-			private function unloadMedia():void
+			private function onParseEvent(event:ParseEvent):void
 			{
+				// trace(event.type+" "+event.currentTarget+" "+event);
+				
+				if(event.type == ParseEvent.COMPLETE)
+				{
+					var mediaElement:MediaElement = event.target as MediaElement;
+					
+					mediaElement.removeEventListener(ParseEvent.BEGIN, onParseEvent);
+					mediaElement.removeEventListener(ParseEvent.PARTIAL, onParseEvent);
+					mediaElement.removeEventListener(ParseEvent.PROGRESS, onParseEvent);
+					mediaElement.removeEventListener(ParseEvent.COMPLETE, onParseEvent);
+				}
+			}
+			
+			private function unloadMedia():void
+			{				
+				var mediaElement:MediaElement = videoPlayer.videoDisplay.videoPlayer.media;
+				
+				if(mediaElement)
+				{
+					mediaElement.removeEventListener(ParseEvent.BEGIN, onParseEvent);
+					mediaElement.removeEventListener(ParseEvent.PARTIAL, onParseEvent);
+					mediaElement.removeEventListener(ParseEvent.PROGRESS, onParseEvent);
+					mediaElement.removeEventListener(ParseEvent.COMPLETE, onParseEvent);
+				}
+				
 				videoPlayer.source = null;
 				videoPlayer.captionsSource = null;
 			}
-			
 		]]>
 	</fx:Script>
-	<s:BorderContainer width="100%" height="100%"
-					   minWidth="800" minHeight="480"
-					   borderVisible="false">
-		<s:VGroup width="100%" height="100%" gap="5" 
-				  paddingTop="20" paddingRight="20" 
-				  paddingBottom="20" paddingLeft="20">
-			<s:Label styleName="title" text="OSMF SMPTE-TT Test App"/>
-			
-			<mx:Form width="100%">
-				<!--<s:layout> 
-					<s:FormLayout gap="-14" 
-								  paddingTop="0" paddingRight="0" 
-								  paddingBottom="0" paddingLeft="0"/> 
-				</s:layout>-->
-				<mx:FormItem label="DFXP File:" width="100%">
-					<s:ComboBox id="cbTestFile" 
-								dataProvider="{timingTestFiles}"
-								width="100%"
-								skinClass="spark.skins.spark.ComboBoxSkin" change="cbTestFile_changeHandler(event)"/>
-				</mx:FormItem>
-				<mx:FormItem label="Media File:" width="100%">
-					<s:HGroup width="100%">
-						<s:TextInput id="tiMediaURL" width="100%" selectable="false"/>
-						<s:Button id="btnLoadMedia" label="Load Media Resource" click="btnLoadMedia_clickHandler(event)"/>
-						<s:Button id="btnUnloadMedia" label="Unload Media Resource" click="btnUnloadMedia_clickHandler(event)"/>			
-					</s:HGroup>					
-				</mx:FormItem>
-			</mx:Form>
-			
-			<mx:HDividedBox width="100%" height="100%">
-				<s:Panel title="Video Container" width="100%" height="100%">
-					<s:Group width="100%" height="100%">
-						<s:Rect width="100%" height="100%">
-							<s:fill><s:SolidColor color="0xffffff" /></s:fill>
-						</s:Rect>
-						<s:VGroup width="100%" height="100%">
-							<components:SMPTETTVideoPlayer id="videoPlayer" 
-														   width="100%" height="100%" showCaptions="false"
-														   skinClass="org.osmf.smpte.tt.skins.spark.VideoPlayerSkin">
-							</components:SMPTETTVideoPlayer>
-						</s:VGroup>
-					</s:Group>
-					
-				</s:Panel>
-				<s:Panel title="SMPTE-TT File" width="100%" height="100%">
-					<s:VGroup width="100%" height="100%">
-						<s:TextArea id="dxfpFileContents" 
-									width="100%" height="100%" 
-									left="0" right="0" top="0" bottom="0"
-									styleName="panelTextArea">
-						</s:TextArea>
-					</s:VGroup>
-				</s:Panel>
-			</mx:HDividedBox>
-		</s:VGroup>
-	</s:BorderContainer>
-	
-
-	
+	<s:Panel width="100%" height="100%" dropShadowVisible="false" horizontalCenter="0"
+			 title="OSMF SMPTE-TT Test App" verticalCenter="0">
+		<s:Scroller width="100%" height="100%">
+			<s:Group width="100%" height="100%">
+				<s:VGroup width="100%" height="100%" minWidth="720" minHeight="352" gap="5"
+						  paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+					<mx:Form width="100%">
+						<mx:FormItem width="100%" label="DFXP File:">
+							<s:ComboBox id="cbTestFile" width="100%"
+										change="cbTestFile_changeHandler(event)"
+										dataProvider="{timingTestFiles}"
+										skinClass="spark.skins.spark.ComboBoxSkin">
+							</s:ComboBox>
+						</mx:FormItem>
+						<mx:FormItem width="100%" label="Media File:">
+							<s:HGroup width="100%">
+								<s:TextInput id="tiMediaURL" width="100%" selectable="false"/>
+								<s:Button id="btnLoadMedia" label="Load Media Resource"
+										  click="btnLoadMedia_clickHandler(event)"/>
+								<s:Button id="btnUnloadMedia" label="Unload Media Resource"
+										  click="btnUnloadMedia_clickHandler(event)"/>			
+							</s:HGroup>					
+						</mx:FormItem>
+					</mx:Form>
+					<mx:HDividedBox width="100%" height="100%" paddingLeft="10" paddingRight="10">
+						<s:Panel width="100%" height="100%" dropShadowVisible="false"
+								 title="Video Container">
+							<s:VGroup width="100%" height="100%">
+								<components:SMPTETTVideoPlayer id="videoPlayer" width="100%"
+															   height="100%"
+															   dropShadowVisible="false"
+															   skinClass="org.osmf.smpte.tt.skins.spark.VideoPlayerSkin"/>
+							</s:VGroup>
+						</s:Panel>
+						<s:Panel width="100%" height="100%" dropShadowVisible="false"
+								 title="SMPTE-TT File">
+							<s:VGroup width="100%" height="100%">
+								<s:TextArea id="dxfpFileContents" width="100%" height="100%"
+											borderVisible="false" fontFamily="_typewriter"
+											horizontalScrollPolicy="auto" lineBreak="explicit">
+								</s:TextArea>
+							</s:VGroup>
+						</s:Panel>
+					</mx:HDividedBox>
+				</s:VGroup>
+			</s:Group>
+		</s:Scroller>
+	</s:Panel>
 </s:Application>

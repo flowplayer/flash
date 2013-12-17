@@ -172,6 +172,8 @@ package org.flowplayer.analytics {
                 _log.debug("Tracking " + eventName + "[" + (clip.completeUrl + (clip.isInStream ? ": instream" : "")) + "] : " + time + " on page " + category);
                 if (_tracker.isReady()) {
                     _tracker.trackEvent(category, eventName, clip.completeUrl + (clip.isInStream ? ": instream" : ""), time);
+                } else {
+                    _log.debug("tracker not ready");
                 }
             } catch (e:Error) {
                 _log.error("Got error while tracking event " + eventName);

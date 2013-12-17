@@ -62,24 +62,21 @@ package org.osmf.smpte.tt.model.parameter
 		protected override function validElements():void
 		{
 			var child:int = 0;
-			
-			while (child < children.length
-				&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement) 
-					|| (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)
-					|| (children[child] is ExtensionElement)))
-			{
-				child++;
-			}
-			
-			if (children.length != child)
-			{
-				error(children[child] + " is not allowed in " + this + " at position " + child);
-			}
-			
-			// now check each of the children is individually valid
+			// check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
-				element.valid();
+				if (element is org.osmf.smpte.tt.model.MetadataElement 
+					|| element is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| element is ExtensionElement)
+				{
+					child++;
+					element.valid();
+				}
+				else
+				{
+					error(element + " is not allowed in " + this + " at position " + (children.length-child));
+					continue;
+				}
 			}
 		}
 	}

@@ -70,6 +70,10 @@ package org.flowplayer.view {
             _pluginRegistry = pluginRegistry;
         }
 
+        //#163 dummy function for plugin registry
+        public function onLoad():void {}
+
+
         override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void {
             addEventListenerToDisplays(_playList.clips.concat(_playList.childClips), type, listener);
 
@@ -95,9 +99,8 @@ package org.flowplayer.view {
 
         private function createDisplays(clips:Array):void {
             for (var i:Number = 0; i < clips.length; i++) {
-                var clip:Clip = clips[i];
-                if (! clip.isNullClip) {
-                    createDisplay(clip);
+                if (! clips[i].isNullClip) {
+                    createDisplay(clips[i]);
                 }
             }
         }
@@ -112,8 +115,6 @@ package org.flowplayer.view {
             _displays[clip] = display;
 			for(var key:Object in _addDisplayListeners)
 				_addDisplayListeners[key](display);
-            //#375 clearing the event listeners here prevents new events being added when the playlist is replaced
-			//_addDisplayListeners = new Dictionary();
         }
 
         public function setVideoApiOverlaySize(width:Number, height:Number):void {
@@ -263,7 +264,14 @@ package org.flowplayer.view {
                 removeChild(_displays[clips[i]]);
 				for(var key:Object in _removeDisplayListeners)
 					_removeDisplayListeners[key](_displays[clips[i]]);
+                //#163 clear content and empty display list
+                clips[i].setContent(null);
+                _displays[clips[i]] = null;
+                delete _displays[clips[i]];
             }
+
+            //#163 initialize display list
+            _displays.length = 0;
             //#375 clearing the event listeners here prevents new events being added when the playlist is replaced
 			//_removeDisplayListeners = new Dictionary();
         }
@@ -293,6 +301,8 @@ package org.flowplayer.view {
         private function removeOneShotDisplay(event:ClipEvent):void {
             log.debug("removing display of a one shot clip " + event.target);
             removeChild(_displays[event.target]);
+            //#163 clear content
+            event.target.setContent(null);
             delete _displays[event.target];
         }
 

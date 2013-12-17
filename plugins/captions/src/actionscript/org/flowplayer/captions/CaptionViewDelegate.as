@@ -152,5 +152,13 @@ package org.flowplayer.captions {
         internal function css(styleObj:Object):void {
             _view.css(styleObj);
         }
+
+        internal function hideButton():void {
+            _player.panel.removeChild(_button);
+        }
+
+        internal function showButton():void {
+            _player.addToPanel(_button, _config.button);
+        }
     }
 }

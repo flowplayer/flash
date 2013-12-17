@@ -1,0 +1,105 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <!--<script src="../flowplayer-3.2.6.min.js"></script>-->
+    <!--<script src="../src/javascript/flashembed.js"></script>-->
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.11.min.js"></script>
+
+
+	<!-- page title -->
+	<title>Minimal Flowplayer setup</title>
+
+</head><body>
+
+	<div id="page">
+        <a
+                     href="fly.mov"
+                     style="display:block;width:440px;height:247px"
+                     id="player">
+                </a>
+<script>
+    flowplayer("player", "../../../flash-build/build/flowplayer-3.2.17-dev.swf",
+    {
+        log: { level: 'debug', filter: 'org.flowplayer.controller.NetStreamClient'},
+
+        key: '#$b6223bfbd646c621758',
+
+        onBegin: function() {
+            console.log("onBegin");
+        },
+
+        onStart: function() {
+            console.log("onStart");
+        },
+
+        onStartBuffering: function() {
+            console.log("onStartBuffering");
+        },
+
+        onFinish: function() {
+            console.log("onFinish");
+        },
+
+        onPause: function() {
+            console.log("onPause");
+        },
+
+        onResume: function() {
+            console.log("onResume");
+        },
+
+        onBeforeSeek: function(clip, target) {
+            console.log("onBeforeSeek, target pos " + target);
+        },
+
+        onSeek: function(clip, target) {
+            console.log("onSeek, target pos " + target);
+        },
+
+        onLastSecond: function() {
+            console.log("onLastSecond");
+        },
+
+        clip: {
+            onNetStreamEvent: function (clip, type, info) {
+                if (type == "onTextData") {
+                    console.log("onTextData:", info);
+                }
+
+            },
+
+            url: 'http://stream.flowplayer.org/big_buck_bunny_with_captions.mp4',
+            captionsTrackFilter: "trackid=2",
+            scaling: 'fit'
+
+        },
+
+        plugins: {
+            captions: {
+                url: "flowplayer.captions-3.2.10-dev.swf",
+                captionTarget: "content"
+            },
+
+            content: {
+                url: "flowplayer.content-3.2.8.swf",
+                bottom: 26,
+                height: 30,
+                backgroundColor: "transparent",
+                backgroundGradient: "none",
+                border: "none",
+                textDecoration: "outline",
+                style: {
+                    body: {
+                        textAlign: "center"
+                    }
+                }
+            }
+        }
+
+
+    });
+</script>
+	</div>
+	
+	
+</body></html>

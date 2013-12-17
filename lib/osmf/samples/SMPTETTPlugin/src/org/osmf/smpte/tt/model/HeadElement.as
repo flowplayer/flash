@@ -22,6 +22,7 @@ package org.osmf.smpte.tt.model
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
 	import org.osmf.smpte.tt.model.parameter.ProfileElement;
 	import org.osmf.smpte.tt.timing.TimeTree;
+	import org.osmf.smpte.tt.timing.TreeType;
 	import org.osmf.smpte.tt.vocabulary.Styling;
 	
 	public class HeadElement extends TimedTextElementBase
@@ -58,18 +59,12 @@ package org.osmf.smpte.tt.model
 			var isValid:Boolean = true;
 			var child:uint = 0;
 			
+			var childElement:TreeType;
 			//{ region allow artibtrary metadata
-			while ((child < children.length)
-				&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement) || (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow an arbitrary number of profile elements
-			while ((child < children.length)
-				&& ((children[child] is ProfileElement)
-				))
+			while (child < children.length
+				&& (children[child] is org.osmf.smpte.tt.model.MetadataElement 
+					|| children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| children[child] is ProfileElement))
 			{
 				child++;
 			}

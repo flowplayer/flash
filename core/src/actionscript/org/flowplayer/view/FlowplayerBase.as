@@ -708,16 +708,17 @@ package org.flowplayer.view {
                 if (name == "onCuePoint") {
                     var cuepoint:Cuepoint = Cuepoint.createDynamic(infoObj["time"], "embedded");
                     for (var prop:String in infoObj) {
-                        log.debug(prop + ": " + infoObj[prop]);
+//                        log.debug(prop + ": " + infoObj[prop]);
                         if (prop == "parameters") {
                             for (var param:String in infoObj.parameters) {
                                 log.debug(param + ": " + infoObj.parameters[param]);
-                                cuepoint.addParameter(param, infoObj.parameters[param]);
+                                cuepoint.addParameter(param.replace(/[^a-z0-9]+/gi, ""), infoObj.parameters[param]);
                             }
                         } else {
                             cuepoint[prop] = infoObj[prop];
                         }
                     }
+                    log.debug("Dispatching cuepoint", cuepoint);
                     playlist.current.dispatch(ClipEventType.forName(name), cuepoint);
                     return;
                 }

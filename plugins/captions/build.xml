@@ -3,8 +3,8 @@
 	<property file="${user.home}/plugin.properties" />
 	<property file="build.properties" />
 	
-	<property file="${devkit-dir}/plugin-build.properties" />
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	<property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
 
     <property name="shortname" value="captions" />

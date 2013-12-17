@@ -28,7 +28,6 @@ package org.flowplayer.controller {
 		private var _onLastSecondDispatched:Boolean;
 		private var _controller:MediaController;
 		private var _endDetectTimer:Timer;
-		private var _wasPaused:Boolean = false;
 		private var _lastTimeDetected:Number;
 
 		public function PlayTimeTracker(clip:Clip, controller:MediaController) {
@@ -52,7 +51,9 @@ package org.flowplayer.controller {
 		public function stop():void {
 			if (!_progressTimer) return;
 			_storedTime = time;
-			_progressTimer.stop();
+			_progressTimer.reset();
+            _progressTimer.removeEventListener(TimerEvent.TIMER, checkProgress);
+            _progressTimer = null;
 			log.debug("stopped at time " + _storedTime);
 		}
 
@@ -119,6 +120,7 @@ package org.flowplayer.controller {
 		}
 
         public function get durationReached():Boolean {
+            if (_clip.live) return false;
             if (_clip.durationFromMetadata > _clip.duration) {
                 return time >= _clip.duration;
             }
@@ -128,27 +130,29 @@ package org.flowplayer.controller {
 		private function startEndTimer(clip:Clip):void {
 		
 			bindEndListeners();
-            _endDetectTimer.addEventListener(TimerEvent.TIMER,
-                    function(event:TimerEvent):void {
-                        log.debug("last time detected == " + _lastTimeDetected);
-                        if(time == _lastTimeDetected && _endDetectTimer.running || durationReached) {
-                            log.debug("clip has reached his end, timer stopped");
-                            _endDetectTimer.reset();
-                            completelyPlayed();
-                        }
-                        _lastTimeDetected = time;
-                    }
-			);
+            _endDetectTimer.addEventListener(TimerEvent.TIMER, onEndTime);
 			
 			log.debug("starting end detect timer");
 			_endDetectTimer.start();
 			
 		}
+
+        private function onEndTime(event:TimerEvent):void
+        {
+            log.debug("last time detected == " + _lastTimeDetected);
+            if(time == _lastTimeDetected && _endDetectTimer.running || durationReached) {
+                log.debug("clip has reached his end, timer stopped");
+                _endDetectTimer.reset();
+                completelyPlayed();
+            }
+            _lastTimeDetected = time;
+        }
 		
 		private function completelyPlayed():void {
 			if(_endDetectTimer.running) {
 				unbindEndListeners();
 				_endDetectTimer.reset();
+                _endDetectTimer.removeEventListener(TimerEvent.TIMER, onEndTime);
 				_endDetectTimer = null;
 			}
 			
@@ -181,6 +185,8 @@ package org.flowplayer.controller {
                     log.debug("this cuepoint already fired");
                 }
 			}
+
+            points = null;
 		}
 		
 		private function collectCuepoints(clip:Clip, timeRounded:Number):Array {

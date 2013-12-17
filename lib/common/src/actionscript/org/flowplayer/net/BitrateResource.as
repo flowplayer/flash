@@ -16,7 +16,7 @@ package org.flowplayer.net {
     public class BitrateResource {
         protected var log:Log = new Log(this);
 
-        protected function sort(bitrates:Vector.<BitrateItem>):Vector.<BitrateItem> {
+        /*protected function sort(bitrates:Vector.<BitrateItem>):Vector.<BitrateItem> {
             var sorter:Function = function (a:BitrateItem, b:BitrateItem):Number {
                 // increasing bitrate order
                 if (a.bitrate == b.bitrate) {
@@ -35,7 +35,7 @@ package org.flowplayer.net {
                 return -1;
             };
             return bitrates.concat().sort(sorter);
-        }
+        } */
 
         public function addBitratesToClip(clip:Clip):Vector.<BitrateItem> {
             log.debug("addBitratesToClip()");

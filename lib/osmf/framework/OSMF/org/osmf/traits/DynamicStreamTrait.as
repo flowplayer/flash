@@ -28,6 +28,12 @@ package org.osmf.traits
 	import org.osmf.events.DynamicStreamEvent;
 	import org.osmf.utils.OSMFStrings;
 	
+	CONFIG::LOGGING
+	{
+		import org.osmf.logging.Logger;
+		import org.osmf.logging.Log;
+	}
+	
 	/**
 	 * Dispatched when a stream switch is requested, completed, or failed.
 	 * 
@@ -101,7 +107,7 @@ package org.osmf.traits
 			super(MediaTraitType.DYNAMIC_STREAM);
 			
 			_autoSwitch = autoSwitch;
-			_currentIndex = currentIndex;		
+			_currentIndex = currentIndex;
 			_numDynamicStreams = numDynamicStreams;
 			_maxAllowedIndex = numDynamicStreams - 1;
 
@@ -160,7 +166,7 @@ package org.osmf.traits
 		{
 			return _currentIndex;
 		}
-
+		
 		/**
 		 * The maximum allowed index. This can be set at run-time to 
 		 * provide a ceiling for the switching profile, for example,
@@ -233,7 +239,7 @@ package org.osmf.traits
 		 *  @productversion OSMF 1.0
 		 */
 		public function get switching():Boolean
-		{			
+		{
 			return _switching;
 		}
 		
@@ -258,20 +264,28 @@ package org.osmf.traits
 		 */
 		public function switchTo(index:int):void
 		{
+			CONFIG::LOGGING
+			{
+				logger.info("switchTo: index = " + index);
+			}
+			
 			if (autoSwitch)
 			{
 				throw new IllegalOperationError(OSMFStrings.getString(OSMFStrings.STREAMSWITCH_STREAM_NOT_IN_MANUAL_MODE));
 			}
-			else if (index != currentIndex)
+			else
 			{
 				if (index < 0 || index > maxAllowedIndex)
 				{
 					throw new RangeError(OSMFStrings.getString(OSMFStrings.STREAMSWITCH_INVALID_INDEX));
 				}
 
-				// This method sets the switching state to true.  The processing
-				// and completion of the switch are up to the implementing media.
-				setSwitching(true, index);
+				if (!switching)
+				{
+					// This method sets the switching state to true.  The processing
+					// and completion of the switch are up to the implementing media.
+					setSwitching(true, index);
+				}
 			}			
 		}
 				
@@ -315,9 +329,13 @@ package org.osmf.traits
 		 */		
 		protected final function setCurrentIndex(value:int):void
 		{
+			CONFIG::LOGGING
+			{
+				logger.debug("setCurrentIndex: " + value);
+			}
 			_currentIndex = value;
 		}
-		
+
 		/**
 		 * Must be called by the implementing media on completing a switch.
 		 * 
@@ -333,20 +351,22 @@ package org.osmf.traits
 		 */		
 		protected final function setSwitching(newSwitching:Boolean, index:int):void
 		{
-			if (newSwitching != _switching)
+			CONFIG::LOGGING
 			{
-				switchingChangeStart(newSwitching, index);
-				
-				_switching = newSwitching;
-				
-				// Update the index when a switch finishes.
-				if (newSwitching == false)
-				{
-					setCurrentIndex(index);
-				}
-				
-				switchingChangeEnd(index);
+				logger.debug("setSwitching: newSwitching = " + newSwitching + "; index = " + index + "; switching = " + _switching);
 			}
+			
+			switchingChangeStart(newSwitching, index);
+			
+			_switching = newSwitching;
+			
+			// Update the current index when a switch finishes.
+			if (newSwitching == false)
+			{
+				setCurrentIndex(index);
+			}
+			
+			switchingChangeEnd(index);
 		}
 
 		/**
@@ -417,6 +437,7 @@ package org.osmf.traits
 					, false
 					, false
 					, switching
+					, _autoSwitch
 					)
 				);
 		}
@@ -452,5 +473,10 @@ package org.osmf.traits
 		private var _maxAllowedIndex:int = 0;
 		private var _numDynamicStreams:int;
 		private var _switching:Boolean;
+		
+		CONFIG::LOGGING
+		{
+			private static const logger:Logger = Log.getLogger("org.osmf.traits.DynamicStreamTrait");
+		}
 	}
 }

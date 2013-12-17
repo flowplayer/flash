@@ -19,17 +19,13 @@
  **********************************************************/
 package org.osmf.smpte.tt.model
 {
-	import flashx.textLayout.conversion.FormatDescriptor;
-	
 	import org.osmf.smpte.tt.formatting.Animation;
-	import org.osmf.smpte.tt.formatting.Block;
 	import org.osmf.smpte.tt.formatting.FormattingObject;
 	import org.osmf.smpte.tt.formatting.Paragraph;
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
 	import org.osmf.smpte.tt.timing.TimeCode;
 	import org.osmf.smpte.tt.timing.TimeContainer;
-	import org.osmf.smpte.tt.timing.TimeTree;
-	import org.osmf.smpte.tt.utilities.DictionaryUtils;
+	import org.osmf.smpte.tt.timing.TreeType;
 	
 	public class PElement extends TimedTextElementBase
 	{
@@ -49,21 +45,20 @@ package org.osmf.smpte.tt.model
 			
 			if (temporallyActive(tick))
 			{
-				
 				var block:Paragraph = new Paragraph(this);
 				var fo:FormattingObject;
-				for each (var child:* in children)
+				for each (var child:TreeType in children)
 				{
-					if (child is BrElement || child is AnonymousSpanElement)
+					if (child is AnonymousSpanElement)
 					{
-						fo = (child as TimedTextElementBase).getFormattingObject(tick);
+						fo = TimedTextElementBase(child).getFormattingObject(tick);
 						if (fo != null)
 						{
 							fo.parent = block;
 							block.children.push(fo);
 							for(var d:* in metadata)
 							{
-								if (!org.osmf.smpte.tt.utilities.DictionaryUtils.containsKey(child.metadata,d))
+								if (!child.metadata[d])
 								{
 									child.metadata[d] = metadata[d];
 								}
@@ -72,7 +67,7 @@ package org.osmf.smpte.tt.model
 					}
 					else if (child is SpanElement)
 					{
-						fo = (child as SpanElement).getFormattingObject(tick);
+						fo = SpanElement(child).getFormattingObject(tick);
 						if (fo != null)
 						{
 							/// Flattened nested <span>A<span>B</span>C</span>
@@ -81,7 +76,7 @@ package org.osmf.smpte.tt.model
 							/// nested elements will still inherit correctly, as style is inherited 
 							/// throughthe tt_element tree, not the formatting object tree.
 							/// something to watch out for when computing relative values though.
-							for each (var nestedInline:* in fo.children)
+							for each (var nestedInline:TreeType in fo.children)
 							{
 								nestedInline.parent = block;
 								block.children.push(nestedInline);
@@ -102,7 +97,7 @@ package org.osmf.smpte.tt.model
 					}
 					if (child is SetElement)
 					{
-						fo = ((child as SetElement).getFormattingObject(tick)) as Animation;
+						fo = SetElement(child).getFormattingObject(tick) as Animation;
 						if (fo != null)
 						{
 							block.animations.push(fo);
@@ -149,54 +144,27 @@ package org.osmf.smpte.tt.model
 		 */
 		protected override function validElements():void
 		{
-			var child:uint = 0;
-			
-			//{ region Allow arbitrary metadata
-			while ((child < children.length)
-				&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement)
-					|| (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)
-					//      || (children[child] is anonymousSpan)
-				))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary set elements (Animation class)
-			while ((child < children.length)
-				&& ((children[child] is SetElement)
-					//|| (children[child] is anonymousSpan)
-				))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary span, br, PCDATA (Inline class)
-			while ((child < children.length)
-				&& ((children[child] is SpanElement)
-					|| (children[child] is BrElement)
-					|| (children[child] is AnonymousSpanElement)
-				))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Check no other element is present
-			if (children.length != child)
-			{
-				error(children[child] + " is not allowed in " + this + " at position " + child);
-			}
-			//} endregion
-			
+			var child:uint = 0;			
 			//{ region now check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
-				element.valid();
+				if (element is org.osmf.smpte.tt.model.MetadataElement
+					|| element is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| element is SetElement
+					|| element is SpanElement
+					|| element is BrElement
+					|| element is AnonymousSpanElement)
+				{
+					child++;
+					element.valid();
+				}
+				else 
+				{
+					error(element + " is not allowed in " + this + " at position " + (children.length-child));
+					continue;
+				}
 			}
-			//} endregion
-				
+			//} endregion		
 		}
 		//} endregion		
 	}

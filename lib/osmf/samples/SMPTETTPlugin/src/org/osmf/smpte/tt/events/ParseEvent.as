@@ -26,6 +26,7 @@ package org.osmf.smpte.tt.events
 		public static const BEGIN:String = "begin";
 		public static const PROGRESS:String = "progress";
 		public static const COMPLETE:String = "complete";
+		public static const PARTIAL:String = "partial"; 
 		
 		private var _data:Object;
 
@@ -39,11 +40,25 @@ package org.osmf.smpte.tt.events
 			_data = value;
 		}
 
+
+		public override function clone():Event
+		{
+			return new ParseEvent(type,bubbles,cancelable,data);
+		}
+
+
+		public override function toString():String
+		{
+			return formatToString("ParseEvent","type","data");
+		}
+
 		
 		public function ParseEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, data:Object=null)
 		{
 			_data = data;
 			super(type, bubbles, cancelable);
 		}
+		
+		
 	}
 }

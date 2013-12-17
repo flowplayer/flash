@@ -286,14 +286,18 @@ package org.flowplayer.view {
 		private function startTimer():void {
 
 			_hideTimer = new Timer(_model.displayTime * 1000, 1);
-			_hideTimer.addEventListener(TimerEvent.TIMER_COMPLETE,
-							function(event:TimerEvent):void {
-                                log.debug("display time complete");
-                                hide(_model.fadeSpeed);
-                                _hideTimer.stop();
-                            });
+			_hideTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onHideComplete);
 			_hideTimer.start();
 		}
+
+        private function onHideComplete(event:TimerEvent):void
+        {
+            log.debug("display time complete");
+            hide(_model.fadeSpeed);
+            _hideTimer.reset();
+            _hideTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, onHideComplete);
+            _hideTimer = null;
+        }
 		
 		CONFIG::freeVersion
 		public function setModel(model:Logo):void {
@@ -306,7 +310,7 @@ package org.flowplayer.view {
 			_model.top = "20";
 			_model.right = "20";
 			_model.opacity = 0.3;
-			_model.linkUrl = "http://flowplayer.org";
+			_model.linkUrl = "http://flash.flowplayer.org";
 			log.debug("initial model dimensions " + _model.dimensions);
 		}
 		

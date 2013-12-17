@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
-<antlib>
-    <taskdef name="mxmlc" classname="flex.ant.MxmlcTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
-    <taskdef name="html-wrapper" classname="flex.ant.HtmlWrapperTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
-	<taskdef name="asdoc" classname="flex.ant.AsDocTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
-    <taskdef name="compc" classname="flex.ant.CompcTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
-    <taskdef name="flex" classname="flex.ant.FlexTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
-	<taskdef name="flexunit" classname="org.flexunit.ant.tasks.FlexUnitTask" classpath="${FLEX_UNIT_HOME}/flexUnitTasks-4.1.0-8.jar" onerror="ignore" /> 
-	<taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpath="${buildtools.dir}/libs/ant-contrib-1.0b3.jar" onerror="ignore" /> 
+<?xml version="1.0"?>
+<antlib>
+    <taskdef name="mxmlc" classname="flex.ant.MxmlcTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+    <taskdef name="html-wrapper" classname="flex.ant.HtmlWrapperTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	<taskdef name="asdoc" classname="flex.ant.AsDocTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+    <taskdef name="compc" classname="flex.ant.CompcTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+    <taskdef name="flex" classname="flex.ant.FlexTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	<taskdef name="flexunit" classname="org.flexunit.ant.tasks.FlexUnitTask" classpath="${FLEX_UNIT_HOME}/flexUnitTasks-4.1.0-8.jar" onerror="ignore" /> 
+	<taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpath="${buildtools.dir}/libs/ant-contrib-1.0b3.jar" onerror="ignore" /> 
 </antlib>

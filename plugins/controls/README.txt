@@ -1,5 +1,11 @@
 Version history:
 
+3.2.16 (Nov 2013)
+-----------------
+- #58 fix alignment issue with tooltips. first obtain the global coordinates of the parent to use for configuring the
+  alignment of the tooltip. outmost left and right tooltips are aligned right and left or else centre them.
+
+
 3.2.15
 ------
 - #42 when returning and resuming from an instream clip, restart the time update timer.

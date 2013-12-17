@@ -15,8 +15,8 @@
     <property name="extra-sources" value="../../lib/common/src/actionscript" />
 
 
-    <property file="${devkit-dir}/plugin-build.properties" />
-    <import file="${devkit-dir}/plugin-build.xml"/>
+    <property file="../../../flash-build/plugin-build.properties" />
+    <import file="../../../flash-build/plugin-build.xml"/>
 
     <property name="plugin-binary" value="${basename}.swf" />
     <property name="plugin-binary-versioned" value="${basename}-${version}.swf" />

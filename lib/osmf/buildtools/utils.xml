@@ -1,335 +1,366 @@
-<project name="utils" >
-	<!-- Set output directory -->
-	<condition property="output.bin" value="bin">
-		<equals arg1="${debug}" arg2="false"/>
-	</condition>
-	<condition property="output.bin" value="bin-debug">
-		<equals arg1="${debug}" arg2="true"/>
-	</condition>
-	
-	<property name="osmf.swc.path" value="${source.dir}/framework/osmf/${output.bin}/OSMF.swc" />
-	<property name="smp.swf.path" value="${source.dir}/player/StrobeMediaPlayer/${output.bin}/StrobeMediaPlayer.swf" />
-
-	<typedef file="${buildtools.dir}/antlib.xml"/>
-	
-	<!-- Define a task for changing tokens in -build-config.xml -->
-	<macrodef name="OSMF.set.path">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<sequential>
-			<!-- Copy the .-build-config.xml file to a temporary file *-build-congif.tmp.xml and replace the tokens with specified paths -->
-			<delete file="@{projectDir}/@{project}-build-config.tmp.xml"  quiet="true" />
-			<copy file="@{projectDir}/@{project}-build-config.xml" tofile="@{projectDir}/@{project}-build-config.tmp.xml"  force="true">
-				<filterchain>
-					<replacetokens begintoken="#" endtoken="#">
-						<token key="osmf.swc.path" value="${osmf.swc.path}"/>
-						<token key="smp.swf.path" value="${smp.swf.path}"/>
-						<token key="output.bin" value="${output.bin}"/>
-					</replacetokens>	
-				</filterchain>
-			</copy>
-		</sequential>
-	</macrodef>
-	
-	
-	<!-- Define a task for compiling an application project. -->
-	<macrodef name="OSMF.application.compile">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<attribute name="srcDir" default="/src" />
-		<attribute name="width" default="800" />
-		<attribute name="height" default="600" />
-		<sequential>			
-			<OSMF.set.path project="@{project}" projectDir="@{projectDir}" />
-			<mxmlc
-				output="@{projectDir}/${output.bin}/@{project}.swf"
-				file="@{projectDir}@{srcDir}/@{project}.as"
-				optimize="true"
-				debug="${debug}"
-				fork="false"
-				target-player="${flash.target.player}"
-				swf-version="${swfversion}"
-				static-link-runtime-shared-libraries="true"
-				static-rsls="false"
-			>
-				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
-				<define name="CONFIG::LOGGING" value="${logging}" />
-				<define name="CONFIG::PLATFORM" value="${platform}" />
-				<define name="CONFIG::MOCK" value="${mock}" />
-				
-				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
-
-			    <compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
-					<include name="playerglobal.swc" />
-				</compiler.external-library-path>
-			</mxmlc>
-
-			<copy todir="@{projectDir}/${output.bin}" overwrite="true" failonerror="false">
-				<fileset dir="@{projectDir}/html-template" />
-			</copy>
-			<move file="@{projectDir}/${output.bin}/index.template.html" tofile="@{projectDir}/${output.bin}/@{project}.html" overwrite="true" failonerror="false" />
-			
-			<html-wrapper
-				title="@{project}"
-				file="@{project}.html"
-				swf="@{project}"
-				output="@{projectDir}/${output.bin}"
-				width="@{width}"
-				height="@{height}"
-			/>
-			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
-		</sequential>		
-	</macrodef>
-	
-	
-	<!-- Define a task for building a component project. -->	
-	<macrodef name="OSMF.component.compile">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<sequential>
-
-			<OSMF.set.path project="@{project}" projectDir="@{projectDir}" />
-			<OSMF.generateClassList project="@{project}" projectDir="@{projectDir}"  />
-			<compc
-				output="@{projectDir}/${output.bin}/@{project}.swc"
-				include-classes="${@{project}.classes}"
-				optimize="true"
-				debug="${debug}"
-				fork="false"
-				target-player="${flash.target.player}"
-			>	
-				
-				<define name="CONFIG::useFlexClasses" value="true" />
-				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
-				<define name="CONFIG::LOGGING" value="${logging}" />
-				<define name="CONFIG::PLATFORM" value="${platform}" />
-				<define name="CONFIG::MOCK" value="${mock}" />
-
-				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
-				
-				<warnings>true</warnings>
-				
-				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
-					<include name="playerglobal.swc" />
-				</compiler.external-library-path>
-
-			</compc>
-			
-			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml"/>
-		</sequential>
-	</macrodef>
-	
-	
-	<!-- Define a task for generating the class list for compc from the appropriate .flexLibProperties file -->
-	<macrodef name="OSMF.generateClassList">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<sequential>
-			<xmlproperty
-				file="@{projectDir}/.flexLibProperties"
-				prefix="@{project}"
-				keepRoot="false"
-				collapseAttributes="true"
-			/>
-			<propertyregex
-				property="@{project}.classes"
-				input="${@{project}.includeClasses.classEntry.path},"
-				regexp=","
-				replace=" "
-			/>
-
-		</sequential>
-	</macrodef>
-	
-	
-	<!-- Define a task for compiling a unit test project. -->
-	<macrodef name="OSMF.mxml.compile">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<attribute name="srcDir" default="/src" />
-		<attribute name="width" default="800" />
-		<attribute name="height" default="600" />
-		<sequential>
-			<OSMF.set.path project="@{project}" projectDir="@{projectDir}" />
-			<mxmlc
-				output="@{projectDir}/${output.bin}/@{project}.swf"
-				file="@{projectDir}@{srcDir}/@{project}.mxml" keep-generated-actionscript="false"
-				debug="${debug}"
-				fork="false"
-				target-player="${flash.target.player}"
-				swf-version="${swfversion}"
-				static-link-runtime-shared-libraries="true"
-				static-rsls="false"
-			>
-				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
-				<define name="CONFIG::LOGGING" value="${logging}" />
-				<define name="CONFIG::PLATFORM" value="${platform}" />
-				<define name="CONFIG::MOCK" value="${mock}" />
-
-				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
-
-				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
-					<include name="playerglobal.swc" />
-				</compiler.external-library-path>
-			</mxmlc>
-
-			<html-wrapper
-				title="@{project}"
-				file="@{project}.html"
-				swf="@{project}"
-				output="@{projectDir}/${output.bin}"
-				width="@{width}"
-				height="@{height}"
-			/>
-			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
-		</sequential>
-	</macrodef>
-	
-	
-	<!-- Define a task for compiling a plugin project. -->
-	<macrodef name="OSMF.plugin.compile">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<attribute name="srcDir" default="/src" />
-		<sequential>
-			
-			<OSMF.set.path project="@{project}" projectDir="@{projectDir}" />
-			<mxmlc
-				output="@{projectDir}/${output.bin}/@{project}.swf"
-				file="@{projectDir}@{srcDir}/@{project}.as"
-				optimize="true"
-				debug="${debug}"
-				fork="false"
-				target-player="${flash.target.player}"
-				swf-version="${swfversion}"
-				static-link-runtime-shared-libraries="true"
-			>		
-				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
-
-				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
-					<include name="playerglobal.swc" />
-				</compiler.external-library-path>
-
-				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
-				<define name="CONFIG::LOGGING" value="${logging}" />
-				<define name="CONFIG::PLATFORM" value="${platform}" />
-				<define name="CONFIG::MOCK" value="${mock}" />
-			</mxmlc>
-			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
-		</sequential>
-	</macrodef>
-	
-	
-	<!-- Define a task for compiling smp project. -->
-	<macrodef name="OSMF.smp.compile">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<attribute name="srcDir" default="/src" />
-		<attribute name="width" default="800" />
-		<attribute name="height" default="600" />
-		<sequential>
-			
-			<OSMF.set.path project="@{project}" projectDir="@{projectDir}" />
-			<mxmlc
-				output="@{projectDir}/${output.bin}/@{project}.swf"
-				file="@{projectDir}@{srcDir}/@{project}.as"
-				optimize="true"
-				debug="${debug}"
-				fork="false"
-				target-player="${flash.target.player}"
-				swf-version="${swfversion}"
-				static-link-runtime-shared-libraries="true"
-				static-rsls="false"
-			>
-				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
-				<define name="CONFIG::LOGGING" value="${logging}" />
-				<define name="CONFIG::PLATFORM" value="${platform}" />
-				<define name="CONFIG::MOCK" value="${mock}" />
-				
-				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
-
-			<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
-					<include name="playerglobal.swc" />
-				</compiler.external-library-path>
-			</mxmlc>
-
-			<copy todir="@{projectDir}/${output.bin}" overwrite="true" failonerror="false">
-				<fileset dir="@{projectDir}/html-template" />
-			</copy>
-			<move file="@{projectDir}/${output.bin}/index.template.html" tofile="@{projectDir}/${output.bin}/@{project}.html" overwrite="true" failonerror="false" />
-			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
-		</sequential>
-	</macrodef>
-	
-	
-	<!-- Define a task for compiling a unit test project. -->
-	<macrodef name="OSMF.unittest.compile">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<attribute name="srcDir" default="/src" />
-		<sequential>
-
-			<OSMF.set.path project="@{project}" projectDir="@{projectDir}" />
-			<mxmlc
-				output="@{projectDir}/${output.bin}/@{project}.swf"
-				file="@{projectDir}@{srcDir}/@{project}.mxml" keep-generated-actionscript="false"
-				debug="${debug}"
-				fork="false"
-				target-player="${flash.target.player}"
-			>
-				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
-				<define name="CONFIG::LOGGING" value="${logging}" />
-				<define name="CONFIG::PLATFORM" value="${platform}" />
-				<define name="CONFIG::MOCK" value="${mock}" />
-				
-				<!-- List of SWC files or directories that contain SWC files. -->
-				<compiler.library-path dir="${FLEX_UNIT_HOME}/" append="true">
-					<include name="flexunit-aircilistener-4.1.0-8-4.1.0.16076.swc" />
-					<include name="flexunit-cilistener-4.1.0-8-4.1.0.16076.swc" />
-					<include name="turnkey/libs/hamcrest-as3-flex-1.1.3.swc" />
-					<include name="turnkey/libs/flexunit-4.1.0-8-flex_4.1.0.16076.swc" />
-				</compiler.library-path>
-				
-				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
-
-				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
-					<include name="playerglobal.swc" />
-				</compiler.external-library-path>
-				
-				<compiler.verbose-stacktraces>false</compiler.verbose-stacktraces>
-				<compiler.headless-server>true</compiler.headless-server>
-			</mxmlc>
-			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
-		</sequential>
-	</macrodef>
-	
-	
-	<!-- Define a task for running an unit test -->
-	<macrodef name="OSMF.unittest.run">
-		<attribute name="project" />
-		<attribute name="projectDir" />
-		<attribute name="flexUnitPlayer" default="air" />
-		<sequential>
-			
-			<mkdir dir="${reports.dir}/@{project}/xml-format" />
-     		<flexunit
-				player="@{flexUnitPlayer}" headless="false" localTrusted="true"
-				swf="@{projectDir}/${output.bin}/@{project}.swf"
-				toDir="${reports.dir}/@{project}/xml-format"
-				haltonfailure="false"
-				verbose="false"
-				failureproperty="flexunit.failed"
-				timeout = "120000"
-			/>
-			<junitreport todir="${reports.dir}/@{project}/xml-format">
-				<fileset dir="${reports.dir}/@{project}/xml-format">
-					<include name="TEST-*.xml" />				
-				</fileset>
-				<report format="frames" todir="${reports.dir}/@{project}" />
-			</junitreport>	
-			
-			<!--<fail message="One or more flexunit tests failed. See test reports for details." if="flexunit.failed" -->
-		</sequential>
-	</macrodef>
-
+<project name="utils" >
+
+	<!-- Set taskdef -->
+	<typedef file="${buildtools.dir}/antlib.xml"/>
+	
+	<!-- Set output directory -->
+	<condition property="output.bin" value="bin">
+		<equals arg1="${debug}" arg2="false"/>
+	</condition>
+	<condition property="output.bin" value="bin-debug">
+		<equals arg1="${debug}" arg2="true"/>
+	</condition>
+	
+	<!-- Set osmf.swc.path and spm.swf.path properties values to default. Obs.: these will not be loaded if they have been previously set. -->
+	<property name="osmf.swc.path" value="${trunk.dir}/framework/osmf/${output.bin}/OSMF.swc" />
+	<property name="smp.swf.path" value="${trunk.dir}/player/StrobeMediaPlayer/${output.bin}/StrobeMediaPlayer.swf" />
+	
+	<!-- Define a task for changing tokens in -build-config.xml -->
+	<macrodef name="OSMF.generate.build.config">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="project.build.config.xml" default="@{projectDir}/@{project}-build-config.xml"/>
+		<sequential>
+			<!-- Create output directory -->
+		    <mkdir dir="@{projectDir}/${output.bin}"/>
+			<!-- Copy the .-build-config.xml file to a temporary file *-build-config.tmp.xml and replace the tokens with specified paths -->
+			<delete file="@{projectDir}/@{project}-build-config.tmp.xml"  quiet="true" />
+			<copy file="@{project.build.config.xml}" tofile="@{projectDir}/@{project}-build-config.tmp.xml"  force="true">
+				<filterchain>
+					<replacetokens begintoken="#" endtoken="#">
+						<token key="osmf.swc.path" value="${osmf.swc.path}"/>
+						<token key="smp.swf.path" value="${smp.swf.path}"/>
+						<token key="output.bin" value="${output.bin}"/>
+					</replacetokens>	
+				</filterchain>
+			</copy>
+			
+		</sequential>
+	</macrodef>
+	
+	<!-- Define a task for compiling an application project. -->
+	<macrodef name="OSMF.application.compile">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="srcDir" default="/src" />
+		<attribute name="width" default="800" />
+		<attribute name="height" default="600" />
+		<attribute name="project.build.config.xml" default="@{projectDir}/@{project}-build-config.xml"/>
+		<sequential>			
+			<OSMF.generate.build.config project="@{project}" projectDir="@{projectDir}" project.build.config.xml="@{project.build.config.xml}" />
+			<mxmlc
+				output="@{projectDir}/${output.bin}/@{project}.swf"
+				file="@{projectDir}@{srcDir}/@{project}.as"
+				optimize="true"
+				debug="${debug}"
+				fork="false"
+				target-player="${flash.target.player}"
+				swf-version="${swfversion}"
+				static-link-runtime-shared-libraries="true"
+				static-rsls="false"
+			>
+				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
+				<define name="CONFIG::LOGGING" value="${logging}" />
+				<define name="CONFIG::PLATFORM" value="${platform}" />
+				<define name="CONFIG::MOCK" value="${mock}" />
+				
+				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
+
+			    <compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
+					<include name="playerglobal.swc" />
+				</compiler.external-library-path>
+			</mxmlc>
+
+			<copy todir="@{projectDir}/${output.bin}" overwrite="true" failonerror="false">
+				<fileset dir="@{projectDir}/html-template" />
+			</copy>
+			<move file="@{projectDir}/${output.bin}/index.template.html" tofile="@{projectDir}/${output.bin}/@{project}.html" overwrite="true" failonerror="false" />
+			
+			<html-wrapper
+				title="@{project}"
+				file="@{project}.html"
+				swf="@{project}"
+				output="@{projectDir}/${output.bin}"
+				width="@{width}"
+				height="@{height}"
+			/>
+			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
+		</sequential>		
+	</macrodef>
+	
+	
+	<!-- Define a task for building a component project. -->	
+	<macrodef name="OSMF.component.compile">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="project.build.config.xml" default="@{projectDir}/@{project}-build-config.xml"/>
+		<sequential>
+			<OSMF.generate.build.config project="@{project}" projectDir="@{projectDir}" project.build.config.xml="@{project.build.config.xml}" />
+			<OSMF.generateClassList project="@{project}" projectDir="@{projectDir}"  />
+			<compc
+				output="@{projectDir}/${output.bin}/@{project}.swc"
+				include-classes="${@{project}.classes}"
+				optimize="true"
+				debug="${debug}"
+				fork="false"
+				target-player="${flash.target.player}"
+			>	
+				
+				<define name="CONFIG::useFlexClasses" value="true" />
+				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
+				<define name="CONFIG::LOGGING" value="${logging}" />
+				<define name="CONFIG::PLATFORM" value="${platform}" />
+				<define name="CONFIG::MOCK" value="${mock}" />
+
+				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
+				
+				<warnings>true</warnings>
+				
+				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
+					<include name="playerglobal.swc" />
+				</compiler.external-library-path>
+
+			</compc>
+			
+			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml"/>
+		</sequential>
+	</macrodef>
+	
+	
+	<!-- Define a task for generating the class list for compc from the appropriate .flexLibProperties file -->
+	<macrodef name="OSMF.generateClassList">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<sequential>
+			<xmlproperty
+				file="@{projectDir}/.flexLibProperties"
+				prefix="@{project}"
+				keepRoot="false"
+				collapseAttributes="true"
+			/>
+			<propertyregex
+				property="@{project}.classes"
+				input="${@{project}.includeClasses.classEntry.path},"
+				regexp=","
+				replace=" "
+			/>
+
+		</sequential>
+	</macrodef>
+	
+	
+	<!-- Define a task for compiling a unit test project. -->
+	<macrodef name="OSMF.mxml.compile">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="srcDir" default="/src" />
+		<attribute name="width" default="800" />
+		<attribute name="height" default="600" />
+		<attribute name="project.build.config.xml" default="@{projectDir}/@{project}-build-config.xml"/>
+		<sequential>
+			<OSMF.generate.build.config project="@{project}" projectDir="@{projectDir}" project.build.config.xml="@{project.build.config.xml}" />
+			<mxmlc
+				output="@{projectDir}/${output.bin}/@{project}.swf"
+				file="@{projectDir}@{srcDir}/@{project}.mxml" keep-generated-actionscript="false"
+				debug="${debug}"
+				fork="false"
+				target-player="${flash.target.player}"
+				swf-version="${swfversion}"
+				static-link-runtime-shared-libraries="true"
+				static-rsls="false"
+			>
+				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
+				<define name="CONFIG::LOGGING" value="${logging}" />
+				<define name="CONFIG::PLATFORM" value="${platform}" />
+				<define name="CONFIG::MOCK" value="${mock}" />
+
+				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
+
+				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
+					<include name="playerglobal.swc" />
+				</compiler.external-library-path>
+			</mxmlc>
+
+			<html-wrapper
+				title="@{project}"
+				file="@{project}.html"
+				swf="@{project}"
+				output="@{projectDir}/${output.bin}"
+				width="@{width}"
+				height="@{height}"
+			/>
+			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
+		</sequential>
+	</macrodef>
+	
+	
+	<!-- Define a task for compiling a plugin project. -->
+	<macrodef name="OSMF.plugin.compile">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="srcDir" default="/src" />
+		<attribute name="project.build.config.xml" default="@{projectDir}/@{project}-build-config.xml"/>
+		<sequential>
+			
+			<OSMF.generate.build.config project="@{project}" projectDir="@{projectDir}" project.build.config.xml="@{project.build.config.xml}" />
+			<mxmlc
+				output="@{projectDir}/${output.bin}/@{project}.swf"
+				file="@{projectDir}@{srcDir}/@{project}.as"
+				optimize="true"
+				debug="${debug}"
+				fork="false"
+				target-player="${flash.target.player}"
+				swf-version="${swfversion}"
+				static-link-runtime-shared-libraries="true"
+			>		
+				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
+
+				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
+					<include name="playerglobal.swc" />
+				</compiler.external-library-path>
+
+				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
+				<define name="CONFIG::LOGGING" value="${logging}" />
+				<define name="CONFIG::PLATFORM" value="${platform}" />
+				<define name="CONFIG::MOCK" value="${mock}" />
+			</mxmlc>
+			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
+		</sequential>
+	</macrodef>
+	
+	
+	<!-- Define a task for compiling smp project. -->
+	<macrodef name="OSMF.smp.compile">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="srcDir" default="/src" />
+		<attribute name="width" default="800" />
+		<attribute name="height" default="600" />
+		<attribute name="project.build.config.xml" default="@{projectDir}/@{project}-build-config.xml"/>
+		<sequential>
+			
+			<OSMF.generate.build.config project="@{project}" projectDir="@{projectDir}" project.build.config.xml="@{project.build.config.xml}" />
+			<mxmlc
+				output="@{projectDir}/${output.bin}/@{project}.swf"
+				file="@{projectDir}@{srcDir}/@{project}.as"
+				optimize="true"
+				debug="${debug}"
+				fork="false"
+				target-player="${flash.target.player}"
+				swf-version="${swfversion}"
+				static-link-runtime-shared-libraries="true"
+				static-rsls="false"
+			>
+				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
+				<define name="CONFIG::LOGGING" value="${logging}" />
+				<define name="CONFIG::PLATFORM" value="${platform}" />
+				<define name="CONFIG::MOCK" value="${mock}" />
+				
+				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
+
+			<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
+					<include name="playerglobal.swc" />
+				</compiler.external-library-path>
+			</mxmlc>
+
+			<copy todir="@{projectDir}/${output.bin}" overwrite="true" failonerror="false">
+				<fileset dir="@{projectDir}/html-template" />
+			</copy>
+			<move file="@{projectDir}/${output.bin}/index.template.html" tofile="@{projectDir}/${output.bin}/@{project}.html" overwrite="true" failonerror="false" />
+			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="OSMF.generate.test.mxml">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="srcDir" default="/src" />
+		<attribute name="test.suite.name" default="@{project}s" />
+		<sequential>
+			<copy file="${buildtools.dir}/testProjectTemplate.mxml" tofile="@{projectDir}@{srcDir}/@{project}.mxml"  force="true" overwrite="true">
+				<filterchain>
+					<replacetokens begintoken="[" endtoken="]">
+						<token key="This value will be overwritten in the testsuite name" value='@{test.suite.name}'/>
+					</replacetokens>
+				</filterchain>
+			</copy>
+		</sequential>
+	</macrodef>
+	
+	<!-- Define a task for compiling a unit test project. -->
+	<macrodef name="OSMF.unittest.compile">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="srcDir" default="/src" />
+		<attribute name="project.mxml" default="@{projectDir}@{srcDir}/@{project}.mxml"/>
+		<attribute name="project.build.config.xml" default="@{projectDir}/@{project}-build-config.xml"/>
+		<attribute name="test.suite.name" default="@{project}s" />
+		<sequential>
+
+			<OSMF.generate.build.config project="@{project}" projectDir="@{projectDir}" project.build.config.xml="@{project.build.config.xml}" />
+			<OSMF.generate.test.mxml project="@{project}" projectDir="@{projectDir}" srcDir="@{srcDir}" test.suite.name="@{test.suite.name}" />
+			
+			<mxmlc
+				output="@{projectDir}/${output.bin}/@{project}.swf"
+				file="@{project.mxml}" keep-generated-actionscript="false"
+				debug="${debug}"
+				fork="false"
+				target-player="${flash.target.player}"
+			>
+				<define name="CONFIG::FLASH_10_1" value="${flash.use.10.1}" />
+				<define name="CONFIG::LOGGING" value="${logging}" />
+				<define name="CONFIG::PLATFORM" value="${platform}" />
+				<define name="CONFIG::MOCK" value="${mock}" />
+				
+				<!-- List of SWC files or directories that contain SWC files. -->
+				<compiler.library-path dir="${FLEX_UNIT_HOME}/" append="true">
+					<include name="flexunit-aircilistener-4.1.0-8-4.1.0.16076.swc" />
+					<include name="flexunit-cilistener-4.1.0-8-4.1.0.16076.swc" />
+					<include name="turnkey/libs/hamcrest-as3-flex-1.1.3.swc" />
+					<include name="turnkey/libs/flexunit-4.1.0-8-flex_4.1.0.16076.swc" />
+				</compiler.library-path>
+				
+				<load-config filename="@{projectDir}/@{project}-build-config.tmp.xml" />
+
+				<compiler.external-library-path dir="${FLEX_HOME}/frameworks/libs/player/${flash.target.player.base}" append="true">
+					<include name="playerglobal.swc" />
+				</compiler.external-library-path>
+				
+				<compiler.verbose-stacktraces>false</compiler.verbose-stacktraces>
+				<compiler.headless-server>true</compiler.headless-server>
+			</mxmlc>
+			<delete quiet="true" file="@{projectDir}/@{project}-build-config.tmp.xml" />
+		</sequential>
+	</macrodef>
+	
+	
+	<!-- Define a task for running an unit test -->
+	<macrodef name="OSMF.unittest.run">
+		<attribute name="project" />
+		<attribute name="projectDir" />
+		<attribute name="flexUnitPlayer" default="air" />
+		<sequential>
+			<property name="reports.dir" value="@{projectDir}/test-reports/" />
+
+			<mkdir dir="${reports.dir}/@{project}/xml-format" />
+     		<flexunit
+				player="@{flexUnitPlayer}" headless="false" localTrusted="true"
+				swf="@{projectDir}/${output.bin}/@{project}.swf"
+				toDir="${reports.dir}/@{project}/xml-format"
+				haltonfailure="false"
+				verbose="false"
+				failureproperty="flexunit.failed"
+				timeout = "120000"
+			/>
+			<junitreport todir="${reports.dir}/@{project}/xml-format">
+				<fileset dir="${reports.dir}/@{project}/xml-format">
+					<include name="TEST-*.xml" />				
+				</fileset>
+				<report format="frames" todir="${reports.dir}/@{project}" />
+			</junitreport>	
+			
+			<fail message="One or more flexunit tests failed. See test reports for details." if="flexunit.failed" />
+		</sequential>
+	</macrodef>
+
 </project>

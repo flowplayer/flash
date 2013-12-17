@@ -15,7 +15,7 @@ package org.flowplayer.analytics {
         private var _debug:Boolean = false;
         private var _mode:String = "AS3";
         private var _accountId:String; // required
-        private var _trackingObj:String;
+        private var _trackingObj:String = "window.pageTracker";
         private var _events:Events = new Events();
 
         // possible values are "video", "audio", "image"

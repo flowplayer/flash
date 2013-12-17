@@ -8,15 +8,11 @@
  */
 
 package org.flowplayer.bwcheck.detect {
-    import flash.net.Responder;
-
-    import org.flowplayer.bwcheck.detect.AbstractDetectionStrategy;
 
     /**
      * @author danielr 
      */
     public class BandwidthDetectorWowza extends AbstractDetectionStrategy {
-        private var info:Object = new Object();
 
         public function onBwCheck(obj:Object):Boolean {
             return onBWCheck(obj);

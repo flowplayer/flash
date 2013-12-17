@@ -2,8 +2,7 @@
 <head>
     <meta http-equiv="content-type"
           content="text/html; charset=UTF-8">
-    <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.9.min.js"></script>
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.11.min.js"></script>
 
 
     <!-- page title -->
@@ -19,7 +18,7 @@
             id="player">
     </a>
     <script>
-        flowplayer("player", "../build/flowplayer.swf",
+        flowplayer("player", "../../../flash-build/build/flowplayer.swf",
         {
             log: { level: 'debug', filter: 'org.flowplayer.captions.*' },
 
@@ -46,16 +45,19 @@
             clip: {
 
                 // here is our high quality movie
-                url: 'http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv'
+                url: 'http://stream.flowplayer.org/flowplayer-700.flv',
 
                 // this is the SubRib file with captions info
-//                captionUrl: 'http://releases.flowplayer.org/data/timedtext.xml'
+//                captionUrl: 'captions.ttml'
+                ttNamespace: 'http://www.w3.org/2006/10/ttaf1',
+
+                captionUrl: 'http://releases.flowplayer.org/data/timedtext.xml'
             },
             plugins:  {
 
                 // the captions plugin
                 captions: {
-                    url: 'flowplayer.captions.swf',
+                    url: 'flowplayer.captions-3.2.10-dev.swf',
 
                     // pointer to a content plugin (see below)
                     captionTarget: 'content'

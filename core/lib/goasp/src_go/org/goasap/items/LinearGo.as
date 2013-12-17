@@ -20,13 +20,14 @@
  * THE SOFTWARE.
  */
 package org.goasap.items {
-	import flash.utils.getTimer;
+
+    import flash.utils.getTimer;
 	
 	import org.goasap.GoEngine;
 	import org.goasap.errors.EasingFormatError;
 	import org.goasap.events.GoEvent;
 	import org.goasap.interfaces.IPlayable;
-	import org.goasap.managers.LinearGoRepeater;	
+	import org.goasap.managers.LinearGoRepeater;
 
 	/**
 	 * Dispatched during an animation's first update after the delay 
@@ -262,13 +263,14 @@ package org.goasap.items {
 		}
 		public function set easing(type:Function):void {
 			if (_state==STOPPED) {
-				try {
+				//try {
 					if (type(1,1,1,1) is Number) {
 						_easing = type;
 						return;
 					}
-				} catch (e:Error) {}
-				throw new EasingFormatError();
+				//} catch (e:Error) {}
+                //#163 don't throw an error just because.
+				//throw new EasingFormatError();
 			}
 		}
 		
@@ -496,18 +498,25 @@ package org.goasap.items {
 				defaultDelay = 0;
 			if (isNaN(defaultDuration))
 				defaultDuration = 1;
-			try { this.easing = defaultEasing; }
-			catch (e1:EasingFormatError) { defaultEasing = easeOut; }
+			/*try { this.easing = defaultEasing; }
+			catch (e1:EasingFormatError) { defaultEasing = easeOut; }  */
+
+            //#163 set default easing
+            this.easing = easeOut;
 			// set params
 			if (!isNaN(delay)) _delay = delay;
 			else _delay = defaultDelay;
 			if (!isNaN(duration)) _duration = duration;
 			else _duration = defaultDuration;
-			try { this.easing = easing; }
+			/*try { this.easing = easing; }
 			catch (e2:EasingFormatError) {
 				if (easing!=null) { throw e2; } // user passed invalid easing function
 				this.easing = defaultEasing;
-			}
+			}*/
+            //if (easing && easing)
+            //#163 set easing if enabled on the argument, not needed for normal Flowplayer animations.
+            if (easing!=null) this.easing = easing;
+
 			if (extraEasingParams) _extraEaseParams = extraEasingParams;
 			if (useRelative) this.useRelative = true;
 			if (useRounding) this.useRounding = true;

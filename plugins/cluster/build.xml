@@ -6,8 +6,8 @@
 	
 	<property name="plugin-libs" value=""/>
 	
-	<property file="${devkit-dir}/plugin-build.properties" />
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	
 	<property name="shortname" value="cluster" />
     <property name="basename" value="flowplayer.${shortname}" />

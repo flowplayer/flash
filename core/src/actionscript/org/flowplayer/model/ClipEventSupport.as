@@ -23,8 +23,8 @@ package org.flowplayer.model {
 	 * @author api
 	 */
 	public class ClipEventSupport extends ClipEventDispatcher {
-		private var _clips:Array;
-		private var _commonClip:Clip;
+		protected var _clips:Array;
+		protected var _commonClip:Clip;
 
 		public function ClipEventSupport(commonClip:Clip, clips:Array = null) {
 			_commonClip = commonClip;

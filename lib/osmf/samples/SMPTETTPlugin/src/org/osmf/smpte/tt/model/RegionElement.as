@@ -24,6 +24,7 @@ package org.osmf.smpte.tt.model
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
 	import org.osmf.smpte.tt.timing.TimeCode;
 	import org.osmf.smpte.tt.timing.TimeContainer;
+	import org.osmf.smpte.tt.timing.TreeType;
 	
 	public class RegionElement extends TimedTextElementBase
 	{
@@ -38,8 +39,6 @@ package org.osmf.smpte.tt.model
 		 */
 		public static const DEFAULT_REGION_NAME:String = "default region";
 		//} endregion
-		
-
 		
 		//{ region Formatting
 		/**
@@ -87,59 +86,38 @@ package org.osmf.smpte.tt.model
 		}
 		
 		/**
-		 * Check vlidity of region element content model
+		 * Check validity of region element content model
 		 */
 		protected override function validElements():void
 		{
 			var child:uint = 0;
-			
-			//{ region Allow arbitrary metadata
-			while ((child < children.length)
-				&& ((children[child] is org.osmf.smpte.tt.model.MetadataElement) 
-					|| (children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement)))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary set element (Animation class)
-			while ((child < children.length)
-				&& (children[child] is SetElement))
-			{
-				child++;
-			}
-			//} endregion
-			
-			//{ region Allow arbitrary style elements
-			while ((child < children.length)
-				&& (children[child] is StyleElement)
-			)
-			{
-				var s:StyleElement = children[child] as StyleElement;
-				//{ region copy nested style attributes over as if they were inline
-				for each (var a:* in s.attributes)
-				{
-					// we should really check if its already defined, however
-					// by adding at the start we ensure the later (inline)
-					// style will override.
-					this.attributes.unshift(a);
-				}
-				//} endregion
-				child++;
-			}
-			//} endregion
-			
-			//{ region Ensure no other element is present
-			if (children.length != child)
-			{
-				error(children[child] + " is not allowed in " + this+ " at position " + child);
-			}
-			//} endregion
-			
 			//{ region Check each of the children is individually valid
 			for each (var element:TimedTextElementBase in children)
 			{
-				element.valid();
+				if (element is org.osmf.smpte.tt.model.MetadataElement 
+					|| element is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| element is SetElement
+					|| element is StyleElement)
+				{
+					if (element is StyleElement)
+					{
+						var styleAttributes:Vector.<TimedTextAttributeBase> = element.attributes;
+						//{ region copy nested style attributes over as if they were inline
+						for each (var a:TimedTextAttributeBase in styleAttributes)
+						{
+							// we should really check if its already defined, however
+							// by adding at the start we ensure the later (inline)
+							// style will override.
+							this.attributes.unshift(a);
+						}
+						//} endregion
+					}
+					child++;
+					element.valid();
+				} else {
+					error(element + " is not allowed in " + this+ " at position " + (children.length-child));
+					continue;
+				}	
 			}
 			//} endregion
 			

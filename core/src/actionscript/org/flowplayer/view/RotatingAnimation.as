@@ -33,10 +33,12 @@ import flash.utils.Timer;
         }
 
         public function start():void {
+            _rotationTimer.addEventListener(TimerEvent.TIMER, rotate);
             _rotationTimer.start();
         }
 
         public function stop():void {
+            _rotationTimer.removeEventListener(TimerEvent.TIMER, rotate);
             _rotationTimer.stop();
         }
 

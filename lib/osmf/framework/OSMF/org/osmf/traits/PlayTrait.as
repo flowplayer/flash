@@ -49,6 +49,31 @@ package org.osmf.traits
 	 *  @productversion OSMF 1.0
 	 */
 	[Event(name="playStateChange",type="org.osmf.events.PlayEvent")]
+	
+	/**
+	 * Dispatched  when playback runs out of content for a live stream but the
+	 * stream is not done.
+	 *
+	 * @eventType org.osmf.events.PlayEvent.LIVE_STALL
+	 * 
+	 * 	@langversion 3.0
+	 *  @playerversion Flash 10
+	 *  @playerversion AIR 1.5
+	 *  @productversion OSMF 2.0
+	 **/
+	[Event(name="liveStall",type="org.osmf.events.PlayEvent")]
+	
+	/**
+	 * Dispatched  when playback resumes after a live stall
+	 *
+	 * @eventType org.osmf.events.PlayEvent.LIVE_RESUME
+	 * 
+	 * 	@langversion 3.0
+	 *  @playerversion Flash 10
+	 *  @playerversion AIR 1.5
+	 *  @productversion OSMF 2.0
+	 **/
+	[Event(name="liveResume",type="org.osmf.events.PlayEvent")]
 
 	/**
 	 * PlayTrait defines the trait interface for media whose playback can be started

@@ -31,6 +31,12 @@ package org.osmf.elements.f4mClasses.utils
 	public class F4MUtils
 	{
 		/**
+		 * A constant id to be used internally for global F4M elements, 
+		 * such as bootstrapInfo and drmAdditionalHeader
+		 */
+		public static const GLOBAL_ELEMENT_ID:String = "global";
+		
+		/**
 		 * Returns the version based on the default namespace of the F4M example.
 		 * <p>An example of a version 1.0 namespace: "http://ns.adobe.com/f4m/1.0"</p>
 		 *
