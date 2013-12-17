@@ -11,6 +11,9 @@
 
 	
 	<property name="basename" value="flowplayer.infopanel" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="infopanel" />
+
     <property name="releasedir" value="flowplayer.infopanel" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />
