@@ -101,7 +101,11 @@ package org.flowplayer.view
 			log.info("Initializing Focus ");
 			if (_availability && Capabilities.playerType.toLowerCase() == "plugin" && !Focus._initialized) 
 			{
-				ExternalInterface.addCallback("setNextFocusId", _instance.setNextFocusId);
+                try {
+                    ExternalInterface.addCallback("setNextFocusId", _instance.setNextFocusId);
+                } catch (e:Error) {
+                    log.debug("Focus._initialize(): Unable to add JS callback.");
+                }
 				_stage.addEventListener(FocusEvent.FOCUS_IN, stage_focusInHandler, false, 0, true);
 				_stage.addEventListener(FocusEvent.FOCUS_OUT, stage_focusOutHandler, false, 0, true);
 			}
