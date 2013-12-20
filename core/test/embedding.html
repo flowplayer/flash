@@ -9,33 +9,26 @@
 
 </head><body>
 
-	<div id="page">
-        <a
-                     href="http://pseudo01.hddn.com/vod/demo.flowplayervod/flowplayer-700.flv"
-                     style="display:block;width:440px;height:247px"
-                     id="player">
-                </a>
-<script>
-    flowplayer("player", "http://player-tms-player.talentinsite.com/playerapi/lib/flowplayer/swf/flowplayer.unlimited-3.2.11.swf?_v=1",
-            {
-                "key":"f08efffa680a677029e",
-                "clip":{"provider":"pseudostreaming","scaling":"fit",
-                    "url":"http://streamer-eu.talentinsite.com/streamer/Data/tms_315/Video/91/Live/hq/20120711110954.mp4",
-                    "captionUrl":"/playerapi/lib/flowplayer/srt/empty.srt","autoPlay":true,"autoBuffering":false},
-                "plugins":{
-                    "pseudostreaming":{"url":"flowplayer.pseudostreaming-3.2.8.swf","queryString":"?start=${start}"},
-                    "controls":null
-                },
-                "play":{"opacity":0},
-                "playerId":"player_12419",
-                "playlist":[
-                    {"provider":"pseudostreaming","scaling":"fit",
-                        "url":"http://streamer-eu.talentinsite.com/streamer/Data/tms_315/Video/91/Live/hq/20120711110954.mp4",
-                        "captionUrl":"http://player-tms-player.talentinsite.com/playerapi/lib/flowplayer/srt/empty.srt",
-                        "autoPlay":true,"autoBuffering":false}
-                ]});
-</script>
-	</div>
+<div class="player">
+    <object id="flowplayer" width="480" height="324" bgcolor="#000000"
+            data="../../../flash-build/build/flowplayer-3.2.18.swf"
+            type="application/x-shockwave-flash">
+
+        <!-- movie param is required for IE -->
+        <param name="movie" value="../../../flash-build/build/flowplayer-3.2.18.swf" />
+
+        <!-- set to true if you want your users to be able to enter fullscreen mode -->
+        <param name="allowfullscreen" value="true" />
+        <!--<param name="allowScriptAccess" value="always" />-->
+
+        <!-- Flowplayer configuration -->
+        <param name="flashvars"  value='config={
+            "key":"#$7162d2d730cf607ac6d",
+            "clip":"http://stream.flowplayer.org/bbb-800.mp4",
+            "logo":{"url":"http://flash.flowplayer.org/media/img/player/acme.png","fullscreenOnly":false}}' />
+
+    </object>
+</div>
 	
 	
 </body></html>
