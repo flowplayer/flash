@@ -1,5 +1,5 @@
 /*!
- * flowplayer.js @VERSION. The Flowplayer API
+ * flowplayer.js The Flowplayer API
  *
  * Copyright 2009-2011 Flowplayer Oy
  *
@@ -18,8 +18,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Date: @DATE
- * Revision: @REVISION
  */
 !function() {
 
