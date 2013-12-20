@@ -1,4 +1,4 @@
-/**
+/*!
  * flowplayer.bitrateselect.js Flowplayer JavaScript plugin.
  *
  * This file is part of Flowplayer, http://flowplayer.org
@@ -7,7 +7,7 @@
  *   Daniel Rossi, danielr@electroteque.org
  *   Anssi Piirainen, api@iki.fi
  *
- * Copyright (c) 2011-2012 Flowplayer Ltd
+ * Copyright (c) 2011-2013 Flowplayer Ltd
  *
  * Released under the MIT License:
  * http://www.opensource.org/licenses/mit-license.php
