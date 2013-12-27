@@ -1,7 +1,7 @@
 /*!
  * flowplayer.js The Flowplayer API
  *
- * Copyright 2009-2011 Flowplayer Oy
+ * Copyright 2009-2013 Flowplayer Oy
  *
  * This file is part of Flowplayer.
  *
