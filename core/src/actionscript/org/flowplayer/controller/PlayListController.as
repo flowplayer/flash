@@ -340,7 +340,8 @@ package org.flowplayer.controller {
 		private function replacePlaylistAndPlay(clips:Object):void {
 
             //#163 stop the connection and stream
-			_state.stop(true, true);
+            //#197 don't set stop to silent, causes some issues
+			_state.stop(true);
             clearStream();
 
 			if (clips is Clip) {
@@ -348,7 +349,8 @@ package org.flowplayer.controller {
 			} else {
 				_playList.replaceClips2(clips as Array);
 			}
-			play();
+
+            _state.play();
 		}
 		
 		flow_internal function addProvider(provider:ProviderModel):void {

@@ -49,11 +49,12 @@ import org.flowplayer.model.ClipEventType;
 
         override internal function stop(closeStreamAndConnection:Boolean = false, silent:Boolean = false):void {
             if (closeStreamAndConnection) {
-                stop(true);
+                //#197 fix stack error referencing stop method
+                super.stop(closeStreamAndConnection, silent);
             }
         }
 
-		internal override function startBuffering():void {
+        internal override function startBuffering():void {
 			if (! playListReady) return;
 			log.debug("startBuffering()");
 			bufferingState.nextStateAfterBufferFull = pausedState;
