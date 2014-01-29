@@ -28,7 +28,7 @@
 
 		<!-- this will install flowplayer inside previous A- tag. -->
 <script>
-    flowplayer("player", "../../../flash-build/build/flowplayer-3.2.19-dev.swf",
+    flowplayer("player", "http://flash.cdn.201f.flowplayer.me.s3.amazonaws.com/swf/flowplayer-3.2.19-dev.swf",
     {
         log: { level: 'debug', filter: 'org.flowplayer.controls.scrubber.ScrubberSlider' },
 
@@ -42,7 +42,7 @@
         },
         plugins: {
             controls: {autoHide: false},
-            content: {url: "flowplayer.content.swf", height: 100},
+//            content: {url: "flowplayer.content.swf", height: 100},
             smil: {url: "flowplayer.smil-3.2.9.swf"},
             rtmp: {
                 url: "flowplayer.rtmp-3.2.13.swf",
@@ -55,7 +55,8 @@
                 dynamic: true,
                 //dynamicBuffer: true,
                 //qos: {waitDurationAfterDownSwitch: 1000},
-                onStreamSwitchBegin: function (newItem, currentItem) {
+
+/*                onStreamSwitchBegin: function (newItem, currentItem) {
                     this.getPlayer().getPlugin("content").setHtml("will switch from: " + currentItem.streamName + "<br />to: " + newItem.streamName);
                 },
                 onStreamSwitch: function (newItem) {
@@ -63,7 +64,8 @@
                 },
                 onStreamSwitchFailed: function (info) {
                     this.getPlayer().getPlugin("content").setHtml(info);
-                }
+
+                }*/
             }
         }
     });

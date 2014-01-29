@@ -1,5 +1,9 @@
 Version history:
 
+3.2.17
+------
+- #191 fix for buffer bar flickering problem with RTMP
+
 3.2.16 (Nov 2013)
 -----------------
 - #58 fix alignment issue with tooltips. first obtain the global coordinates of the parent to use for configuring the
