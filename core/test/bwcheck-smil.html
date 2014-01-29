@@ -9,7 +9,7 @@
 		Flash embedding and provides the Flowplayer API.
 	-->
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.11.min.js"></script>
 
 	<!-- some minimal styling, can be removed -->
 	<!--<link rel="stylesheet" type="text/css" href="style.css">-->
@@ -28,73 +28,41 @@
 
 		<!-- this will install flowplayer inside previous A- tag. -->
 <script>
-    flowplayer("player", "../build/flowplayer.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer-3.2.19-dev.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        log: { level: 'debug', filter: 'org.flowplayer.controls.scrubber.ScrubberSlider' },
 
-
-        // The playlist is loaded from the RSS file
+        debug: true,
         clip: {
-            url: "bitrates.smil.xml",
+            provider: "rtmp",
+            scaling: "fit",
             autoPlay: false,
-            provider: 'rtmp',
-
-            // use smil and bwcheck when resolving the clip URL
-            urlResolvers: [ 'smil', 'bwcheck' ]
+            urlResolvers: ["smil", "bwcheck"],
+            url: "http://flowplayer.blacktrash.org/test/live-smil.smil"
         },
-
         plugins: {
-
-            // the SMIL plugin reads in and parses the SMIL, and provides
-            // the bitrates info to the bw detection plugin
-            smil: {
-                url: 'flowplayer.smil.swf'
+            controls: {autoHide: false},
+            content: {url: "flowplayer.content.swf", height: 100},
+            smil: {url: "flowplayer.smil-3.2.9.swf"},
+            rtmp: {
+                url: "flowplayer.rtmp-3.2.13.swf",
+                netConnectionUrl: "rtmp://50.7.180.18/vod"
             },
-
-            // bandwidth check plugin
             bwcheck: {
-                url: 'flowplayer.bwcheck.swf',
-
-                // HDDN uses Wowza servers
-                serverType: 'wowza',
-
-                // we use dynamic switching, the appropriate bitrate is switched on the fly
+                url: "flowplayer.bwcheck-3.2.13.swf",
+                netConnectionUrl: "rtmp://50.7.180.18/vod",
+                serverType: "wowza",
                 dynamic: true,
-
-                hdIcon: true,
-
-//                  netConnectionUrl: 'rtmp://vod01.netdna.com/play',
-
-                // show the selected file in the content box. This is not used in real installations.
+                //dynamicBuffer: true,
+                //qos: {waitDurationAfterDownSwitch: 1000},
                 onStreamSwitchBegin: function (newItem, currentItem) {
-                   $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
-                    " from " + currentItem.streamName);
+                    this.getPlayer().getPlugin("content").setHtml("will switch from: " + currentItem.streamName + "<br />to: " + newItem.streamName);
                 },
                 onStreamSwitch: function (newItem) {
-                   $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
-                }
-            },
-
-            // RTMP streaming plugin
-            rtmp: {
-                url: 'flowplayer.rtmp.swf',
-                netConnectionUrl: 'rtmp://vod01.netdna.com/play'
-            },
-
-            // a content box so that we can see the selected bitrate. This is not normally
-            // used in real installations.
-            content: {
-                url: 'flowplayer.content.swf',
-                top: 0, left: 0, width: 400, height: 150,
-                backgroundColor: 'transparent', backgroundGradient: 'none', border: 0,
-                textDecoration: 'outline',
-                style: {
-                    body: {
-                        fontSize: 14,
-                        fontFamily: 'Arial',
-                        textAlign: 'center',
-                        color: '#ffffff'
-                    }
+                    this.getPlayer().getPlugin("content").setHtml("switched to: " + newItem.streamName);
+                },
+                onStreamSwitchFailed: function (info) {
+                    this.getPlayer().getPlugin("content").setHtml(info);
                 }
             }
         }
