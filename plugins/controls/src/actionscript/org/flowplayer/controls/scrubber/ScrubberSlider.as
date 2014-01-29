@@ -460,11 +460,8 @@ package org.flowplayer.controls.scrubber {
        }
 
        private function drawBufferBar():void {
-          if (_dragger.x + _dragger.width / 2 > _bufferStart * width) {
-             doDrawBufferBar(_bufferStart * width, _bufferEnd * width);
-          } else {
-             clearBar(_bufferBar);
-          }
+          log.debug("dragger pos " + _dragger.x + ", buffer start " + _bufferStart + ", end " + _bufferEnd);
+          doDrawBufferBar(Math.min(_dragger.x + _dragger.width / 2, _bufferStart * width), _bufferEnd * width);
        }
 
        private function clearBar(bar:Sprite):void {
