@@ -342,7 +342,7 @@ package org.flowplayer.view {
                 playable.addEventListener(GoEvent.UPDATE, 
                     function(event:GoEvent):void {
                         updateCallback(view);
-                }, false, 0, true);
+                }, false, 0, false);
             }
 
 			playable.start();
