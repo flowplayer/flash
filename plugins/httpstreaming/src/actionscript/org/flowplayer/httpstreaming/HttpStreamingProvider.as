@@ -297,7 +297,8 @@ package org.flowplayer.httpstreaming {
         override public function get bufferStart():Number
         {
             if (! clip) return 0;
-            return _bufferStart - clip.start;
+            //#204 start offset does not need to be taken off the buffer offset when using offset and duration this caused issues.
+            return _bufferStart;
         }
 
         override public function get bufferEnd() : Number {
