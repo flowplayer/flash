@@ -6,6 +6,7 @@ Version history:
 - #70 fixes for live streams
 - #70 fixes for buffer start value.
 - #136 when we are streaming live and not in dvr mode set the duration to zero in the index handler instead of the metadata callback.
+- #219 fix the clip dimensions if none is set for the stream.
 
 3.2.10
 ------

@@ -172,28 +172,19 @@ package org.flowplayer.httpstreaming {
 			}
         }
 
-        /*override protected function onMetaData(event:ClipEvent):void {
+        override protected function onMetaData(event:ClipEvent):void {
             log.debug("in NetStreamControllingStremProvider.onMetaData: " + event.target);
 
-            //#70 remove clip duration for live streams and when not dvr recording
-            if (clip.live && !isDvr) {
-                clip.metaData.duration = 0;
-                clip.duration = 0;
-                clip.durationFromMetadata = 0;
+            //#219 fix the clip dimensions if none is set for the stream.
+            if (isNaN(clip.metaData.width)) {
+                clip.metaData.width = _player.screen.getDisplayObject().width;
+                clip.metaData.height = _player.screen.getDisplayObject().height;
             }
 
+            super.onMetaData(event);
 
 
-            if (! clip.startDispatched) {
-                clip.dispatch(ClipEventType.START, pauseAfterStart);
-                clip.startDispatched = true;
-            }
-
-            if (pauseAfterStart) {
-                pauseToFrame();
-            }
-            switching = false;
-        } */
+        }
 
         override public function get allowRandomSeek():Boolean {
            return true;
