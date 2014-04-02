@@ -1,5 +1,4 @@
 
-
 # Flowplayer Flash
 
 
@@ -21,6 +20,8 @@ This is Flowplayer Flash. Flowplayer 5 for HTML5 will be out soon.
 ## Building
 
 Follow [these instructions](http://flowplayer.org/documentation/developer/development-environment.html).
+
+Addtionally for versions above 3.2.16, check out the [Flash builder](https://github.com/flowplayer/flash-build/) in the same tree as the Flash sources.
 
 ## License
 
