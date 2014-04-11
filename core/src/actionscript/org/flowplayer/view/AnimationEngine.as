@@ -337,12 +337,12 @@ package org.flowplayer.view {
 			playable.addEventListener(GoEvent.COMPLETE, 
 				function(event:GoEvent):void {
 					onComplete(view, playable, completeCallback);
-			}, false, 0, true);
+			});
             if (updateCallback != null) {
                 playable.addEventListener(GoEvent.UPDATE, 
                     function(event:GoEvent):void {
                         updateCallback(view);
-                }, false, 0, true);
+                });
             }
 
 			playable.start();

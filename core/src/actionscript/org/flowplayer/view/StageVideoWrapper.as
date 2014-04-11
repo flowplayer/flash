@@ -96,6 +96,7 @@ package org.flowplayer.view {
 			
 			if ( _hasStageVideo && _stage.stageVideos.length ) {
 				_stageVideo = _stage.stageVideos[0];
+                _stageVideo.addEventListener(StageVideoEvent.RENDER_STATE, _displayStageVideo);
 				super.visible = false;
                 //#503 update viewport when stage is added to obtain the coordnates correctly.
                 _updateStageVideo();
@@ -103,7 +104,7 @@ package org.flowplayer.view {
 				super.visible = true;
 				_hasStageVideo = false;
 			}
-			
+
 			attachNetStream(_netStream);
 		}
 
@@ -111,10 +112,7 @@ package org.flowplayer.view {
 			_netStream = netStream;
 			if ( hasStageVideo ) {
 				log.info("Attaching netstream to stageVideo");
-				
-				stageVideo.attachNetStream(_netStream);
-				stageVideo.addEventListener(StageVideoEvent.RENDER_STATE, _displayStageVideo);
-				
+				_stageVideo.attachNetStream(_netStream);
 			} else {
 				log.info("Attaching netstream to video");
 				
