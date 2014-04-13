@@ -48,9 +48,6 @@ import org.flowplayer.model.ClipEventType;
 		}
 
         override internal function stop(closeStreamAndConnection:Boolean = false, silent:Boolean = false):void {
-            if (closeStreamAndConnection) {
-                stop(true);
-            }
         }
 
 		internal override function startBuffering():void {
