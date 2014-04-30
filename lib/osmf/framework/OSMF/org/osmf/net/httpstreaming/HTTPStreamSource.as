@@ -286,7 +286,35 @@ package org.osmf.net.httpstreaming
 		 */
 		public function getBytes():ByteArray
 		{
-			return doSomeProcessingAndGetBytes();
+			var bytes:ByteArray = null;
+
+			// try best to read 
+			for(var timer:uint = 0; timer < 100; timer ++) {
+				bytes = doSomeProcessingAndGetBytes();
+				
+				if (null != bytes) {
+					// has read value
+					break;
+				}
+				
+				if (_state != HTTPStreamingState.READ ) {
+					// not read state
+					break;
+				}
+				
+				if (null == _downloader || null == _fileHandler) {
+					// runtime exception
+					break;
+				}
+				
+				if (_fileHandler.inputBytesNeeded > _downloader.totalAvailableBytes) {
+					// don't have enough data in buffer
+					break;
+				}
+			}
+			
+			
+			return bytes;
 		}
 		
 		/**
