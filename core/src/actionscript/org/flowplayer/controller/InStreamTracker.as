@@ -66,6 +66,7 @@ package org.flowplayer.controller {
                 _timer.stop();
                 _timer.removeEventListener(TimerEvent.TIMER, onTimer);
             }
+            _timer = null;
         }
 
         private function onTimer(event:TimerEvent):void {
