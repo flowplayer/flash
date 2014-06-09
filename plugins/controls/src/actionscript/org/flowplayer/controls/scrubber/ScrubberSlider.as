@@ -271,7 +271,7 @@ package org.flowplayer.controls.scrubber {
                                    return c * t / d + b;
                                 });
                      }
-                  }, false, 0, true);
+                  });
           log.debug("doStart(), starting timer");
           _startDetectTimer.start();
        }
