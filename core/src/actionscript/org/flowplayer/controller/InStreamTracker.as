@@ -65,6 +65,8 @@ package org.flowplayer.controller {
             if (_timer && _timer.running) {
                 _timer.stop();
                 _timer.removeEventListener(TimerEvent.TIMER, onTimer);
+                //#231 clear the timer so it can be setup again.
+                _timer = null;
             }
         }
 
