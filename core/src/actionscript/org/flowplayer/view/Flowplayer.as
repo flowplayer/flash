@@ -77,6 +77,11 @@ package org.flowplayer.view {
                 addCallback("getId", function():String {
                     return id;
                 });
+
+                addCallback("getLicenseKeyId", function():String {
+                    var LicenseKey:Class = Class(getDefinitionByName("org.flowplayer.FlowplayerLicenseKey"));
+                    return LicenseKey["id"];
+                });
                 addCallback("play", genericPlay);
                 addCallback("playFeed", playFeed);
                 addCallback("startBuffering", function():void {

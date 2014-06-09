@@ -258,5 +258,10 @@ package org.flowplayer.config {
             return _configObject;
         }
 
+        public function get persistVolumeLevel():Boolean {
+            if (! _configObject.hasOwnProperty("persistVolumeLevel")) return true;
+            return _configObject["persistVolumeLevel"];
+        }
+
     }
 }

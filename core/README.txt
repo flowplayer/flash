@@ -1,5 +1,9 @@
 Version history:
 
+3.2.19-dev
+------
+- new top level config option 'persistVolumeLevel'. Does not store the volume level and create a 'flash cookie' if set to false.
+
 3.2.17
 ------
 - #75 set the child display list different when a gradient is set.

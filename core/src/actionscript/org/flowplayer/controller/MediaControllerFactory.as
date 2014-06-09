@@ -56,7 +56,7 @@ package org.flowplayer.controller {
             _providers = providers;
 			_instance = this;
 			_playerEventDispatcher = playerEventDispatcher;
-			_volumeController = new VolumeController(_playerEventDispatcher);
+			_volumeController = new VolumeController(_playerEventDispatcher, config.persistVolumeLevel);
 			_config = config;
 			_loader = loader;
 		}
