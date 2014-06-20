@@ -333,7 +333,7 @@ package org.flowplayer.view {
         }
 
         public function bufferAnimate(enable:Boolean = true):void {
-            var playBtn:Object = playButtonOverlay.getDisplayObject();
+			var playBtn:Object = _pluginRegistry.getPlugin("play").pluginObject;
             if (enable) {
                 playBtn.startBuffering();
             } else {
