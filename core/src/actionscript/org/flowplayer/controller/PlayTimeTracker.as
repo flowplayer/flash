@@ -29,6 +29,7 @@ package org.flowplayer.controller {
 		private var _controller:MediaController;
 		private var _endDetectTimer:Timer;
 		private var _lastTimeDetected:Number;
+        private var _seeked:Boolean;
 
 		public function PlayTimeTracker(clip:Clip, controller:MediaController) {
 			_clip = clip;
@@ -56,6 +57,10 @@ package org.flowplayer.controller {
             _progressTimer = null;
 			log.debug("stopped at time " + _storedTime);
 		}
+
+        public function set seeked(value:Boolean):void {
+            _seeked = value;
+        }
 
 		public function set time(value:Number):void {
 			log.debug("setting time to " + value);
@@ -87,6 +92,8 @@ package org.flowplayer.controller {
                 return;
             }
 			checkAndFireCuepoints();
+
+            _seeked = false;
 			
 			if (_clip.live) return;
 			var timePassed:Number = time;
@@ -192,7 +199,7 @@ package org.flowplayer.controller {
 		private function collectCuepoints(clip:Clip, timeRounded:Number):Array {
 			var result:Array = new Array();
 			for (var i:Number = 5; i >= 0; i--) {
-				result = result.concat(clip.getCuepoints(timeRounded - i * 100));
+				result = result.concat(clip.getCuepoints(timeRounded - i * 100, -1, _seeked));
 			}
 			return result;
 		}

@@ -238,12 +238,25 @@ package org.flowplayer.model {
 			}
 		}
 
-		public function getCuepoints(time:int, dur:Number = -1):Array {
+		public function getCuepoints(time:int, dur:Number = -1, seeked:Boolean = false):Array {
 			var result:Array = new Array();
+
+            //#230 possible fix. if we have just seeked, attempt to get the previous cuepoint so that it will fire when seeking between cuepoints. may need performance improves on large cuepoint lists.
+            if (seeked) {
+
+                for (var key:Object in _cuepoints) {
+                    if (int(key) <= time) {
+                       // if (int(key) + _cuepoints[key]["duration"] < time) continue;
+                        result = ArrayUtil.concat(result, _cuepoints[key]);
+                        break;
+                    }
+                }
+            }
+
 			result = ArrayUtil.concat(result, _cuepoints[time]);
             result = ArrayUtil.concat(result, getNegativeCuepoints(time, this == commonClip ? dur : this.duration));
             if (this == commonClip) return result;
-			result = ArrayUtil.concat(result, commonClip.getCuepoints(time, this.duration));
+			result = ArrayUtil.concat(result, commonClip.getCuepoints(time, this.duration, seeked));
             if (result.length > 0) {
                 log.info("found " + result.length + " cuepoints for time " + time);
             }

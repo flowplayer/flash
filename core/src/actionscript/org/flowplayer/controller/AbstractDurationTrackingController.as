@@ -183,6 +183,8 @@ package org.flowplayer.controller {
             if (! durationTracker) createDurationTracker(clip);
             doSeekTo(event, seconds);
             durationTracker.time = seconds;
+            //#230 tell the tracker of a seek event.
+            durationTracker.seeked = true;
         }
 
 		protected function get clip():Clip {

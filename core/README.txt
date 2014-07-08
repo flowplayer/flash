@@ -3,6 +3,8 @@ Version history:
 3.2.19-dev
 ------
 - new top level config option 'persistVolumeLevel'. Does not store the volume level and create a 'flash cookie' if set to false.
+- #230 possible fix. if we have just seeked, attempt to get the previous cuepoint so that it will fire when seeking between cuepoints. may need performance improves on large cuepoint lists.
+
 
 3.2.17
 ------
