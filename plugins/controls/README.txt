@@ -3,6 +3,7 @@ Version history:
 3.2.17
 ------
 - #191 fix for buffer bar flickering problem with RTMP
+- #245 fairly major issue with dragger animating before playback has actually begun. Wait until buffer full events to fix issues when transversing between instream clips and when switching http clips.
 
 3.2.16 (Nov 2013)
 -----------------

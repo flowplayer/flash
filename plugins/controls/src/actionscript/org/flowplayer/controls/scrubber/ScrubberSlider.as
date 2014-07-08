@@ -49,6 +49,7 @@ package org.flowplayer.controls.scrubber {
        private var _currentClip:Clip;
        private var _isSeekPaused:Boolean;
        private var _isRtmp:Boolean;
+       private var _started:Boolean;
 
        public function ScrubberSlider(config:ScrubberConfig, player:Flowplayer, controlbar:DisplayObject) {
           super(config, player, controlbar);
@@ -76,16 +77,29 @@ package org.flowplayer.controls.scrubber {
 
           playlist.onBegin(function(event:ClipEvent):void {
              _currentClip = event.target as Clip;
+              //#245 prevent the dragger animating until buffer full / playback begins.
+              _started = false;
           });
           playlist.onResume(function(event:ClipEvent):void {
              _currentClip = event.target as Clip;
           });
 
           // onBegin instead of onStart: http://code.google.com/p/flowplayer-core/issues/detail?id=190
-          playlist.onBegin(start);
+          //playlist.onBegin(start);
 
           //#404 stop/start dragger animation when switching to update correctly.
-          playlist.onSwitch(resume);
+          //#245 for http switching, the stream gets reset so stop the dragger and reset all elements to continue again on playback / buffer full.
+          playlist.onSwitch(function(event:ClipEvent):void {
+               if (_currentClip.provider == "http") {
+                   stop(null);
+                   _started = false;
+                   updateDraggerPos(0, _currentClip);
+                   doDrawBufferBar(0, 0);
+                   drawProgressBar(0, 0);
+               } else {
+                   resume(event);
+               }
+          });
 
           playlist.onResume(resume);
 
@@ -304,9 +318,17 @@ package org.flowplayer.controls.scrubber {
           animationEngine.pause(_dragger);
        }
 
+       //#245 if playback has not begin start the dragger animation or else resume it after the buffer is full.
        private function bufferFull(event:ClipEvent):void {
-          log.debug("bufferFull()");
-          animationEngine.resume(_dragger);
+            log.debug("bufferFull()");
+            if (!_started) {
+                start(event);
+                _started = true;
+
+            } else {
+                animationEngine.resume(_dragger);
+            }
+
        }
 
        private function stopAndRewind(event:ClipEvent):void {
