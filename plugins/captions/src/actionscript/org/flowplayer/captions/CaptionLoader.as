@@ -167,8 +167,7 @@ package org.flowplayer.captions {
 				parser = new JSONParser(_config.template);
 
 			} else if (parserType == "tt") {
-				parser = new TTXTParser(_config.template);
-				TTXTParser(parser).simpleFormatting = _config.simpleFormatting;
+				parser = new TTXTParser(_config.template, clip.getCustomProperty("ttNamespace") as String || "http://www.w3.org/ns/ttml", _config.simpleFormatting);
 
 			} else {
 				throw new Error("Unrecognized captions file extension");

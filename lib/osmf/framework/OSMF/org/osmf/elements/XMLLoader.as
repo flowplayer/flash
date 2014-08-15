@@ -120,7 +120,7 @@ package org.osmf.elements
 				parserTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onParserTimerComplete);
 				parserTimer.start();
 				
-				parser.parse(resourceData, URL.getRootUrl(StreamingXMLResource(loadTrait.resource).url));
+				parser.parse(resourceData, URL.normalizePathForURL(StreamingXMLResource(loadTrait.resource).url, true));
 			}
 			catch (parseError:Error)
 			{

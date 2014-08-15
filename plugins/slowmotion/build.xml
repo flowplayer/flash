@@ -2,13 +2,16 @@
 
 	<property name="devkit-dir" value="../../lib/devkit" />
 	
-	<property file="${devkit-dir}/plugin-build.properties" />
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	<property name="extra-sources" value="../../lib/common/src/actionscript" />
 
-	<property name="version" value="3.2.9" />
+	<property name="version" value="3.2.10" />
 	<property name="shortname" value="slowmotion" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
+
     <property name="releasedir" value="${basename}" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />

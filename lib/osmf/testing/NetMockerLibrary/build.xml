@@ -11,7 +11,7 @@
 	
 	<!-- compile project -->
 	<target name="build" depends="clean-bin" >	
-		<OSMF.component.compile project="NetMocker" projectDir="${basedir}" />
+		<OSMF.component.compile project="NetMockerLibrary" projectDir="${basedir}" />
 	</target>
 
 	<!-- cleans the output directory -->

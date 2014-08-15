@@ -11,8 +11,8 @@
 package org.flowplayer.f4m {
 
         import flash.events.NetStatusEvent;
-import flash.events.TimerEvent;
-import flash.utils.Timer;
+        import flash.events.TimerEvent;
+        import flash.utils.Timer;
 
         import org.flowplayer.model.Plugin;
         import org.flowplayer.model.PluginModel;
@@ -154,6 +154,7 @@ import flash.utils.Timer;
                         if (itemConfig.hasOwnProperty("label")) bitrateItem.label = itemConfig.label;
                         if (itemConfig.hasOwnProperty("sd")) bitrateItem.sd = itemConfig.sd;
                         if (itemConfig.hasOwnProperty("hd")) bitrateItem.hd = itemConfig.hd;
+                        if (itemConfig.hasOwnProperty("isDefault")) bitrateItem.isDefault = itemConfig.isDefault as Boolean;
                     }
 
                     bitrateItems.push(bitrateItem);
@@ -197,13 +198,20 @@ import flash.utils.Timer;
             {
                 log.debug("F4M Manifest Finished");
 
-                try
-                {
+
                     //#493 add option to include application instance for rtmp base urls.
                     if (!manifest.urlIncludesFMSApplicationInstance && manifest.baseURL)
                         manifest.urlIncludesFMSApplicationInstance = _config.includeApplicationInstance;
 
-                    netResource = parser.createResource(manifest, new URLResource(_clip.completeUrl));
+                    try
+                    {
+                        netResource = parser.createResource(manifest, new URLResource(_clip.completeUrl));
+                    }
+                    catch (error:Error)
+                    {
+                        handleStreamNotFound(error.message);
+                        return;
+                    }
 
                     if (netResource is DynamicStreamingResource) {
                         dynResource = netResource as DynamicStreamingResource;
@@ -236,11 +244,7 @@ import flash.utils.Timer;
                        _successListener(_clip);
                     }
 
-                }
-                catch (error:Error)
-                {
-                    handleStreamNotFound(error.message);
-                }
+
             }
 
             /**

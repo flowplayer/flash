@@ -9,16 +9,13 @@
  */
 
 package org.flowplayer.bwcheck.net {
-    import org.flowplayer.bwcheck.detect.*;
     import org.flowplayer.bwcheck.config.Config;
 
     import org.flowplayer.util.Log;
     import org.flowplayer.view.Flowplayer;
-
     import org.flowplayer.net.BitrateItem;
     import org.flowplayer.net.IStreamSelectionManager;
 
-    import org.osmf.net.DynamicStreamingItem;
     import org.osmf.net.SwitchingRuleBase;
     import org.osmf.net.rtmpstreaming.RTMPNetStreamMetrics;
     import org.osmf.net.NetStreamMetricsBase;
@@ -37,7 +34,6 @@ package org.flowplayer.bwcheck.net {
         }
 
         override public function getNewIndex():int {
-            var screenWidth:Number = _player.screen.getDisplayObject().width;
 
             for (var i:Number = _bitrates.length - 1; i >= 0; i--) {
                 var item:BitrateItem = _bitrates[i];

@@ -4,7 +4,7 @@
     <property file="build.properties" />
 
 	<!-- import javascript-tasks (min, pack, lint, gzip, dist) -->
-	<import file="${DEVKIT_HOME}/js.xml"/>
+	<import file="../../../flash-build/js.xml"/>
  
 	<!-- write custom tasks here -->
 	

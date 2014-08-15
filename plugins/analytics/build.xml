@@ -3,14 +3,17 @@
     <property file="${user.home}/plugin.properties" />
     <property file="build.properties"/>
 
-	<property file="../../lib/devkit/plugin-build.properties" />
-	<import file="../../lib/devkit/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	<property name="flowplayer_lib" value="../core/build/flowplayer.swc" />
     <property name="library-path" value="lib-swc" />
     <property name="compiler-defines" value="-define+=LOG::P,'false'"/>
 
     <property name="shortname" value="analytics" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
+
     <property name="releasedir" value="flowplayer.analytics" />
     <property name="plugin-binary" value="${basename}.swf" />
     <property name="plugin-binary-versioned" value="${basename}-${version}.swf" />

@@ -68,10 +68,9 @@ package org.osmf.smpte.tt.captions
 					s.fontFamily = style.fontFamily;
 					break;
 				case "fontSize":
-					s.fontSize = style.fontSize;
-					break;
 				case "ttFontSize":
 					s.ttFontSize = style.ttFontSize;
+					s.fontSize = style.fontSize;
 					break;
 				case "fontStyle":
 					s.fontStyle = style.fontStyle;
@@ -80,10 +79,9 @@ package org.osmf.smpte.tt.captions
 					s.fontWeight = style.fontWeight;
 					break;
 				case "lineHeight":
-					s.lineHeight = style.lineHeight;
-					break;
 				case "ttLineHeight":
 					s.ttLineHeight = style.ttLineHeight;
+					s.lineHeight = style.lineHeight;
 					break;
 				case "opacity":
 					s.opacity = style.opacity;
@@ -102,6 +100,14 @@ package org.osmf.smpte.tt.captions
 					break;
 				case "textAlign":
 					s.textAlign = style.textAlign;
+					break;
+				case "lineThrough":
+				case "textDecoration":
+					s.textDecoration = style.textDecoration;
+					s.lineThrough = style.lineThrough;
+					break;
+				case "textOutline":
+					s.textOutline = style.textOutline;
 					break;
 				case "visibility":
 					s.visibility = style.visibility;

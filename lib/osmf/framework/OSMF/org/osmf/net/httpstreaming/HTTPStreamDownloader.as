@@ -34,6 +34,8 @@ package org.osmf.net.httpstreaming
 	import flash.utils.Timer;
 	
 	import org.osmf.events.HTTPStreamingEvent;
+	import org.osmf.events.HTTPStreamingEventReason;
+	import org.osmf.net.httpstreaming.flv.FLVTagScriptDataMode;
 	import org.osmf.utils.OSMFSettings;
 
 	CONFIG::LOGGING
@@ -164,7 +166,7 @@ package org.osmf.net.httpstreaming
 					logger.debug("Loading (timeout=" + _timeoutInterval + ", retry=" + _currentRetry + "):" + _request.url.toString());
 				}
 
-				_downloadBeginDate = new Date();
+				_downloadBeginDate = null;
 				_downloadBytesCount = 0;
 				startTimeoutMonitor(_timeoutInterval);
 				_urlStream.load(_request);
@@ -235,6 +237,22 @@ package org.osmf.net.httpstreaming
 		}
 		
 		/**
+		 * Return the total number of available bytes,
+		 * includes both saved bytes and bytes in the underlying url stream
+		 **/
+		public function get totalAvailableBytes():int
+		{
+			if (!isOpen)
+			{
+				return 0;
+			}
+			else
+			{
+				return _savedBytes.bytesAvailable + _urlStream.bytesAvailable;
+			}
+		}
+		
+		/**
 		 * Returns a buffer containing a specified number of bytes or null if 
 		 * there are not enough bytes available.
 		 * 
@@ -252,7 +270,7 @@ package org.osmf.net.httpstreaming
 				numBytes = 1;
 			}
 			
-			var totalAvailableBytes:int = _savedBytes.bytesAvailable + _urlStream.bytesAvailable;
+			var totalAvailableBytes:int = this.totalAvailableBytes;
 			if (totalAvailableBytes == 0)
 			{
 				_hasData = false;
@@ -283,21 +301,50 @@ package org.osmf.net.httpstreaming
 		}
 		
 		/**
+		 * Clears the saved bytes.
+		 **/
+		public function clearSavedBytes():void
+		{
+			if(_savedBytes == null)
+			{
+				// called after dispose
+				return;
+			}
+			_savedBytes.length = 0;
+			_savedBytes.position = 0;
+		}
+		
+		/**
+		 * Copies the specified number of bytes from source into the saved bytes.
+		 **/
+		public function appendToSavedBytes(source:IDataInput, count:uint):void
+		{
+			if(_savedBytes == null)
+			{
+				// called after dispose
+				return;
+			}
+			source.readBytes(_savedBytes, _savedBytes.length, count);
+		}
+		
+		/**
 		 * Saves all remaining bytes from the HTTP stream source to
 		 * internal buffer to be available in the future.
 		 **/
-		public function saveBytes():void
+		public function saveRemainingBytes():void
 		{
+			if(_savedBytes == null)
+			{
+				// called after dispose
+				return;
+			}
 			if (_urlStream != null && _urlStream.connected && _urlStream.bytesAvailable)
 			{
-				_urlStream.readBytes(_savedBytes);
+				_urlStream.readBytes(_savedBytes, _savedBytes.length);
 			}
 			else
 			{
-				if (_savedBytes != null)
-				{	
-					_savedBytes.length = 0;
-				}
+				// no remaining bytes
 			}
 		}
 		
@@ -326,6 +373,11 @@ package org.osmf.net.httpstreaming
 		 **/
 		private function onComplete(event:Event):void
 		{
+			if (_downloadBeginDate == null)
+			{
+				_downloadBeginDate = new Date();
+			}
+			
 			_downloadEndDate = new Date();
 			_downloadDuration = (_downloadEndDate.valueOf() - _downloadBeginDate.valueOf())/1000.0;
 			
@@ -339,17 +391,18 @@ package org.osmf.net.httpstreaming
 			
 			if (_dispatcher != null)
 			{
-				_dispatcher.dispatchEvent(
-					new HTTPStreamingEvent(
-							HTTPStreamingEvent.DOWNLOAD_COMPLETE,
-							false,
-							false,
-							NaN,
-							null,
-							null,
-							_request.url
-					)
-				);
+				var streamingEvent:HTTPStreamingEvent = new HTTPStreamingEvent(
+					HTTPStreamingEvent.DOWNLOAD_COMPLETE,
+					false, // bubbles
+					false, // cancelable
+					0, // fragment duration
+					null, // scriptDataObject
+					FLVTagScriptDataMode.NORMAL, // scriptDataMode
+					_request.url, // urlString
+					_downloadBytesCount, // bytesDownloaded
+					HTTPStreamingEventReason.NORMAL, // reason
+					this); // downloader
+				_dispatcher.dispatchEvent(streamingEvent);
 			}
 		}
 		
@@ -359,6 +412,11 @@ package org.osmf.net.httpstreaming
 		 **/
 		private function onProgress(event:ProgressEvent):void
 		{
+			if (_downloadBeginDate == null)
+			{
+				_downloadBeginDate = new Date();
+			}
+			
 			if (_downloadBytesCount == 0)
 			{
 				if (_timeoutTimer != null)
@@ -375,6 +433,23 @@ package org.osmf.net.httpstreaming
 			}
 			
 			_hasData = true;			
+			
+			if(_dispatcher != null)
+			{
+				var streamingEvent:HTTPStreamingEvent = new HTTPStreamingEvent(
+					HTTPStreamingEvent.DOWNLOAD_PROGRESS,
+					false, // bubbles
+					false, // cancelable
+					0, // fragment duration
+					null, // scriptDataObject
+					FLVTagScriptDataMode.NORMAL, // scriptDataMode
+					_request.url, // urlString
+					0, // bytesDownloaded
+					HTTPStreamingEventReason.NORMAL, // reason
+					this); // downloader
+				_dispatcher.dispatchEvent(streamingEvent);
+			}
+				
 		}	
 		
 		/**
@@ -388,8 +463,12 @@ package org.osmf.net.httpstreaming
 				stopTimeoutMonitor();
 			}
 			
+			if (_downloadBeginDate == null)
+			{
+				_downloadBeginDate = new Date();
+			}
 			_downloadEndDate = new Date();
-			_downloadDuration = (_downloadEndDate.valueOf() - _downloadBeginDate.valueOf())/1000.0;
+			_downloadDuration = (_downloadEndDate.valueOf() - _downloadBeginDate.valueOf()) / 1000.0;
 
 			_isComplete = false;
 			_hasErrors = true;
@@ -402,17 +481,23 @@ package org.osmf.net.httpstreaming
 			
 			if (_dispatcher != null)
 			{
-				_dispatcher.dispatchEvent(
-					new HTTPStreamingEvent(
-						HTTPStreamingEvent.DOWNLOAD_ERROR,
-						false,
-						false,
-						NaN,
-						null,
-						null,
-						_request.url
-					)
-				);
+				var reason:String = HTTPStreamingEventReason.NORMAL;
+				if(event.type == Event.CANCEL)
+				{
+					reason = HTTPStreamingEventReason.TIMEOUT;
+				}
+				var streamingEvent:HTTPStreamingEvent = new HTTPStreamingEvent(
+					HTTPStreamingEvent.DOWNLOAD_ERROR,
+					false, // bubbles
+					false, // cancelable
+					0, // fragment duration
+					null, // scriptDataObject
+					FLVTagScriptDataMode.NORMAL, // scriptDataMode
+					_request.url, // urlString
+					0, // bytesDownloaded
+					reason, // reason
+					this); // downloader
+				_dispatcher.dispatchEvent(streamingEvent);
 			}
 		}
 		
@@ -471,6 +556,7 @@ package org.osmf.net.httpstreaming
 			}
 			else
 			{
+				close();
 				onError(new Event(Event.CANCEL));
 			}
 		}

@@ -6,14 +6,17 @@
 	
     <property name="plugin-libs" value=""/>
     <property name="extra-sources" value="../cluster/src/actionscript ../../lib/common/src/actionscript ${osmf-dir}"/>
-	<property name="library-path" value="src/flash ../../lib/common/src/flash"/>
-	<property name="compiler-defines" value="-define+=CONFIG::LOGGING,true -define+=CONFIG::FLASH_10_1,'true' -define+=CONFIG::enableRtmpMetrics,'false' -define+=CONFIG::enableHttpMetrics,'true'"/>
+	<property name="library-path" value=""/>
+	<property name="compiler-defines" value="-define+=CONFIG::LOGGING,'false' -define+=CONFIG::FLASH_10_1,'true' -define+=CONFIG::enableRtmpMetrics,'false' -define+=CONFIG::enableHttpMetrics,'true'"/>
 
-	<property file="${devkit-dir}/plugin-build.properties" />
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	
-	<property name="shortname" value="bwcheck-httpstreaming" />
+	<property name="shortname" value="bwcheck_httpstreaming" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
+
     <property name="releasedir" value="${basename}" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-swc" value="${basename}.swc" />
@@ -34,4 +37,64 @@
 	<target name="demo" >
 			<example player-swf="flowplayer.swf" main-swf="${plugin-binary-versioned}" />
 	</target>
+
+    <macrodef name="mxmlc.compile">
+        <attribute name="src" default="${src-as}" />
+        <attribute name="plugin-main-class" default="${plugin-main-class}" />
+        <attribute name="out" default="${plugin-binary}" />
+        <attribute name="libs" default="" />
+
+        <sequential>
+            <condition property="libs" value="" else="-include-libraries @{libs}">
+                <equals arg1="@{libs}" arg2="" />
+            </condition>
+            <condition property="pluginruntimelibs1" value="-runtime-shared-library-path+=${plugin-runtime-lib-swc1},library.swf" else="">
+                <isset property="plugin-runtime-lib-swc1" />
+            </condition>
+            <condition property="pluginruntimelibs2" value="-runtime-shared-library-path+=${plugin-runtime-lib-swc2},library.swf" else="">
+                <isset property="plugin-runtime-lib-swc2" />
+            </condition>
+            <condition property="pluginruntimelibs3" value="-runtime-shared-library-path+=${plugin-runtime-lib-swc3},library.swf" else="">
+                <isset property="plugin-runtime-lib-swc3" />
+            </condition>
+            <condition property="mxmlc-library-path" value="${library-path}" else="">
+                <isset property="library-path" />
+            </condition>
+            <condition property="mxmlc-define" value="-define=${compiler-define}" else="">
+                <isset property="compiler-define" />
+            </condition>
+            <condition property="mxmlc-defines" value="${compiler-defines}" else="">
+                <isset property="compiler-defines" />
+            </condition>
+            <condition property="mxmlc-sources" value="${extra-sources}" else="">
+                <isset property="extra-sources" />
+            </condition>
+
+            <echo message="compiling with  ${mxmlc-library-path}" />
+            <echo message="compiling with  ${mxmlc-define} ${mxmlc-defines}" />
+
+            <exec executable="${mxmlc_bin}" failonerror="true">
+                <arg line="-source-path @{src} ${mxmlc-library-path} ${mxmlc-sources}" />
+                <arg line="${mxmlc-define}" />
+                <arg line="${mxmlc-defines}" />
+                <arg line="${libs}" />
+                <arg line="-library-path ${flex-libs-path} ${mxmlc-library-path}" />
+                <arg line="-runtime-shared-library-path=${flowplayer_lib},library.swf" />
+                <arg line="${pluginruntimelibs1}" />
+                <arg line="${pluginruntimelibs2}" />
+                <arg line="${pluginruntimelibs3}" />
+                <arg line="-static-link-runtime-shared-libraries=false"/>
+                <arg line="-generate-frame-loader=false"/>
+                <arg line="-default-frame-rate=${framerate}" />
+                <arg line="-default-background-color=${bgcolor}" />
+                <arg line="-strict=true" />
+                <arg line="-keep-as3-metadata=Value,External" />
+                <!-- Load external osmf library from httpstreaming except NetClient -->
+                <arg line="-load-externs lib/externs.xml" />
+                <arg line="'@{src}/@{plugin-main-class}'" />
+                <arg line="-output '${build-dir}/@{out}'" />
+                <arg line="-incremental=false"/>
+            </exec>
+        </sequential>
+    </macrodef>
 </project>

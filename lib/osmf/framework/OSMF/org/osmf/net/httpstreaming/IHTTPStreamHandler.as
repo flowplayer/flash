@@ -41,7 +41,7 @@ package org.osmf.net.httpstreaming
 		function get isOpen():Boolean;
 		
 		function get streamName():String;
-		function get qosInfo():HTTPStreamQoSInfo;
+		function get qosInfo():HTTPStreamHandlerQoSInfo;
 		
 		function open(streamName:String):void
 		function close():void;

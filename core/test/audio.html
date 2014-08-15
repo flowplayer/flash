@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="../src/javascript/flowplayer.js/flowplayer-3.2.11.min.js"></script>
 
 
 	<!-- page title -->
@@ -16,9 +16,9 @@
                      id="player">
                 </a>
 <script>
-    flowplayer("player", "../build/flowplayer-3.2.11.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.controls.scrubber.ScrubberSlider, org.flowplayer.audio.*' },
+//        log: { level: 'debug', filter: 'org.flowplayer.controller.MediaControllerFactory' },
 
         onBegin: function() {
             console.log("onBegin");
@@ -49,7 +49,7 @@
         },
 
         clip: {
-            url: "http://releases.flowplayer.org/data/fake_empire.mp3",
+            url: "file://Users/api/code/core/build/fake_empire.mp3",
 
             // this style of configuring the cover image was added in audio
             // plugin version 3.2.3
@@ -57,6 +57,7 @@
                 url: "http://releases.flowplayer.org/data/national.jpg",
                 scaling: 'orig'
             }
+            , provider: 'http'
         }
 
 //        plugins: {

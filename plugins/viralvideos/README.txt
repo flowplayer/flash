@@ -2,7 +2,8 @@ sVersion history:
 
 3.2.14
 ------
-- Added helper methods to hide / show the dock when autohide is enabled or not, issue #60
+- Added helper methods hide() and show(). Can be used to show the viralvideos form when the dock is not used (or is hidden).
+- Sharing is now enabled in virally shared players. #110
 
 3.2.12
 ------

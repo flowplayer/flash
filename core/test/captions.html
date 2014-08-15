@@ -28,7 +28,7 @@
 		<!-- this will install flowplayer inside previous A- tag. -->
 <script>
 //    flowplayer("player", { src: "../build/flowplayer.commercial-3.2.5-16.swf", wmode: "transparent" },
-            flowplayer("player", { src: "../build/flowplayer.swf", wmode: "transparent" },
+            flowplayer("player", { src: "../../flash-build/build/flowplayer.swf", wmode: "transparent" },
 {
 				//debug: true,
 				log : {
@@ -79,7 +79,7 @@
 				plugins: {
 
 					lighttpd: {
-						url: '../build/flowplayer.pseudostreaming.swf'
+						url: 'flowplayer.pseudostreaming.swf'
 					},
 
 //					advert: {
@@ -93,20 +93,6 @@
 //							window.open("http://www.port.hu/", "_blank");
 //						}
 //					},
-
-					port_logo: {
-						url: "../build/flowplayer.content.swf",
-						top: 0,
-						left: 5,
-						height: 42,
-						width: 94,
-						padding: 0,
-						backgroundColor: "transparent",
-						backgroundGradient: "none",
-						opacity: 0.9,
-						border: 0,
-						html: '<img src="http:\/\/media.port-network.com\/sponsoration_elements\/development\/zolee\/player\/port_logo_watherpix_32bit.png" hspace="0"/>'
-					},
 
 					subtitle: {
 						url: "../build/flowplayer.content.swf",

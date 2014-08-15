@@ -1,5 +1,5 @@
 /*!
- * flowplayer.js @VERSION. The Flowplayer API
+ * flowplayer.js The Flowplayer API
  *
  * Copyright 2009-2011 Flowplayer Oy
  *
@@ -18,8 +18,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Flowplayer.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Date: @DATE
- * Revision: @REVISION
  */
 !function() {
 
@@ -262,7 +260,8 @@
 				}
 
 				// 1. clip properties, 2-3. metadata, 4. updates, 5. resumes from nested clip
-				if (arg1 && "onBeforeBegin,onMetaData,onStart,onUpdate,onResume".indexOf(evt) != -1) {
+                //#148 add onMetaDataChange event to extend clip properties, this was needed to prevent regular updates during stream switching.
+				if (arg1 && "onBeforeBegin,onMetaData,onMetaDataChange,onStart,onUpdate,onResume".indexOf(evt) != -1) {
 					// update clip properties
 					extend(target, arg1);
 

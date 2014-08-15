@@ -48,47 +48,56 @@ package org.osmf.logging
 		[Test]
 		public function testAccessLoggerFactory():void
 		{
-			var loggerFactory:TraceLoggerFactory = new TraceLoggerFactory();
-			Log.loggerFactory = loggerFactory;
-			
-			Assert.assertTrue(loggerFactory == Log.loggerFactory);
+			CONFIG::LOGGING
+			{
+				var loggerFactory:TraceLoggerFactory = new TraceLoggerFactory();
+				Log.loggerFactory = loggerFactory;
+				
+				Assert.assertTrue(loggerFactory == Log.loggerFactory);
+			}
 		}
 		
 		[Test]
 		public function testGetLogger():void
 		{
-			var logger:Logger = Log.getLogger("testLogger");
-			
 			CONFIG::LOGGING
 			{
+				var logger:Logger = Log.getLogger("testLogger");
+				
+				CONFIG::LOGGING
+				{
+					Assert.assertTrue(logger != null);
+					logger = null;
+				}
+				
+				Assert.assertTrue(logger == null);
+				
+				Log.loggerFactory = new TraceLoggerFactory();
+				
+				logger = Log.getLogger("testLogger");
 				Assert.assertTrue(logger != null);
-				logger = null;
 			}
-			
-			Assert.assertTrue(logger == null);
-			
-			Log.loggerFactory = new TraceLoggerFactory();
-			
-			logger = Log.getLogger("testLogger");
-			Assert.assertTrue(logger != null);
 		}
 		
 		[Test]
 		public function testLevelEnablements():void
 		{
-			var logger:Logger = new TraceLoggerFactory().getLogger("testLogger");
-			
-			logger.debug("message");
-			logger.error("message");
-			logger.info("message");
-			logger.warn("message");
-			logger.fatal("message");
-			
-			logger.debug("{0} message", "debug");
-			logger.error("{0} message", "error");
-			logger.info("{0} message", "info");
-			logger.warn("{0} message", "warn");
-			logger.fatal("{0} message", "fatal");
+			CONFIG::LOGGING
+			{
+				var logger:Logger = new TraceLoggerFactory().getLogger("testLogger");
+				
+				logger.debug("message");
+				logger.error("message");
+				logger.info("message");
+				logger.warn("message");
+				logger.fatal("message");
+				
+				logger.debug("{0} message", "debug");
+				logger.error("{0} message", "error");
+				logger.info("{0} message", "info");
+				logger.warn("{0} message", "warn");
+				logger.fatal("{0} message", "fatal");
+			}
 		}
 	}
 }

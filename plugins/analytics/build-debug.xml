@@ -3,8 +3,8 @@
     <property file="${user.home}/plugin.properties" />
     <property file="build.properties"/>
 
-	<property file="../../lib/devkit/plugin-build.properties" />
-	<import file="../../lib/devkit/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	<property name="flowplayer_lib" value="../core/build/flowplayer.swc" />
     <property name="library-path" value="lib-swc" />
     <property name="compiler-defines" value="-define+=LOG::P,'true'"/>

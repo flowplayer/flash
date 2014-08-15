@@ -69,7 +69,7 @@ package org.osmf.utils
 		/**
 		 * @private
 		 * 
-		 * Controls how much bytes should be appended at one to a NetStream object.
+		 * Controls how much bytes should be appended at once to a NetStream object.
 		 * Defaul is 100Kb per appendBytes.
 		 */
 		public static var hdsBytesProcessingLimit:Number = 102400;
@@ -77,7 +77,7 @@ package org.osmf.utils
 		/**
 		 * @private
 		 * 
-		 * Controls how much bytes should be readed once from a HDS stream.
+		 * Controls how much bytes should be read at once from a HDS stream.
 		 * Defaul is 100Kb per read
 		 */
 		public static var hdsBytesReadingLimit:Number = 102400; 
@@ -86,7 +86,14 @@ package org.osmf.utils
 		 * @private
 		 */
 		public static var hdsMainTimerInterval:int = 25;
-
+		
+		/**
+		 * @private
+		 * 
+		 * Controls minimum number of seconds to wait before issuing a
+		 * MediaErrorEvent.LIVE_STALL when liveness is encountered.
+		 */
+		public static var hdsLiveStallTolerance:Number = 15;
 		
 		/////////////////////////////////////////////
 		//

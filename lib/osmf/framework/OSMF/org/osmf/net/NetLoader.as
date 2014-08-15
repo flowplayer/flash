@@ -430,7 +430,14 @@ package org.osmf.net
 				var netStream:NetStream = createNetStream(connection, netLoadTrait.resource as URLResource);				
 				netStream.client = new NetClient();
 				netLoadTrait.netStream = netStream;
-				netLoadTrait.switchManager = createNetStreamSwitchManager(connection, netStream, netLoadTrait.resource as DynamicStreamingResource);
+				
+				// Only generate the switching manager if the resource is truly switchable.
+				var dsResource:DynamicStreamingResource = loadTrait.resource as DynamicStreamingResource;
+				if (dsResource != null)
+				{
+					netLoadTrait.switchManager = createNetStreamSwitchManager(connection, netStream, dsResource);
+				}
+				
 				netLoadTrait.netConnectionFactory = factory;
 				
 				CONFIG::FLASH_10_1	

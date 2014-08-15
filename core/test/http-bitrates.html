@@ -1,7 +1,7 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <!--<script type="text/javascript" src="flowplayer-3.0.5.min.js"></script>-->
-    <script src="../flowplayer-3.2.6.min.js"></script>
+    <script src="flowplayer-3.2.12.js"></script>
 
 
 	<!-- page title -->
@@ -15,10 +15,12 @@
                      style="display:block;width:440px;height:247px"
                      id="player">
                 </a>
+
+
 <script>
-    flowplayer("player", "../build/flowplayer-3.2.8-dev.swf",
+    flowplayer("player", "../../../flash-build/build/flowplayer.swf",
     {
-        log: { level: 'debug', filter: 'org.flowplayer.bwcheck.*' },
+        log: { level: 'debug', filter: 'org.flowplayer.cluster.*, org.flowplayer.f4m.*, org.flowplayer.httpstreaming.*, org.flowplayer.bwcheck.*' },
         onStart: function() {
             console.log("onStart");
         },
@@ -36,10 +38,22 @@
         },
 
         clip: {
+			//url: "http://itv08.digizuite.dk/tv2b/ngrp:ch1_all/manifest.f4m",
+			//url: "http://localhost:1935/live/livestream/manifest.f4m",
             url: "sample1.f4m",
+			
+			//url: "http://localhost:1935/dvr/livestream/manifest.f4m?DVR",
+			//urlResolvers: ['f4m'],
             urlResolvers: ['f4m','bwcheck'],
             provider: 'httpstreaming',
-            baseUrl: "http://httpstreaming.electroteque.org/videos/vod/"
+			startLivePosition: true,
+            baseUrl: 'http://stream.flowplayer.org/httpstreaming/',
+			bitrates: [
+				{ bitrate: 259},
+				{ bitrate: 405, isDefault: true},
+				{ bitrate: 894},
+				{ bitrate: 3064}
+			]
 
         },
         plugins:  {
@@ -57,10 +71,13 @@
                 url: 'flowplayer.httpstreaming.swf'
             },
             bwcheck: {
-                url: 'flowplayer.bwcheck.swf',
-                netConnectionUrl: 'http://flowplayer.electroteque.org/swf/flowplayer-bwcheck.swf',
+                url: 'flowplayer.bwcheck-httpstreaming.swf',
+                //netConnectionUrl: 'http://flowplayer.electroteque.org/swf/flowplayer-bwcheck.swf',
+				dynamicBuffer: true,
+          		netConnectionUrl: "http://releases.flowplayer.org/swf/flowplayer-3.2.16.swf",
                 bitrateProfileName: 'HTTPBitrateProfile',
-                dynamic: false,
+                dynamic: true,
+				checkOnStart: true,
                 //onStreamSwitch: switchStreamInfo,
                 //onStreamSwitchBegin: switchStreamInfoBegin,
                 // this method is called when the bandwidth check is done
@@ -71,13 +88,16 @@
                 onStreamSwitchBegin: function (newItem, currentItem) {
                     console.log("Will switch to: " + newItem.streamName +
                      " from " + currentItem.streamName);
-//                   $f().getPlugin('content').setHtml("Will switch to: " + newItem.streamName +
-//                    " from " + currentItem.streamName);
+                    $f("player").getPlugin('content').setHtml("Will switch to: " + newItem.bitrate +
+                    " from " + currentItem.bitrate);
                 },
                 onStreamSwitch: function (newItem) {
-                    console.log('content').setHtml("Switched to: " + newItem.streamName);
-//                    $f().getPlugin('content').setHtml("Switched to: " + newItem.streamName);
-                }
+                   // console.log('content').setHtml("Switched to: " + newItem.streamName);
+                    $f("player").getPlugin('content').setHtml("Switched to: " + newItem.bitrate);
+                },
+				onBwDone: function(mappedBitrate) {
+					$f("player").getPlugin('content').setHtml("Mapped to: " + mappedBitrate.bitrate);
+				}
             },
             content: {
                 url: 'flowplayer.content.swf',

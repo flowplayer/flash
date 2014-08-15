@@ -3,13 +3,16 @@
 
 	<property name="devkit-dir" value="../../lib/devkit" />
 	
-	<property file="${devkit-dir}/plugin-build.properties" />
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	<property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
 	
 	<property name="version" value="3.2.8-dev" />
 	<property name="shortname" value="akamai" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
+
     <property name="releasedir" value="flowplayer.akamai" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />

@@ -1,5 +1,10 @@
 Version history:
 
+3.2.10
+------
+- #99 cleanup domain parsing, use native function instead of mx classes.
+- #101 fixes for handling origin server redirections.
+
 3.2.4
 -----
 - #601 dispatch resolver failure correctly.

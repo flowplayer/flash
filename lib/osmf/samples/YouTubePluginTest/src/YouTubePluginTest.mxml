@@ -50,7 +50,7 @@
 				//core.addListener( new TraceListener() ); - For AS3 Projects
 				//core.addListener( TextListener.getDefaultTextListener( LogEventLevel.DEBUG ) ); - For Flex Projects
 				
-				core.run(currentRunTestSuite());		
+				core.run(YoutubePluginTests.currentRunTestSuite());		
 				
 			}
 			

@@ -263,7 +263,7 @@ package org.flowplayer.view {
 							} else {
 								log.info("previous fadeout was canceled, will not remove " + view + " from panel");
 							}
-						});
+						}, false, 0, true);
 				} else if (view.parent != _panel) {
 					_panel.addView(view, null, plugin);
 				}
@@ -337,12 +337,12 @@ package org.flowplayer.view {
 			playable.addEventListener(GoEvent.COMPLETE, 
 				function(event:GoEvent):void {
 					onComplete(view, playable, completeCallback);
-			});
+			}, false, 0, true);
             if (updateCallback != null) {
                 playable.addEventListener(GoEvent.UPDATE, 
                     function(event:GoEvent):void {
                         updateCallback(view);
-                });
+                }, false, 0, true);
             }
 
 			playable.start();

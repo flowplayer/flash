@@ -20,9 +20,9 @@
 package org.osmf.smpte.tt.model
 {
 	import org.osmf.smpte.tt.model.metadata.MetadataElement;
-	import org.osmf.smpte.tt.timing.TimeTree;
+	import org.osmf.smpte.tt.timing.TreeType;
 	
-	public class MetadataElement extends TimedTextElementBase
+	public class MetadataElement extends TimedTextElementBase 
 	{
 		public function MetadataElement()
 		{
@@ -53,16 +53,16 @@ package org.osmf.smpte.tt.model
 		protected override function validElements():void
 		{
 			var child:uint = 0;
-			
+			var childElement:TreeType;
 			//{ region Ensure the children are not tt elements.
-			while ((child < children.length) &&
-				(
-					children[child] is org.osmf.smpte.tt.model.metadata.MetadataElement ||
-					!(children[child] is TimedTextElementBase)
-				)
-			)
+			while (child < children.length)
 			{
-				child++;
+				childElement = children[child];
+				if (childElement is org.osmf.smpte.tt.model.metadata.MetadataElement
+					|| !(childElement is TimedTextElementBase))
+				{
+					child++;
+				}
 			}
 			//} endregion
 			

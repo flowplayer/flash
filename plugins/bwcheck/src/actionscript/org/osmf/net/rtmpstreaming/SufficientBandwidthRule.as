@@ -21,13 +21,13 @@
 *****************************************************/
 package org.osmf.net.rtmpstreaming
 {
-	import org.osmf.net.SwitchingRuleBase;
+import org.osmf.net.SwitchingRuleBase;
 
-	CONFIG::LOGGING
+CONFIG::LOGGING
 	{
-	import org.osmf.logging.Logger;
-	import org.osmf.logging.Log;
-	}
+    import org.osmf.logging.Log;
+    import org.osmf.logging.Logger;
+}
 	
 	/**
 	 * SufficientBandwidthRule is a switching rule that switches up when the
@@ -48,11 +48,11 @@ package org.osmf.net.rtmpstreaming
 		 **/
 		public function SufficientBandwidthRule(metrics:RTMPNetStreamMetrics, bandwidthSafetyMultiplier:Number = 1.15, minDroppedFrames:Number = 2)
 		{
-			super(metrics);
+            //flowplayer addition - make bandwidth rule settings configurable
+            this.bandwidthSafetyMultiplier = bandwidthSafetyMultiplier;
+            this.minDroppedFrames = minDroppedFrames;
 
-            _bandwidthSafetyMultiplier = bandwidthSafetyMultiplier;
-            _minDroppedFrames = minDroppedFrames;
-
+            super(metrics);
 		}
 
 		/**
@@ -69,17 +69,11 @@ package org.osmf.net.rtmpstreaming
 				// First find the preferred bitrate level we should be at by finding
 				// the highest profile that can play, given the current average max
 				// bytes per second.
-				for (var i:int = rtmpMetrics.resource.streamItems.length - 1; i >= 0; i--)
+				for (var i:int = rtmpMetrics.resource.streamItems.length - 1; i >= 0; i--) 
 				{
-
-                    //debug("bandwidth: " + rtmpMetrics.averageMaxBytesPerSecond * 8 / 1024 + " multiplied: " + (rtmpMetrics.resource.streamItems[i].bitrate * _bandwidthSafetyMultiplier) + " bitrate: " + rtmpMetrics.resource.streamItems[i].bitrate);
-
-                    if (rtmpMetrics.averageMaxBytesPerSecond * 8 / 1024 > (rtmpMetrics.resource.streamItems[i].bitrate * _bandwidthSafetyMultiplier))
+					if (rtmpMetrics.averageMaxBytesPerSecond * 8 / 1024 > (rtmpMetrics.resource.streamItems[i].bitrate * this.bandwidthSafetyMultiplier))
 					{
-
-                        newIndex = i;
-                        //debug("bandwidth is greater than bitrate index " + newIndex);
-
+						newIndex = i;
 						break;
 					}
 				}
@@ -90,13 +84,13 @@ package org.osmf.net.rtmpstreaming
 				{
 	        		// We switch up only if conditions are perfect - no framedrops and
 	        		// a stable buffer.
-	        		newIndex = (rtmpMetrics.droppedFPS < _minDroppedFrames && rtmpMetrics.netStream.bufferLength > rtmpMetrics.netStream.bufferTime) ? newIndex : -1;
+	        		newIndex = (rtmpMetrics.droppedFPS < this.minDroppedFrames && rtmpMetrics.netStream.bufferLength > rtmpMetrics.netStream.bufferTime) ? newIndex : -1;
 	        		
 					CONFIG::LOGGING
 					{
 		        		if (newIndex != -1)
 		        		{
-	        				debug("Move up since avg dropped FPS " + Math.round(rtmpMetrics.droppedFPS) + " < " + _minDroppedFrames + " and bufferLength > " + rtmpMetrics.netStream.bufferTime);
+	        				debug("Move up since avg dropped FPS " + Math.round(rtmpMetrics.droppedFPS) + " < " + this.minDroppedFrames + " and bufferLength > " + rtmpMetrics.netStream.bufferTime);
 	        			}
 	        		}
 	        	}
@@ -129,11 +123,9 @@ package org.osmf.net.rtmpstreaming
 			logger.debug(s);
 		}
 		}
-		
-		//private static const BANDWIDTH_SAFETY_MULTIPLE:Number = 1.15;
-		//private static const MIN_DROPPED_FPS:int = 2;
-        private var _bandwidthSafetyMultiplier:Number = 1.15;
-        private var _minDroppedFrames:Number = 2;
+
+        private var bandwidthSafetyMultiplier:Number = 1.15;
+        private var minDroppedFrames:Number = 2;
 		
 		CONFIG::LOGGING
 		{

@@ -21,7 +21,7 @@ package org.flowplayer.config {
     import org.flowplayer.controller.ResourceLoader;
     import org.flowplayer.flow_internal;
 	import org.flowplayer.util.Log;
-	import com.adobe.serialization.json.JSON;
+	import com.adobe.serialization.json.JSONforFP;
 
     use namespace flow_internal;
 
@@ -33,12 +33,12 @@ package org.flowplayer.config {
 
         flow_internal static function parse(config:String):Object {
             //#590 add full package reference to work with Flex 4.6
-            return com.adobe.serialization.json.JSON.decode(config);
+            return com.adobe.serialization.json.JSONforFP.decode(config);
         }
 
         flow_internal static function parseConfig(config:Object, builtInConfig:Object, playerSwfUrl:String, controlsVersion:String, audioVersion:String):Config {
             if (!config) return new Config({}, builtInConfig, playerSwfUrl, controlsVersion, audioVersion);
-            var configObj:Object = config is String ? com.adobe.serialization.json.JSON.decode(config as String) : config;
+            var configObj:Object = config is String ? com.adobe.serialization.json.JSONforFP.decode(config as String) : config;
             return new Config(configObj, builtInConfig, playerSwfUrl, controlsVersion, audioVersion);
         }
 

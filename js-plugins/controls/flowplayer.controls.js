@@ -1,10 +1,10 @@
-/**
+/*!
  * flowplayer.controls.js. Flowplayer JavaScript plugin.
  * 
  * This file is part of Flowplayer, http://flowplayer.org
  *
  * Author: Tero Piirainen, <support@flowplayer.org>
- * Copyright (c) 2008-2012 Flowplayer Ltd
+ * Copyright (c) 2008-2013 Flowplayer Ltd
  *
  * Released under the MIT License:
  * http://www.opensource.org/licenses/mit-license.php
@@ -256,7 +256,8 @@
             time.innerHTML = getTime(status.time, clip.duration);
 
 			// buffer width
-			var x = getMax(status.bufferEnd, duration);
+			// assume "filled buffer" for streaming protocols #152
+			var x = getMax(clip.provider == "http" ? status.bufferEnd : duration, duration);
 			bufferBar.style.width = x + "px";
 			head.setMax(x);	
 
@@ -297,6 +298,7 @@
 	
 	// clear timer when clip ends	
 	self.onFinish(function(clip) {		
+		play.className = opts.playClass;
 		clearInterval(timer);	
 	}); 
 	

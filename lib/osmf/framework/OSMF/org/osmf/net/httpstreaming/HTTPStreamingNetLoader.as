@@ -33,12 +33,24 @@ package org.osmf.net.httpstreaming
 	import org.osmf.net.NetLoader;
 	import org.osmf.net.NetStreamLoadTrait;
 	import org.osmf.net.NetStreamSwitchManagerBase;
+	import org.osmf.net.NetStreamSwitcher;
+	import org.osmf.net.RuleSwitchManagerBase;
 	import org.osmf.net.SwitchingRuleBase;
 	import org.osmf.net.httpstreaming.dvr.DVRInfo;
 	import org.osmf.net.httpstreaming.dvr.HTTPStreamingDVRCastDVRTrait;
 	import org.osmf.net.httpstreaming.dvr.HTTPStreamingDVRCastTimeTrait;
 	import org.osmf.net.httpstreaming.f4f.HTTPStreamingF4FFactory;
+	import org.osmf.net.metrics.DefaultMetricFactory;
+	import org.osmf.net.metrics.MetricFactory;
+	import org.osmf.net.metrics.MetricRepository;
+	import org.osmf.net.qos.QoSInfoHistory;
 	import org.osmf.net.rtmpstreaming.DroppedFramesRule;
+	import org.osmf.net.rules.AfterUpSwitchBufferBandwidthRule;
+	import org.osmf.net.rules.BandwidthRule;
+	import org.osmf.net.rules.BufferBandwidthRule;
+	import org.osmf.net.rules.DroppedFPSRule;
+	import org.osmf.net.rules.EmptyBufferRule;
+	import org.osmf.net.rules.RuleBase;
 	import org.osmf.traits.LoadState;
 
 	/**
@@ -97,14 +109,63 @@ package org.osmf.net.httpstreaming
 		 */
 		override protected function createNetStreamSwitchManager(connection:NetConnection, netStream:NetStream, dsResource:DynamicStreamingResource):NetStreamSwitchManagerBase
 		{
-			// Only generate the switching manager if the resource is truly
-			// switchable.
-			if (dsResource != null)
-			{
-				var metrics:HTTPNetStreamMetrics = new HTTPNetStreamMetrics(netStream as HTTPNetStream);
-				return new HTTPStreamingSwitchManager(connection, netStream, dsResource, metrics, getDefaultSwitchingRules(metrics));
-			}
-			return null;
+			// Create a QoSInfoHistory, to hold a history of QoSInfo provided by the NetStream
+			var netStreamQoSInfoHistory:QoSInfoHistory = createNetStreamQoSInfoHistory(netStream);
+			
+			// Create a MetricFactory, to be used by the metric repository for instantiating metrics
+			var metricFactory:MetricFactory = createMetricFactory(netStreamQoSInfoHistory);
+			
+			// Create the MetricRepository, which caches metrics
+			var metricRepository:MetricRepository = new MetricRepository(metricFactory);
+			
+			// Create the normal rule
+			var normalRules:Vector.<RuleBase> = new Vector.<RuleBase>();
+			var normalRuleWeights:Vector.<Number> = new Vector.<Number>();
+			
+			normalRules.push
+				( new BufferBandwidthRule
+				  ( metricRepository
+				  , BANDWIDTH_BUFFER_RULE_WEIGHTS
+				  , BANDWIDTH_BUFFER_RULE_BUFFER_FRAGMENTS_THRESHOLD
+				  )
+				);
+			normalRuleWeights.push(1);
+			
+			// Create the emergency rules
+			var emergencyRules:Vector.<RuleBase> = new Vector.<RuleBase>();
+			
+			emergencyRules.push(new DroppedFPSRule(metricRepository, 10, 0.1));
+			
+			emergencyRules.push
+				( new EmptyBufferRule
+				  ( metricRepository
+				  , EMPTY_BUFFER_RULE_SCALE_DOWN_FACTOR
+				  )
+				);
+			
+			emergencyRules.push
+				( new AfterUpSwitchBufferBandwidthRule
+				  ( metricRepository
+					, AFTER_UP_SWITCH_BANDWIDTH_BUFFER_RULE_BUFFER_FRAGMENTS_THRESHOLD
+					, AFTER_UP_SWITCH_BANDWIDTH_BUFFER_RULE_MIN_RATIO
+				  )
+				);
+			
+			// Create a NetStreamSwitcher, which will handle the low-level details of NetStream
+			// stream switching
+			var nsSwitcher:NetStreamSwitcher = new NetStreamSwitcher(netStream, dsResource);
+			
+			// Finally, return an instance of the DefaultSwitchManager, passing it
+			// the objects we instatiated above
+			return new DefaultHTTPStreamingSwitchManager
+				( netStream
+				, nsSwitcher
+				, metricRepository
+				, emergencyRules
+				, true
+				, normalRules
+				, normalRuleWeights
+				);
 		}
 		
 		/**
@@ -140,6 +201,34 @@ package org.osmf.net.httpstreaming
 		}
 		
 		/**
+		 * Creates a QoSInfoHistory to be used in Adaptive Bitrate switching
+		 * by the metrics. Subclasses may override.
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 2.0
+		 */		
+		protected function createNetStreamQoSInfoHistory(netStream:NetStream):QoSInfoHistory
+		{
+			return new QoSInfoHistory(netStream, QOS_MAX_HISTORY_LENGTH);
+		}
+		
+		/**
+		 * Creates a MetricFactory to be used in Adaptive Bitrate switching for
+		 * instantiating metrics. Subclasses may override.
+		 *  
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10
+		 *  @playerversion AIR 1.5
+		 *  @productversion OSMF 2.0
+		 */	
+		protected function createMetricFactory(netStreamQoSInfoHistory:QoSInfoHistory):MetricFactory
+		{
+			return new DefaultMetricFactory(netStreamQoSInfoHistory);
+		}
+		
+		/**
 		 * @private
 		 * 
 		 * Override this method to use a different factory object with HTTPNetStream objects.
@@ -148,6 +237,17 @@ package org.osmf.net.httpstreaming
 		{
 			return new HTTPStreamingF4FFactory();
 		}
+		
+		
+		//
+		// ABR protected constants
+		//
+		
+		protected static const BANDWIDTH_BUFFER_RULE_WEIGHTS:Vector.<Number> = new <Number>[7, 3];
+		protected static const BANDWIDTH_BUFFER_RULE_BUFFER_FRAGMENTS_THRESHOLD:uint = 2;
+		protected static const AFTER_UP_SWITCH_BANDWIDTH_BUFFER_RULE_BUFFER_FRAGMENTS_THRESHOLD:uint = 2;
+		protected static const AFTER_UP_SWITCH_BANDWIDTH_BUFFER_RULE_MIN_RATIO:Number = 0.5;
+		protected static const EMPTY_BUFFER_RULE_SCALE_DOWN_FACTOR:Number = 0.4;
 		
 		//
 		// Internal
@@ -160,12 +260,6 @@ package org.osmf.net.httpstreaming
 			return (metadata != null);
 		}
 		
-		private function getDefaultSwitchingRules(metrics:HTTPNetStreamMetrics):Vector.<SwitchingRuleBase>
-		{
-			var rules:Vector.<SwitchingRuleBase> = new Vector.<SwitchingRuleBase>();
-			rules.push(new DownloadRatioRule(metrics, false));
-			rules.push(new DroppedFramesRule(metrics));
-			return rules;
-		}
+		private static const QOS_MAX_HISTORY_LENGTH:Number = 10;
 	}
 }

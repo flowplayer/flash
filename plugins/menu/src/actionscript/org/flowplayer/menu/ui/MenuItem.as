@@ -37,34 +37,40 @@ package org.flowplayer.menu.ui {
         private var _mask:Sprite;
         private var _image:DisplayObject;
         private var _player:Flowplayer;
+        private var _selected:Boolean;
 
         private var _buffer:int = 10;
 
         public function MenuItem(player:Flowplayer, config:MenuItemConfig, animationEngine:AnimationEngine) {
             _player = player;
+
             super(config, animationEngine);
+
         }
 
-        override protected function onClicked(event:MouseEvent):void {
-            if (! itemConfig.toggle) return;
-            if (_tickMark.parent) {
-                removeChild(_tickMark);
-            } else {
-                addChild(_tickMark);
-            }
+        //#71 prevent the over state when the item is disabled
+        override protected function onMouseOver(event:MouseEvent):void {
+            if (!this.enabled) return;
+            super.onMouseOver(event);
         }
 
         public function set selected(selected:Boolean):void {
-//            if (! _tickMark) return;
+
+            //#71 set the selection and enabled state of the item
+            _selected = selected;
+            this.enabled = !selected;
+
+            if (! _tickMark) return;
+
             if (selected && ! _tickMark.parent) {
                 addChild(_tickMark);
-            } else if (_tickMark.parent) {
+            } else if (_tickMark.parent && !selected) {
                 removeChild(_tickMark);
             }
         }
 
         public function get selected():Boolean {
-            return _tickMark.parent != null;
+            return _selected;
         }
 
         override protected function createFace():DisplayObjectContainer {
@@ -78,6 +84,10 @@ package org.flowplayer.menu.ui {
                     addChild(_tickMark);
                 }
             }
+
+            //#71 set the default selection
+            _selected = itemConfig.selected;
+
             _text = addChild(TextUtil.createTextField(false, null, 12, true)) as TextField;
             _text.selectable = false;
             _text.type = TextFieldType.DYNAMIC;
@@ -147,6 +157,8 @@ package org.flowplayer.menu.ui {
                 _text.x = _image ? (_image.x + _image.width + _buffer) : _buffer;
                 Arrange.center(_text,  0, height);
             }
+
+
         }
 
         override protected function doEnable(enabled:Boolean):void {

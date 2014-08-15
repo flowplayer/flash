@@ -1,4 +1,4 @@
-/**
+/*!
  * flowplayer.bitrateselect.js Flowplayer JavaScript plugin.
  *
  * This file is part of Flowplayer, http://flowplayer.org
@@ -7,7 +7,7 @@
  *   Daniel Rossi, danielr@electroteque.org
  *   Anssi Piirainen, api@iki.fi
  *
- * Copyright (c) 2011-2012 Flowplayer Ltd
+ * Copyright (c) 2011-2013 Flowplayer Ltd
  *
  * Released under the MIT License:
  * http://www.opensource.org/licenses/mit-license.php
@@ -29,10 +29,9 @@
 
 		$.extend(opts, options);
 
-		var wrap = container;
+        var wrap = $(container);
 
-        // use either the element with templateId or the contents of wrap
-        var template = null;
+        var template = opts.templateId ? $('<div>').append($(opts.templateId).clone()).remove().html() : wrap.html();
 
 		var plugin = self.getPlugin(opts.pluginName) || null;
 
@@ -100,11 +99,6 @@
             bitrateItems = self.getClip().bitrateItems ? self.getClip().bitrateItems :  self.getClip().bitrates;
 
 			if (bitrateItems.length > 0) {
-                wrap = $(wrap);
-
-                //fix for #322 containers only obtainable at this point
-                template = opts.templateId ? $('<div>').append($(opts.templateId).clone()).remove().html() : wrap.html();
-
                 wrap.empty();
 				buildBitrateList();
 			}

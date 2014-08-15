@@ -107,7 +107,7 @@ package org.osmf.smpte.tt.model.parameter
 				case "value":
 					if (feature)
 					{
-						if (DictionaryUtils.containsKey(ParameterElement.features,key))
+						if (ParameterElement.features[key] !== undefined)
 						{
 							valInt = ParameterElement.features[key] as int;
 							valInt |= int(attribute.value == "required");
@@ -120,7 +120,7 @@ package org.osmf.smpte.tt.model.parameter
 					}
 					else
 					{
-						if (DictionaryUtils.containsKey(ParameterElement.extensions,key))
+						if (ParameterElement.extensions[key] !== undefined)
 						{
 							valInt = ParameterElement.extensions[key] as int;
 							valInt |= int(attribute.value == "required");

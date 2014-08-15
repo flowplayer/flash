@@ -38,6 +38,8 @@ package org.osmf.net
 	import org.osmf.traits.LoaderBase;
 	import org.osmf.traits.MediaTraitBase;
 	import org.osmf.utils.OSMFStrings;
+	import org.osmf.net.httpstreaming.HTTPNetStream;
+
 	CONFIG::LOGGING
 	{
 		import org.osmf.logging.Logger;
@@ -276,7 +278,13 @@ package org.osmf.net
 		 */
 		override public function get bytesLoaded():Number
 		{
-			return isStreamingResource ? NaN : (netStream != null ? netStream.bytesLoaded : NaN);
+			// FM-1003 - the HTTPNetStream populates bytesLoaded. We need to expose it further.
+			if ((netStream != null) && (!isStreamingResource || netStream is HTTPNetStream))
+			{
+				return netStream.bytesLoaded;
+			}
+			
+			return NaN;
 		}
 		
 		/**

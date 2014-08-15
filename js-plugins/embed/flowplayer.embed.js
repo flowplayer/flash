@@ -1,10 +1,10 @@
-/**
+/*!
  * flowplayer.embed.js Flowplayer JavaScript plugin.
  * 
  * This file is part of Flowplayer, http://flowplayer.org
  *
  * Author: Tero Piirainen, <support@flowplayer.org>
- * Copyright (c) 2008-2012 Flowplayer Ltd
+ * Copyright (c) 2008-2013 Flowplayer Ltd
  *
  * Released under the MIT License:
  * http://www.opensource.org/licenses/mit-license.php

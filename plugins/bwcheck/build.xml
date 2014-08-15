@@ -6,14 +6,17 @@
 	
     <property name="plugin-libs" value=""/>
     <property name="extra-sources" value="../cluster/src/actionscript ../../lib/common/src/actionscript ${osmf-dir}"/>
-	<property name="library-path" value="src/flash ../../lib/common/src/flash"/>
-	<property name="compiler-defines" value="-define+=CONFIG::LOGGING,'true' -define+=CONFIG::FLASH_10_1,'false' -define+=CONFIG::enableRtmpMetrics,'true' -define+=CONFIG::enableHttpMetrics,'false'"/>
+	<property name="library-path" value=""/>
+	<property name="compiler-defines" value="-define+=CONFIG::LOGGING,'false' -define+=CONFIG::FLASH_10_1,'false' -define+=CONFIG::enableRtmpMetrics,'true' -define+=CONFIG::enableHttpMetrics,'false'"/>
 
-	<property file="${devkit-dir}/plugin-build.properties" />
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<property file="../../../flash-build/plugin-build.properties" />
+	<import file="../../../flash-build/plugin-build.xml"/>
 	
 	<property name="shortname" value="bwcheck" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
+
     <property name="releasedir" value="${basename}" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-swc" value="${basename}.swc" />

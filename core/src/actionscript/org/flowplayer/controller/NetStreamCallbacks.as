@@ -36,6 +36,6 @@ package org.flowplayer.controller {
 
          function RtmpSampleAccess(obj:Object):void;
 
-         function onTextData(obj:Object):void;
+         function onTextData(info:Object):void;
 	}
 }

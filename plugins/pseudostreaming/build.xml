@@ -2,14 +2,17 @@
 
 	<property file="${user.home}/plugin.properties" />
 	<property file="build.properties" />
-	<property file="${devkit-dir}/plugin-build.properties" />
+	<property file="../../../flash-build/plugin-build.properties" />
 	<property name="extra-sources" value="../../core/lib/corelib/src" />
 
     <property name="compiler-defines" value="-define+=CONFIG::enableByteRange,'false'"/>
-	<import file="${devkit-dir}/plugin-build.xml"/>
+	<import file="../../../flash-build/plugin-build.xml"/>
 	
 	<property name="shortname" value="pseudostreaming" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="basename_yaml" value="${basename}" />
+    <property name="shortname_yaml" value="${shortname}" />
+
     <property name="releasedir" value="${basename}" />
 	<property name="plugin-binary" value="${basename}.swf" />
 	<property name="plugin-binary-versioned" value="${basename}-${version}.swf" />

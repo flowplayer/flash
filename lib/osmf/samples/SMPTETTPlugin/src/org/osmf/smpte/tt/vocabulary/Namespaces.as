@@ -21,6 +21,11 @@ package org.osmf.smpte.tt.vocabulary
 {
 	public class Namespaces
 	{
+		
+		static public const TTML_NS_REGEXP:RegExp = /^http\:\/\/www\.w3\.org\/(?:ns\/ttml|2006\/(?:02|04|10)\/ttaf1)/;
+		
+		static public const DEFAULT_TTML_NS:Namespace = new Namespace("http://www.w3.org/ns/ttml"); // default root namespace
+		
 		static public var TTML_NS:Namespace = new Namespace("http://www.w3.org/ns/ttml"); //root namespace
 		static public var TTML_PARAMETER_NS:Namespace = new Namespace("ttp","http://www.w3.org/ns/ttml#parameter");  //ttp:
 		static public var TTML_STYLING_NS:Namespace = new Namespace("tts","http://www.w3.org/ns/ttml#styling"); //tts:

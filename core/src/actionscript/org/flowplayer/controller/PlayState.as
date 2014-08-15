@@ -129,11 +129,11 @@ package org.flowplayer.controller {
 			log.debug("stop() called");
 
             if (silent) {
-                getMediaController().onEvent(null, [closeStreamAndConnection]);
+                getMediaController().onEvent(ClipEventType.STOP, [closeStreamAndConnection, true]);
 
                 if (closeStreamAndConnection && playList.current.parent != null) {
                     playList.setInStreamClip(null);
-                    getMediaController().onEvent(null, [true]);
+                    getMediaController().onEvent(ClipEventType.STOP, [true, true]);
                 }
 
             } else {

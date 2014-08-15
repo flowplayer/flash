@@ -162,6 +162,7 @@ package org.flowplayer.view {
                 addCallback("setKeyboardShortcutsEnabled", setKeyboardShortcutsEnabled);
                 addCallback("isKeyboardShortcutsEnabled", isKeyboardShortcutsEnabled);
                 addCallback("validateKey", validateKey);
+                addCallback("checkKeyInDomain", checkKeyInDomain);
 
                 addCallback("bufferAnimate", bufferAnimate);
 
@@ -380,10 +381,15 @@ package org.flowplayer.view {
             };
         }
 
-        private function validateKey(key:Object, pageDomain:Boolean):Boolean {
-            var LicenseKey:Class = Class(getDefinitionByName("org.flowplayer.view.LicenseKey"));
-            return LicenseKey["validate"](_canvas.loaderInfo.url, version, key, pageDomain);
-        }
+    private function validateKey(key:Object, pageDomain:Boolean):Boolean {
+        var LicenseKey:Class = Class(getDefinitionByName("org.flowplayer.view.LicenseKey"));
+        return LicenseKey["validate"](_canvas.loaderInfo.url, version, key, pageDomain);
+    }
+
+    private function checkKeyInDomain(key:Object, domain:String):Boolean {
+        var LicenseKey:Class = Class(getDefinitionByName("org.flowplayer.view.LicenseKey"));
+        return LicenseKey["validate"](domain, version, key, false);
+    }
 
     }
 }

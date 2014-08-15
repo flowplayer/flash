@@ -72,6 +72,8 @@ package org.flowplayer.controls.time {
 		override protected function addPlayerListeners():void {
 			super.addPlayerListeners();
 			_player.playlist.onSeek(function(event:ClipEvent):void { onTimeUpdate(null); });
+            //#145 there is no seek complete event use the metadata change to update the time when seeking when paused with rtmp.
+            _player.playlist.onMetaDataChange(function(event:ClipEvent):void { onTimeUpdate(null); });
 			_player.playlist.onBeforeFinish(durationReached);
 		}
 

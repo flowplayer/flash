@@ -7,6 +7,10 @@
     <!-- filename for the plugin swf -->
     <property name="shortname" value="controls-tube" />
     <property name="basename" value="flowplayer.${shortname}" />
+    <property name="shortname_yaml" value="controls_tube" />
+    <property name="basename_yaml" value="flowplayer.${shortname_yaml}" />
+
+
     <property name="releasedir" value="flowplayer.controls" />
 
     <!-- location of the skin swd, anc swc -->
@@ -14,8 +18,8 @@
 
     <property name="extra-sources" value="../../lib/common/src/actionscript" />
 
-    <property file="${devkit-dir}/plugin-build.properties" />
-    <import file="${devkit-dir}/plugin-build.xml"/>
+    <property file="../../../flash-build/plugin-build.properties" />
+    <import file="../../../flash-build/plugin-build.xml"/>
     <property name="flowplayer_lib" value="${devkit-dir}/flowplayer.swc" />
 
     <property name="plugin-binary" value="${basename}.swf" />
