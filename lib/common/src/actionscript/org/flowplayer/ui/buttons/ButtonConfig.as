@@ -20,6 +20,7 @@ package org.flowplayer.ui.buttons {
         private var _offColor:String;
         private var _onColor:String;
         private var _disabledColor:String;
+        private var _downColor:String;
 
 		public static function get defaultConfig():ButtonConfig {
 			var config:ButtonConfig = new ButtonConfig;
@@ -87,7 +88,32 @@ package org.flowplayer.ui.buttons {
         public function setOverColor(color:String):void {
             _overColor = color;
         }
-		
+
+        /*
+         * Down color.
+         */
+
+        public function get downColor():Number {
+            return StyleSheetUtil.colorValue(_downColor);
+        }
+
+        public function get downAlpha():Number {
+            return StyleSheetUtil.colorAlpha(_downColor);
+        }
+
+        public function get downColorRGB():Array {
+            return StyleSheetUtil.rgbValue(downColor);
+        }
+
+        public function get downColorRGBA():Array {
+            var rgba:Array = downColorRGB;
+            rgba.push(downAlpha);
+            return rgba;
+        }
+
+        public function setDownColor(color:String):void {
+            _downColor = color;
+        }
 
         /*
          * Line color.

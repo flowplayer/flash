@@ -430,14 +430,14 @@
 
             // update plugins properties & methods
             if (evt == 'onUpdate') {
-               var json = player._api().fp_getPlugin(name);
-					if (!json) { return;	}
+               var api = player._api();
+               var json = api.fp_getPlugin(name);
+               if (!json) return;
 
                extend(self, json);
                delete self.methods;
-
                if (!hasMethods) {
-                  each(json.methods, function() {
+                  each(json.methods || json.methodNames, function() {
                      var method = "" + this;
 
                      self[method] = function() {
