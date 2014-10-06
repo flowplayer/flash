@@ -17,7 +17,8 @@
  */
 
 package org.flowplayer.config {
-	import flash.external.ExternalInterface;
+import flash.debugger.enterDebugger;
+import flash.external.ExternalInterface;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
@@ -36,13 +37,13 @@ package org.flowplayer.config {
 		public static function initializeInterface(callable:Callable, plugin:Object):void {
 			if (!ExternalInterface.available) return;
 			var xml:XML = describeType(plugin);
-			
-			var exposed:XMLList = xml.*.(hasOwnProperty("metadata") && metadata.@name=="External");
-			log.info("Number of exposed methods and accessors: " + exposed.length());
-			for each (var exposedNode:XML in exposed) {
-				log.debug("processing exposed method or accessor " + exposedNode);
-				addMethods(callable, exposedNode, plugin);
-			}
+
+            for each(var node:XML in xml.*) {
+                if(node.hasOwnProperty('metadata') && node.metadata.attributes().contains("External")) {
+                    log.debug("processing exposed method or accessor " + node);
+                    addMethods(callable, node, plugin);
+                }
+            }
 		}
 		
 		private static function addMethods(callable:Callable, exposedNode:XML, plugin:Object):void {

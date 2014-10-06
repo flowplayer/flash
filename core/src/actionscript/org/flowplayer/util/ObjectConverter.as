@@ -1,6 +1,7 @@
 package org.flowplayer.util {
 
-    import flash.utils.describeType;
+import flash.debugger.enterDebugger;
+import flash.utils.describeType;
 
     import org.flowplayer.model.Extendable;
 
@@ -54,18 +55,20 @@ package org.flowplayer.util {
 			var obj:Object = new Object();
 			var classInfo:XML = describeType(o);
 			log.debug("classInfo : " + classInfo.@name.toString());
-			
 			if (classInfo.@name.toString() == "Object") {
                 copyProps(o, obj);
 			} else { // o is a class instance
 				// Loop over all of the *annotated* variables and accessors in the class and convert
-				var exposed:XMLList = classInfo.*.(hasOwnProperty("metadata") && metadata.@name=="Value");
-				for each (var v:XML in exposed) {
-					if (o[v.@name] != null) {
-						var key2:String = v.metadata.arg.@key == "name" ? v.metadata.arg.@value : v.@name.toString();
-						obj[key2] = process(o[v.@name]);
-					}
-				}
+                for each(var v:XML in classInfo.*) {
+                    if (v.hasOwnProperty("metadata") &&
+                        v.metadata.attributes().contains("Value") &&
+                        o[v.@name] != null)
+                    {
+                        var key2:String = v.metadata.arg.@key == "name" ? v.metadata.arg.@value : v.@name.toString();
+                        obj[key2] = process(o[v.@name]);
+                    }
+                }
+
                 if (o is Extendable) {
                     copyProps(Extendable(o).customProperties, obj);
                 }
