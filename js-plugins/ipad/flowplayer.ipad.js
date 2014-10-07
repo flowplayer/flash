@@ -1,7 +1,7 @@
 /*!
  * ipad.js The Flowplayer iOS fallback.
  *
- * Copyright 2010-2013 Flowplayer Oy
+ * Copyright 2010-2014 Flowplayer Oy
  * By Thomas Dubois <thomas@flowplayer.org>
  *
  * Released under the MIT License:
