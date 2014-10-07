@@ -360,13 +360,22 @@ $f.addPlugin("ipad", function(options) {
 				$f.fireEvent(self.id(), 'onBegin', activeIndex);
 
 				log("calling video.load()");
-				video.load();
+				if (! clip.live ) // iOS 8 chokes otherwise
+					video.load();
 			}
 
 			// auto
 			if ( autoPlay ) {
 				log("calling video.play()");
-				video.play();
+				if ( clip.live ) {
+					// timeout required for iOS 8, live stream not recognized,
+					// only the current m3u8 segment list duration
+					setTimeout(function () {
+						video.play();
+					}, 1);
+				} else {
+					video.play();
+				}
 			}
 		}
 
@@ -901,6 +910,10 @@ $f.addPlugin("ipad", function(options) {
 				// clearing root
 				while(root.firstChild)
 					root.removeChild(root.firstChild);
+
+				// do not follow video link - crucial for iOS 8
+				if (root.hasAttribute("href"))
+					root.removeAttribute("href");
 
 				var container = document.createElement('div');
 				var api = document.createElement('video');
