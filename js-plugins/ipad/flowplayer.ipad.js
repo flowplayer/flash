@@ -925,7 +925,6 @@ $f.addPlugin("ipad", function(options) {
 				api.style.cursor = 'pointer';
 				api.style.webkitUserDrag = 'none';
 				
-				api.type="video/mp4";
 			//	if ( hasBuiltinControls )
 			//		api.controls="controls";
 
