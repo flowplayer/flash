@@ -136,10 +136,27 @@
 		to[evt].push(fn);
 	}
 
-	// escape & and = in config written into flashvars (issue #21)
-	function queryescape(url) {
-		return url.replace(/&amp;/g, '%26').replace(/&/g, '%26').replace(/=/g, '%3D');
-	}
+    // recursively cycle through config objects for queryescaping,
+    // i.e. escape & and = only (issues #21, #260)
+    // because & and = cannot be written into the Flash object on the page
+    function queryescape(obj) {
+        if (typeof obj === "string") {
+            return obj.replace(/&amp;/g, '%26').replace(/&/g, '%26').replace(/=/g, '%3D');
+        } else if (typeof obj === "object") {
+            if (obj.length) {
+                each(obj, function (i, item) {
+                    each(item, function (key, val) {
+                        obj[i][key] = queryescape(val);
+                    });
+                });
+            } else {
+                each(obj, function (key, val) {
+                    obj[key] = queryescape(val);
+                });
+            }
+        }
+        return obj;
+    }
 
 	// generates an unique id
    function makeId() {
@@ -980,10 +997,6 @@ function Player(wrapper, params, conf) {
 			conf.clip.url = wrapper.getAttribute("href", 2);
 		}
 
-		if (conf.clip.url) {
-			conf.clip.url = queryescape(conf.clip.url);
-		}
-
 		commonClip = new Clip(conf.clip, -1, self);
 
 		// playlist
@@ -998,10 +1011,6 @@ function Player(wrapper, params, conf) {
 			/* sometimes clip is given as array. this is not accepted. */
 			if (typeof clip == 'object' && clip.length) {
 				clip = {url: "" + clip};
-			}
-
-			if (clip.url) {
-				clip.url = queryescape(clip.url);
 			}
 
 			// populate common clip properties to each clip
@@ -1037,6 +1046,9 @@ function Player(wrapper, params, conf) {
 				delete conf[key];
 			}
 		});
+
+		// queryescape string values
+		conf = queryescape(conf);
 
 
 		// plugins
