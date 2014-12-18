@@ -1,13 +1,7 @@
 /**
- * @license
- * jQuery Tools @VERSION / Flashembed - New wave Flash embedding
- *
  * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
  *
  * http://flowplayer.org/tools/toolbox/flashembed.html
- *
- * Since : March 2008
- * Date  : @DATE
  */
 !function() {
 
