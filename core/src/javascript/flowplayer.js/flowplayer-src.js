@@ -141,7 +141,7 @@
     // because & and = cannot be written into the Flash object on the page
     function queryescape(obj) {
         if (typeof obj === "string") {
-            return obj.replace(/&amp;/g, '%26').replace(/&/g, '%26').replace(/=/g, '%3D');
+            return obj.replace(/&(amp;)?/g, '%26').replace(/=/g, '%3D');
         } else if (typeof obj === "object") {
             if (obj.length) {
                 each(obj, function (i, item) {
