@@ -1,4 +1,4 @@
-/*    
+/*
  *    Author: Anssi Piirainen, <api@iki.fi>
  *
  *    Copyright (c) 2009-2011 Flowplayer Oy
@@ -9,6 +9,7 @@
  *    Additional Term, see http://flowplayer.org/license_gpl.html
  */
 package org.flowplayer.bwcheck.net {
+    import flash.utils.Dictionary;
     import org.flowplayer.controller.NetStreamCallbacks;
     import org.flowplayer.controller.NetStreamClient;
     import org.flowplayer.util.Log;
@@ -18,7 +19,7 @@ package org.flowplayer.bwcheck.net {
     /**
      * A OSMF and Flowplayer compatible NetStream client.
      */
-    public class OsmfNetStreamClient extends NetClient implements NetStreamCallbacks {
+    public function OsmfNetStreamClient(flowplayerNetStreamClient:NetStreamClient, streamCallbacks:Dictionary) {
         protected var log:Log = new Log(this);
         private var _fpClient:NetStreamClient;
 
@@ -26,6 +27,10 @@ package org.flowplayer.bwcheck.net {
             _fpClient = flowplayerNetStreamClient;
             //set a low priority here
             addHandler(NetStreamCodes.ON_PLAY_STATUS, onCustomPlayStatus, -1);
+            //fix for #280 maintain stream callbacks that already exist
+            for (var key:Object in streamCallbacks) {
+                addStreamCallback(key as String, streamCallbacks[key]);
+            }
         }
 
         public function onMetaData(infoObject:Object):void {
@@ -65,5 +70,14 @@ package org.flowplayer.bwcheck.net {
             _fpClient.onPlayStatus(info);
 
         }
+
+        //fix for #280 maintain stream callbacks that already exist
+        private function addStreamCallback(name:String, listener:Function):void {
+            log.debug("registering callback " + name);
+            this.addHandler(name, function(obj:Object):void{
+                _fpClient[name](obj);
+            });
+        }
+
     }
 }
