@@ -429,8 +429,9 @@ package org.flowplayer.bwcheck {
                 clip.setCustomProperty("urlResource", dsResource);
             }
             //#500 setup osmf netclient when configuring metrics.
+            //#280 pass existing stream callbacks into new OsmfNetStreamClient.
             if (netStream && ! (netStream.client is OsmfNetStreamClient)) {
-                var netStreamClient:OsmfNetStreamClient = new OsmfNetStreamClient(NetStreamClient(netStream.client));
+                var netStreamClient:OsmfNetStreamClient = new OsmfNetStreamClient(NetStreamClient(netStream.client), _player.streamProvider.streamCallbacks);
                 netStream.client = netStreamClient;
             }
 
