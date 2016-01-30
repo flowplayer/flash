@@ -3,6 +3,7 @@ Version history:
 3.2.19-dev
 ------
 - new top level config option 'persistVolumeLevel'. Does not store the volume level and create a 'flash cookie' if set to false.
+- #121 fix for XSS protocoless urls breaking the local url check. Disabled wildcard security for loading crossdomain plugin code for now as same domain does not need this.
 
 3.2.17
 ------
