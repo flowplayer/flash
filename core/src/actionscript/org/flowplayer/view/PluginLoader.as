@@ -104,7 +104,8 @@ import org.flowplayer.util.URLUtil;
             _loadListener = loadListener;
             _loadErrorListener = loadErrorListener;
 
-            Security.allowDomain("*");
+            //#121 disable this as it possibly causes issues with crossdomain code loading.
+            //Security.allowDomain("*");
 
 			_providers = new Dictionary();
             _allPlugins = plugins.concat([]);

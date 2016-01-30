@@ -100,7 +100,8 @@ public class DomainUtil {
             if (url.indexOf("file://") == 0) return true;
             if (url.indexOf("http://127.0.0.1") == 0) return true;
             if (url.indexOf("http://") == 0) return false;
-            if (url.indexOf("/") == 0) return true;
+            //#121 remove this check as //domain.com which is a new protocoless way to set urls bypasses this.
+            //if (url.indexOf("/") == 0) return true;
             return false;
         }
 

@@ -70,7 +70,8 @@ package org.flowplayer.util {
 
 		public static function isCompleteURLWithProtocol(fileName:String):Boolean {
 			if (! fileName) return false;
-			return fileName.indexOf("://") > 0;
+            //#121 check for any protocol string including the new protocoless urls
+			return fileName.indexOf("//") > 0;
 		}
 		
 
